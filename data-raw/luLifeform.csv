@@ -1,0 +1,24 @@
+OBJECTID,SortID,LifeForm_Code,LF_Description,Height,LF_Class,LF_Group,Carbon_Group,GROWTHFORMCODE,HEIGHTCLASS,FORMATION,STRATUMCODE
+1,1,T,T Trees > 30m,35,1_Trees,T,T,T,8,tall trees,U
+2,2,M,M Trees 15 - 30 m,23,1_Trees,T,T,T,7,mid trees,U
+3,3,LA,LA Trees 5 - 15 m,10,1_Trees,T,T,T,6,low trees,U
+4,4,LB,LB Trees < 5 m,4,1_Trees,T,T,T,6,low trees,U
+5,5,KT,KT Mallee *(>3m),5,2_Mallees,T,T,M,6,mid mallee trees,U
+6,6,KS,KS Low Mallee *(<3m),2,2_Mallees,T,T,Y,5,low mallee shrubs,M
+7,7,S,S Shrubs > 2m,2.5,3_Shrubs,S,S,S,4,tall shrubs,M
+8,8,SA,SA Shrubs 1.5 - 2.0 m,2,3_Shrubs,S,S,S,3,mid shrubs,M
+9,9,SB,SB Shrubs 1 - 1.5 m,1.5,3_Shrubs,S,S,S,3,mid shrubs,M
+10,10,SC,SC Shrubs 0.5 - 1.0 m,1,4_Low Shrubs,S,,S,2,low shrubs,G
+11,11,SD,SD Shrubs 0 - 0.5 m,0.5,4_Low Shrubs,S,,S,1,low shrubs,G
+12,12,P,P Mat plants (single plant),0.1,7_Forbs,G,,F,1,low forbs,G
+13,13,H,H Hummock grass,0.3,5_Grasses,G,,H,1,hummock grasses,G
+14,14,GT,GT Grass > 0.5 m,0.6,5_Grasses,G,,G,2,mid tussock grasses,G
+15,15,GL,GL Grass < 0.5 m,0.25,5_Grasses,G,,G,1,low tussock grasses,G
+16,16,J,J Herbaceous spp,0.2,7_Forbs,G,,F,1,forbs,G
+17,17,VT,VT Sedges > 0.5 m,0.6,6_Sedges,G,,V,2,mid sedges,G
+18,18,VL,VL Sedges < 0.5 m,0.25,6_Sedges,G,,V,1,low sedges,G
+19,19,V,V Vines (twiners),0.2,7_Forbs,G,,L,1,vines,G
+20,20,MI,MI Mistletoes,0.2,3_Shrubs,S,,S,5,low shrubs,M
+21,21,X,X Ferns,0.3,7_Forbs,G,,E,1,ferns,G
+22,22,MO,"MO Mosses, liverwort",0.05,8_Groundcover,,,B,1,bryophytes,
+23,23,LI,LI Lichens,0.05,8_Groundcover,,,N,1,lichens,

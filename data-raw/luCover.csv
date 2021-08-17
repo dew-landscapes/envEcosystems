@@ -1,0 +1,8 @@
+COVCODE,COVDESC,COVSHORTDESC,COVSEQ,Cover,Cover2,Cover3,Cover4,pa,MidCover,MaxCover,MinCover
+N,"not many, 1-10 individuals",1-10 individuals,13,1,0.02,0.01,0.01,1,0.01,0.01,0
+T,sparsely or very sparsely present - cover very small (less than 5%),sparsely present,11,2,0.01,0.5,0.1,1,0.015,0.02,0.01
+1,plentiful but of small cover (less than 5%),<5%,9,3,0.03,1,1,1,0.025,0.05,0.02
+2,any number of individuals covering 5-25% of the area,5-25%,7,4,0.05,2,2,1,0.15,0.25,0.05
+3,any no. of individuals covering 25-50% of the area,25-50%,5,5,0.25,3,3,1,0.375,0.5,0.25
+4,any no. of individuals covering 50-75% of the area,50-75%,3,6,0.5,4,4,1,0.625,0.75,0.5
+5,covering more than 75% of the area,>75%,1,7,0.75,5,5,1,0.875,1,0.75
