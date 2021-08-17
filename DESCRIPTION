@@ -1,5 +1,5 @@
 Package: envEcosystems
-Title: What the Package Does (One Line, Title Case)
+Title: Functions and Data to Help Create Ecosystem Definitions
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Nigel",
@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "nige.willoughby@gmail.com")
 Description: What the package does (one paragraph).
-License: MIT + file LICENSE
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
