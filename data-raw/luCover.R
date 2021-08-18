@@ -1,5 +1,7 @@
 
+  library(magrittr)
 
   # Cover
-  luCover <- rio::import("data-raw/luCover.csv") %>%
-    as_tibble()
+  lucover <- rio::import("data-raw/luCover.csv") %>%
+    tibble::as_tibble() %>%
+    stats::setNames(tolower(names(.)))

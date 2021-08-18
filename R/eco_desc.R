@@ -3,51 +3,50 @@
 
 #' Generate a structural description from cluster_spp_per and the clustering
 #'
-#' @param strPer Dataframe of structural information for each ecosystem. Ouput
+#' @param strper Dataframe of structural information for each ecosystem. Ouput
 #' from eco_str_per().
-#' @param sppPer Dataframe of taxa information for each ecosystem. Output from
+#' @param sppper Dataframe of taxa information for each ecosystem. Output from
 #' eco_spp_per().
+#' @param taxonomy Dataframe with ind column indicating indigenous status.
 #'
 #' @return Dataframe of full ecosystem floristic * structural descriptions.
 #' Indcludes text suitable for display in .md
 #' @export
 #'
 #' @examples
-eco_desc <- function(strPer,sppPer) {
+eco_desc <- function(strper,sppper,taxonomy) {
 
-  source("R/SAVegetationStructuralFormations.R")
+  apply_savsf <- function(df,covercol = "sumcov", heightcol = "wtht", strcol = "storey") {
 
-  apply_savsf <- function(df,coverCol = "sumCov", heightCol = "wtHt", strCol = "storey") {
-
-    savsfCols <- if(strCol == "storey") c("storey","htClass","covClass") else c("str","savsf","htClass","covClass")
+    savsfcols <- if(strcol == "storey") c("storey","htclass","covclass") else c("str","savsf","htclass","covclass")
 
     df %>%
-      dplyr::group_by(!!ensym(strCol)) %>%
-      dplyr::mutate(covClass = cut(!!ensym(coverCol)
-                                   , breaks = c(cutCov$covThresh)
+      dplyr::group_by(!!ensym(strcol)) %>%
+      dplyr::mutate(covclass = cut(!!ensym(covercol)
+                                   , breaks = c(cutcov$covthresh)
                                    )
-                    , htClass = cut(!!ensym(heightCol)
-                                    , breaks = c(cutHt$htThresh)
+                    , htclass = cut(!!ensym(heightcol)
+                                    , breaks = c(cutht$htthresh)
                                     )
                     ) %>%
       dplyr::ungroup() %>%
       dplyr::left_join(savsf %>%
-                         dplyr::select(all_of(savsfCols)) %>%
+                         dplyr::select(all_of(savsfcols)) %>%
                          unique() %>%
-                         dplyr::arrange(desc(htClass),desc(covClass))
+                         dplyr::arrange(desc(htclass),desc(covclass))
                        )
 
   }
 
-  freq_class <- function(perPres) {
+  freq_class <- function(perpres) {
 
-    if_else(perPres == 100
+    if_else(perpres == 100
             , "always"
-            , if_else(perPres > 75
+            , if_else(perpres > 75
                       , "often"
-                      , if_else(perPres > 50
+                      , if_else(perpres > 50
                                 , "frequent"
-                                , if_else(perPres > 5
+                                , if_else(perpres > 5
                                           , "occasional"
                                           , "infrequent"
                                 )
@@ -58,213 +57,213 @@ eco_desc <- function(strPer,sppPer) {
 
   }
 
-  make_storey_text <- function(df,keepStorey = TRUE) {
+  make_storey_text <- function(df,keepstorey = TRUE) {
 
     groups <- if("pres" %in% names(df)) "pres"
-    groups <- if(keepStorey) c("cluster","AD","overstorey",groups) else c("cluster","AD",groups)
+    groups <- if(keepstorey) c("cluster","AD","overstorey",groups) else c("cluster","AD",groups)
 
     df %>%
-      dplyr::left_join(taxaTaxonomy) %>%
-      dplyr::arrange(cluster,perPres) %>%
-      dplyr::mutate(useTaxa = if_else(ind == "N",paste0("&ast;_",Taxa,"_"),paste0("_",Taxa,"_"))) %>%
+      dplyr::left_join(taxonomy) %>%
+      dplyr::arrange(cluster,perpres) %>%
+      dplyr::mutate(usetaxa = if_else(ind == "N",paste0("&ast;_",Taxa,"_"),paste0("_",Taxa,"_"))) %>%
       dplyr::group_by(!!!syms(groups)) %>%
-      dplyr::summarise(perCov = sum(perCov)
-                       , text = paste0(useTaxa
+      dplyr::summarise(percov = sum(percov)
+                       , text = paste0(usetaxa
                                        , collapse=", "
-                       )
-      ) %>%
-      dplyr::summarise(perCov = sum(perCov)
+                                       )
+                       ) %>%
+      dplyr::summarise(percov = sum(percov)
                        , text = vec_to_sentence(paste0(if("pres" %in% groups) paste0(pres," ")
                                                        , text
-                       )
-                       )
-      ) %>%
+                                                       )
+                                                )
+                       ) %>%
       dplyr::ungroup()
 
   }
 
-  allStorey <- strPer %>%
+  allstorey <- strper %>%
     dplyr::group_by(cluster,storey) %>%
-    dplyr::summarise(sumCov = sum(perCov)
-                     , wtHt = weighted.mean(ht,perCov)
+    dplyr::summarise(sumcov = sum(percov)
+                     , wtht = weighted.mean(ht,percov)
                      ) %>%
     dplyr::ungroup()
 
-  storey <- allStorey %>%
+  storey <- allstorey %>%
     dplyr::group_by(cluster) %>%
-    dplyr::filter(sumCov > 5) %>%
-    #dplyr::filter(sumCov == max(sumCov)) %>%
-    dplyr::filter(wtHt == max(wtHt)) %>%
-    dplyr::filter(sumCov == max(sumCov)) %>%
+    dplyr::filter(sumcov > 5) %>%
+    #dplyr::filter(sumcov == max(sumcov)) %>%
+    dplyr::filter(wtht == max(wtht)) %>%
+    dplyr::filter(sumcov == max(sumcov)) %>%
     dplyr::ungroup() %>%
     apply_savsf()
 
-  storeyBackup <- allStorey %>%
+  storeybackup <- allstorey %>%
     dplyr::anti_join(storey %>% dplyr::select(cluster)) %>%
     dplyr::group_by(cluster) %>%
-    dplyr::filter(sumCov == max(sumCov)) %>%
-    dplyr::filter(wtHt == max(wtHt)) %>%
+    dplyr::filter(sumcov == max(sumcov)) %>%
+    dplyr::filter(wtht == max(wtht)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(oldCov = sumCov
-                  , sumCov = 5.1
+    dplyr::mutate(oldcov = sumcov
+                  , sumcov = 5.1
                   ) %>%
     apply_savsf() %>%
-    dplyr::mutate(sumCov = oldCov) %>%
-    dplyr::select(-oldCov)
+    dplyr::mutate(sumcov = oldcov) %>%
+    dplyr::select(-oldcov)
 
   storey <- storey %>%
-    dplyr::bind_rows(storeyBackup)
+    dplyr::bind_rows(storeybackup)
 
-  allStr <- strPer %>%
+  allstr <- strper %>%
     dplyr::group_by(cluster,lifeform,str) %>%
-    dplyr::summarise(sumCov = sum(perCov)
-                     , wtHt = weighted.mean(ht,perCov)
+    dplyr::summarise(sumcov = sum(percov)
+                     , wtht = weighted.mean(ht,percov)
                      ) %>%
     dplyr::ungroup()
 
-  str <- allStr %>%
+  str <- allstr %>%
     dplyr::group_by(cluster) %>%
-    dplyr::filter(sumCov > 5) %>%
-    dplyr::filter(wtHt == max(wtHt)) %>%
-    dplyr::filter(sumCov == max(sumCov)) %>%
+    dplyr::filter(sumcov > 5) %>%
+    dplyr::filter(wtht == max(wtht)) %>%
+    dplyr::filter(sumcov == max(sumcov)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(wtHt = if_else(str != "Mallees"
-                                 , wtHt
-                                 , if_else(wtHt > 5
+    dplyr::mutate(wtht = if_else(str != "Mallees"
+                                 , wtht
+                                 , if_else(wtht > 5
                                            , 4.9999
-                                           , wtHt
+                                           , wtht
                                            )
                                  )
                   ) %>%
-    apply_savsf(strCol = "lifeform") %>%
-    dplyr::mutate(savsf = if_else(str == "Mallees" & wtHt == 4.9999
+    apply_savsf(strcol = "lifeform") %>%
+    dplyr::mutate(savsf = if_else(str == "Mallees" & wtht == 4.9999
                                   , paste0("Tall ",tolower(savsf))
                                   , savsf
                                   )
                   )
 
-  strBackup <- allStr %>%
+  strbackup <- allstr %>%
     dplyr::anti_join(str %>% dplyr::select(cluster)) %>%
     dplyr::group_by(cluster) %>%
-    dplyr::filter(sumCov == max(sumCov)) %>%
-    dplyr::filter(wtHt == max(wtHt)) %>%
+    dplyr::filter(sumcov == max(sumcov)) %>%
+    dplyr::filter(wtht == max(wtht)) %>%
     dplyr::slice(1) %>% # hack to ensure only one str per cluster
     dplyr::ungroup() %>%
-    dplyr::mutate(oldCov = sumCov
-                  , sumCov = 5.1
+    dplyr::mutate(oldcov = sumcov
+                  , sumcov = 5.1
                   ) %>%
-    apply_savsf(strCol = "lifeform") %>%
+    apply_savsf(strcol = "lifeform") %>%
     dplyr::mutate(savsf = gsub("open","very open",savsf)) %>%
-    dplyr::mutate(sumCov = oldCov) %>%
-    dplyr::select(-oldCov)
+    dplyr::mutate(sumcov = oldcov) %>%
+    dplyr::select(-oldcov)
 
   str <- str %>%
-    dplyr::bind_rows(strBackup)
+    dplyr::bind_rows(strbackup)
 
-  over <- sppPer %>%
+  over <- sppper %>%
     dplyr::inner_join(str %>% dplyr::select(cluster,str)) %>%
     dplyr::group_by(cluster,str) %>%
-    dplyr::slice_max(order_by = perCov, n = 3) %>%
-    dplyr::slice_max(order_by = perPres,n = 3) %>%
+    dplyr::slice_max(order_by = percov, n = 3) %>%
+    dplyr::slice_max(order_by = perpres,n = 3) %>%
     dplyr::mutate(AD = "O"
                   , overstorey = names(which.max(table(storey)))
-                  , pres = freq_class(perPres)
+                  , pres = freq_class(perpres)
                   ) %>%
     dplyr::ungroup() %>%
     dplyr::filter(pres != "infrequent") %>%
-    make_storey_text(keepStorey = TRUE) %>%
+    make_storey_text(keepstorey = TRUE) %>%
     dplyr::mutate(over = gsub("_","",text)) %>%
-    dplyr::rename(overText = text)
+    dplyr::rename(overtext = text)
 
-  emer <- sppPer %>%
-    dplyr::left_join(over %>% dplyr::select(-perCov)) %>%
+  emer <- sppper %>%
+    dplyr::left_join(over %>% dplyr::select(-percov)) %>%
     dplyr::filter(storey > overstorey) %>%
     dplyr::group_by(cluster) %>%
-    dplyr::slice_max(order_by = perCov, n = 3) %>%
-    dplyr::slice_max(order_by = perPres,n = 3) %>%
+    dplyr::slice_max(order_by = percov, n = 3) %>%
+    dplyr::slice_max(order_by = perpres,n = 3) %>%
     dplyr::mutate(AD = "E"
                   , overstorey = names(which.max(table(storey)))
-                  , pres = freq_class(perPres)
+                  , pres = freq_class(perpres)
                   ) %>%
     dplyr::ungroup() %>%
     dplyr::filter(pres != "infrequent") %>%
-    make_storey_text(keepStorey = FALSE) %>%
-    dplyr::rename(emerText = text)
+    make_storey_text(keepstorey = FALSE) %>%
+    dplyr::rename(emertext = text)
 
-  under <- sppPer %>%
-    dplyr::left_join(over %>% dplyr::select(-perCov)) %>%
+  under <- sppper %>%
+    dplyr::left_join(over %>% dplyr::select(-percov)) %>%
     dplyr::filter(storey < overstorey) %>%
     dplyr::group_by(cluster,storey) %>%
-    dplyr::slice_max(order_by = perCov, n = 5) %>%
-    dplyr::slice_max(order_by = perPres,n = 3) %>%
+    dplyr::slice_max(order_by = percov, n = 5) %>%
+    dplyr::slice_max(order_by = perpres,n = 3) %>%
     dplyr::mutate(AD = "U"
                   , overstorey = names(which.max(table(storey)))
-                  , pres = freq_class(perPres)
+                  , pres = freq_class(perpres)
                   ) %>%
     dplyr::ungroup() %>%
     dplyr::filter(pres != "infrequent") %>%
-    make_storey_text(keepStorey = FALSE) %>%
-    dplyr::rename(underText = text)
+    make_storey_text(keepstorey = FALSE) %>%
+    dplyr::rename(undertext = text)
 
 
-  sfWetland <- sppPer %>%
-    dplyr::filter(grepl(paste0(wetlandSpp,collapse="|"),Taxa)) %>%
+  sfWetland <- sppper %>%
+    dplyr::filter(grepl(paste0(wetlandspp,collapse="|"),Taxa)) %>%
     dplyr::group_by(cluster) %>%
-    dplyr::summarise(wetCov = sum(perCov)) %>%
-    dplyr::filter(wetCov > 500)
+    dplyr::summarise(wetcov = sum(percov)) %>%
+    dplyr::filter(wetcov > 500)
 
-  sfSamphire <- sppPer %>%
-    dplyr::filter(grepl(paste0(samphireSpp,collapse="|"),Taxa)) %>%
+  sfSamphire <- sppper %>%
+    dplyr::filter(grepl(paste0(samphirespp,collapse="|"),Taxa)) %>%
     dplyr::group_by(cluster) %>%
-    dplyr::summarise(samCov = sum(perCov)) %>%
-    dplyr::filter(samCov > 500)
+    dplyr::summarise(samcov = sum(percov)) %>%
+    dplyr::filter(samcov > 500)
 
   str <- str %>%
-    dplyr::left_join(sfWetland) %>%
-    dplyr::left_join(sfSamphire) %>%
-    dplyr::mutate(savsf = if_else(wetCov > sumCov & !is.na(wetCov)
+    dplyr::left_join(sfwtland) %>%
+    dplyr::left_join(sfsamphire) %>%
+    dplyr::mutate(savsf = if_else(wetcov > sumcov & !is.na(wetcov)
                                   ,"Wetland"
-                                  , if_else(samCov > sumCov & !is.na(samCov)
+                                  , if_else(samcov > sumcov & !is.na(samcov)
                                             , "Samphire"
                                             , savsf
                                             )
                                   )
                   )
 
-  saveg <- sppPer %>%
+  saveg <- sppper %>%
     dplyr::count(cluster) %>%
     dplyr::select(-n) %>%
-    dplyr::left_join(over %>% dplyr::select(cluster,over,overText)) %>%
-    dplyr::left_join(emer %>% dplyr::select(cluster,emerText)) %>%
-    dplyr::left_join(under %>% dplyr::select(cluster,underText)) %>%
-    dplyr::left_join(str %>% dplyr::select(cluster,sumCov,savsf)) %>%
-    dplyr::mutate(savsf = if_else(grepl(paste0(paste0("always ",samphireSpp,collapse="|")
+    dplyr::left_join(over %>% dplyr::select(cluster,over,overtext)) %>%
+    dplyr::left_join(emer %>% dplyr::select(cluster,emertext)) %>%
+    dplyr::left_join(under %>% dplyr::select(cluster,undertext)) %>%
+    dplyr::left_join(str %>% dplyr::select(cluster,sumcov,savsf)) %>%
+    dplyr::mutate(savsf = if_else(grepl(paste0(paste0("always ",samphirespp,collapse="|")
                                                ,"|"
-                                               , paste0("frequent",samphireSpp,collapse="|")
+                                               , paste0("frequent",samphirespp,collapse="|")
                                                )
-                                        ,paste0(overText," ",underText)
+                                        ,paste0(overtext," ",undertext)
                                         )
                                   ,"Samphire"
                                   ,savsf
                                   )
-                  , savsf = if_else(grepl(paste0(paste0("always ",wetlandSpp,collapse="|")
+                  , savsf = if_else(grepl(paste0(paste0("always ",wetlandspp,collapse="|")
                                                  ,"|"
-                                                 , paste0("frequent ",wetlandSpp,collapse="|")
+                                                 , paste0("frequent ",wetlandspp,collapse="|")
                                                  )
-                                          ,paste0(overText," ",underText)
+                                          ,paste0(overtext," ",undertext)
                                           )
                                     ,"Wetland"
                                     ,savsf
                                     )
-                  #, overText = if_else(is.na(overText) & grepl("very very",tolower(savsf)),emerText,overText)
-                  #, emerText = ifelse(overText == emerText,NA,emerText)
+                  #, overtext = if_else(is.na(overtext) & grepl("very very",tolower(savsf)),emertext,overtext)
+                  #, emertext = ifelse(overtext == emertext,NA,emertext)
                   , sf = tolower(stringr::word(savsf,-1))
-                  , sf = factor(sf, levels = levels(sfCol$sf))
+                  , sf = factor(sf, levels = levels(sfcol$sf))
                   ) %>%
-    dplyr::group_by(cluster,savsf,sf,sumCov,over,overText) %>%
-    dplyr::summarise(saveg = pmap(list(overText
-                                       , emerText
-                                       , underText
+    dplyr::group_by(cluster,savsf,sf,sumcov,over,overtext) %>%
+    dplyr::summarise(saveg = pmap(list(overtext
+                                       , emertext
+                                       , undertext
                                        , savsf
                                        )
                                   , function(a,b,c,d) paste0(if(!is.na(d)) paste0(d, ": ")

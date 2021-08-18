@@ -38,24 +38,24 @@
   }
 
   clustdf %>%
-    dplyr::add_count(!!ensym(clutcol), name = "clusterSites") %>%
-    dplyr::select(!!ensym(sitecol),!!ensym(clustcol),clusterSites) %>%
+    dplyr::add_count(!!ensym(clustcol), name = "clustersites") %>%
+    dplyr::select(!!ensym(sitecol),!!ensym(clustcol),clustersites) %>%
     dplyr::inner_join(taxadf) %>%
     dplyr::inner_join(lustr) %>%
     dplyr::filter(!is.na(str)) %>%
-    dplyr::group_by(cluster,Taxa,clusterSites) %>%
-    dplyr::summarise(Presences = n()
+    dplyr::group_by(cluster,Taxa,clustersites) %>%
+    dplyr::summarise(presences = n()
                     , str = names(which.max(table(str)))
                      , storey = names(which.max(table(storey)))
-                     , sumCover = sum(!!ensym(covcol))
+                     , sumcover = sum(!!ensym(covcol))
                      ) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(perPres = 100*Presences/clusterSites
-                  , perCov = 100*sumCover/clusterSites
-                  , perCovPres = 100*sumCover/Presences
+    dplyr::mutate(perpres = 100*presences/clustersites
+                  , percov = 100*sumcover/clustersites
+                  , percovpres = 100*sumcover/presences
                   , str = factor(str, levels = levels(lustr$str))
                   , storey = factor(storey, levels = levels(lustr$storey), ordered = TRUE)
                   ) %>%
-    dplyr::select(-sumCover)
+    dplyr::select(-sumcover)
 
 }

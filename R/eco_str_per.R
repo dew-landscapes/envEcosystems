@@ -25,31 +25,31 @@ str_per <- function(clustdf
 
   clustdf %>%
     dplyr::select(!!ensym(sitecol),!!ensym(clustcol)) %>%
-    dplyr::add_count(cluster, name = "clusterSites") %>%
+    dplyr::add_count(cluster, name = "clustersites") %>%
     dplyr::inner_join(taxadf %>%
                         dplyr::filter(!is.na(lifeform))
                       ) %>%
     # cover per lifeform*site (otherwise presences is per taxa, not per str)
-    dplyr::group_by(!!ensym(clustcol),!!ensym(sitecol),lifeform,clusterSites) %>%
+    dplyr::group_by(!!ensym(clustcol),!!ensym(sitecol),lifeform,clustersites) %>%
     dplyr::summarise(cov = sum(!!ensym(covcol))) %>%
     dplyr::ungroup() %>%
     dplyr::left_join(lustr) %>%
-    dplyr::group_by(!!ensym(clustcol),lifeform,ht,str,storey,clusterSites) %>%
+    dplyr::group_by(!!ensym(clustcol),lifeform,ht,str,storey,clustersites) %>%
     # cover per lifeform * ecosystem
-    dplyr::summarise(Presences = n()
+    dplyr::summarise(presences = n()
                      , str = names(which.max(table(str)))
                      , storey = names(which.max(table(storey)))
-                     , sumCover = sum(cov)
+                     , sumcover = sum(cov)
                      , ht = mean(ht)
                      ) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(perPres = 100*Presences/clusterSites
-                  , perCov = 100*sumCover/clusterSites
-                  , perCovPres = 100*sumCover/Presences
+    dplyr::mutate(perpres = 100*presences/clustersites
+                  , percov = 100*sumcover/clustersites
+                  , percovpres = 100*sumcover/presences
                   , str = factor(str, levels = levels(lustr$str))
                   , storey = factor(storey, levels = levels(lustr$storey), ordered = TRUE)
                   ) %>%
-    dplyr::select(-sumCover) %>%
+    dplyr::select(-sumcover) %>%
     dplyr::arrange(!!ensym(clustcol),desc(ht)) %>%
     dplyr::mutate(storey = factor(storey,levels = levels(lustr$storey), ordered = TRUE))
 
