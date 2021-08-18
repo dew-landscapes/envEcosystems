@@ -4,14 +4,16 @@
 \alias{eco_desc}
 \title{Generate a structural description from cluster_spp_per and the clustering}
 \usage{
-eco_desc(strPer, sppPer)
+eco_desc(strper, sppper, taxonomy)
 }
 \arguments{
-\item{strPer}{Dataframe of structural information for each ecosystem. Ouput
+\item{strper}{Dataframe of structural information for each ecosystem. Ouput
 from eco_str_per().}
 
-\item{sppPer}{Dataframe of taxa information for each ecosystem. Output from
+\item{sppper}{Dataframe of taxa information for each ecosystem. Output from
 eco_spp_per().}
+
+\item{taxonomy}{Dataframe with ind column indicating indigenous status.}
 }
 \value{
 Dataframe of full ecosystem floristic * structural descriptions.

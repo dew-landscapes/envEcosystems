@@ -1,12 +1,12 @@
 Package: envEcosystems
-Title: Functions and Data to Help Create Ecosystem Definitions
+Title: envEcosystems: Functions and Data to Help Create Ecosystem Definitions
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Nigel",
            family = "Willoughby",
            role = c("aut", "cre"),
-           email = "nige.willoughby@gmail.com")
-Description: What the package does (one paragraph).
+           email = "nige.willoughby@sa.gov.au")
+Description: Create ecosystem descriptions along the lines of 'Low open shrubland: always _Samolus repens_, _Salicornia quinqueflora_ and frequent _Frankenia pauciflora_; with emergent occasional _Austrostipa stipoides_, _Chenopodium candolleanum_, _Enchylaena tomentosa_'.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -16,3 +16,8 @@ URL: https://github.com/Acanthiza/envEcosystems
 BugReports: https://github.com/Acanthiza/envEcosystems/issues
 Depends: 
     R (>= 2.10)
+Imports: 
+    stringr,
+    dplyr,
+    tibble,
+    tidyr
