@@ -21,7 +21,7 @@
                             ,clutcol = "cluster"
                             , taxadf
                             , sitecol = "cell"
-                            , taxacol = "Taxa"
+                            , taxacol = "taxa"
                             , covcol = "cover"
                             , lustr = NULL
                             ) {
@@ -43,7 +43,7 @@
     dplyr::inner_join(taxadf) %>%
     dplyr::inner_join(lustr) %>%
     dplyr::filter(!is.na(str)) %>%
-    dplyr::group_by(cluster,Taxa,clustersites) %>%
+    dplyr::group_by(cluster,taxa,clustersites) %>%
     dplyr::summarise(presences = n()
                     , str = names(which.max(table(str)))
                      , storey = names(which.max(table(storey)))

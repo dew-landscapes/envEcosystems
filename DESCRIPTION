@@ -1,12 +1,17 @@
 Package: envEcosystems
-Title: envEcosystems: Functions and Data to Help Create Ecosystem Definitions
+Title: Create Ecosystem Definitions
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Nigel",
            family = "Willoughby",
            role = c("aut", "cre"),
-           email = "nige.willoughby@sa.gov.au")
-Description: Create ecosystem descriptions along the lines of 'Low open shrubland: always _Samolus repens_, _Salicornia quinqueflora_ and frequent _Frankenia pauciflora_; with emergent occasional _Austrostipa stipoides_, _Chenopodium candolleanum_, _Enchylaena tomentosa_'.
+           email = "nigel.willoughby@sa.gov.au")
+Description: Create ecosystem: descriptions; taxa lists; indicator taxa;
+    environmental correlates; and colours (for use in mapping and figures).
+    Descriptions are along the lines of 'Low open shrubland: always _Samolus
+    repens_, _Salicornia quinqueflora_ and frequent _Frankenia pauciflora_; with
+    emergent occasional _Austrostipa stipoides_, _Chenopodium candolleanum_,
+    _Enchylaena tomentosa_'.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

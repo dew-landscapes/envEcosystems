@@ -18,7 +18,7 @@ str_per <- function(clustdf
                     , clustcol = "cluster"
                     , taxadf
                     , sitecol = "cell"
-                    , taxacol = "Taxa"
+                    , taxacol = "taxa"
                     , covcol = "cover"
                     , lustr
                     ) {

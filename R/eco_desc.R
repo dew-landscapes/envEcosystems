@@ -16,7 +16,7 @@
 #' @examples
 eco_desc <- function(strper,sppper,taxonomy) {
 
-  apply_savsf <- function(df,covercol = "sumcov", heightcol = "wtht", strcol = "storey") {
+  apply_savsf <- function(df,covercol = "sumcov", htcol = "wtht", strcol = "storey") {
 
     savsfcols <- if(strcol == "storey") c("storey","htclass","covclass") else c("str","savsf","htclass","covclass")
 
@@ -25,7 +25,7 @@ eco_desc <- function(strper,sppper,taxonomy) {
       dplyr::mutate(covclass = cut(!!ensym(covercol)
                                    , breaks = c(cutcov$covthresh)
                                    )
-                    , htclass = cut(!!ensym(heightcol)
+                    , htclass = cut(!!ensym(htcol)
                                     , breaks = c(cutht$htthresh)
                                     )
                     ) %>%
@@ -65,7 +65,7 @@ eco_desc <- function(strper,sppper,taxonomy) {
     df %>%
       dplyr::left_join(taxonomy) %>%
       dplyr::arrange(cluster,perpres) %>%
-      dplyr::mutate(usetaxa = if_else(ind == "N",paste0("&ast;_",Taxa,"_"),paste0("_",Taxa,"_"))) %>%
+      dplyr::mutate(usetaxa = if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))) %>%
       dplyr::group_by(!!!syms(groups)) %>%
       dplyr::summarise(percov = sum(percov)
                        , text = paste0(usetaxa
@@ -207,13 +207,13 @@ eco_desc <- function(strper,sppper,taxonomy) {
 
 
   sfWetland <- sppper %>%
-    dplyr::filter(grepl(paste0(wetlandspp,collapse="|"),Taxa)) %>%
+    dplyr::filter(grepl(paste0(wetlandspp,collapse="|"),taxa)) %>%
     dplyr::group_by(cluster) %>%
     dplyr::summarise(wetcov = sum(percov)) %>%
     dplyr::filter(wetcov > 500)
 
   sfSamphire <- sppper %>%
-    dplyr::filter(grepl(paste0(samphirespp,collapse="|"),Taxa)) %>%
+    dplyr::filter(grepl(paste0(samphirespp,collapse="|"),taxa)) %>%
     dplyr::group_by(cluster) %>%
     dplyr::summarise(samcov = sum(percov)) %>%
     dplyr::filter(samcov > 500)

@@ -11,7 +11,7 @@
                                               , "ground"
                                               )
                                      )
-                  , ht = Height
+                  , ht = ht
                   , LF_Class_Num = readr::parse_number(LF_Class)
                   , str = gsub("^\\d_|Low ","",LF_Class)
                   , str = dplyr::if_else(lifeform == "H","Hummock grasses",str)
@@ -25,7 +25,7 @@
                   # , storey = replace(storey,grepl("Mat",LF_Description),"mat")
                   , storey = replace(storey,grepl("VT|GT",lifeform),"mid")
                   , storey = replace(storey,grepl("SD",lifeform),"ground")
-                  , storey = forcats::fct_reorder(storey,Height,.fun=mean)
+                  , storey = forcats::fct_reorder(storey,ht,.fun=mean)
                   , storey = factor(storey, ordered = TRUE)
                   ) %>%
     dplyr::select(sort = SortID
