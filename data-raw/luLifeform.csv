@@ -1,4 +1,4 @@
-OBJECTID,SortID,LifeForm_Code,LF_Description,Height,LF_Class,LF_Group,Carbon_Group,GROWTHFORMCODE,HEIGHTCLASS,FORMATION,STRATUMCODE
+object_id,sort,lifeform,description,ht,lifeform_class,lifeform_group,carbon_group,growthform_code,height_class,formation,stratum_code
 1,1,T,T Trees > 30m,35,1_Trees,T,T,T,8,tall trees,U
 2,2,M,M Trees 15 - 30 m,23,1_Trees,T,T,T,7,mid trees,U
 3,3,LA,LA Trees 5 - 15 m,10,1_Trees,T,T,T,6,low trees,U

@@ -6,16 +6,18 @@
 \usage{
 spp_per(
   clustdf,
-  clutcol = "cluster",
+  clustcol = "cluster",
   taxadf,
   sitecol = "cell",
-  taxacol = "Taxa",
+  taxacol = "taxa",
   covcol = "cover",
   lustr = NULL
 )
 }
 \arguments{
 \item{clustdf}{Dataframe with column indicating cluster membership.}
+
+\item{clustcol}{Name of column in clustdf with cluster membership.}
 
 \item{taxadf}{Dataframe with columns clustcol and taxacol.}
 
@@ -25,8 +27,6 @@ spp_per(
 
 \item{lustr}{Dataframe of structural information. Needs columns 'str' and
 'storey': structure and storey, respectively.}
-
-\item{clustcol}{Name of column in clustdf with cluster membership.}
 }
 \value{
 Dataframe with columns clustcol, taxacol, str, storey,

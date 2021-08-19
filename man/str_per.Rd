@@ -9,7 +9,7 @@ str_per(
   clustcol = "cluster",
   taxadf,
   sitecol = "cell",
-  taxacol = "Taxa",
+  taxacol = "taxa",
   covcol = "cover",
   lustr
 )

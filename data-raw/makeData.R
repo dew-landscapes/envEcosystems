@@ -9,4 +9,4 @@
 
   datas <- ls(pattern = "cut|lu|Spp")
 
-  do.call(save, c(lapply(datas,as.name), file = "data/data.rda"))
+  do.call(save, c(lapply(datas,as.name), file = "data/sysdata.rda"))

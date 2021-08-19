@@ -3,22 +3,19 @@
 
   # Muir codes
   lulifeform <- rio::import("data-raw/luLifeform.csv") %>%
-    dplyr::mutate(lifeform = LifeForm_Code
-                  , storey = dplyr::if_else(grepl("Trees|Mallee",LF_Class)
+    dplyr::mutate(storey = dplyr::if_else(grepl("Trees|Mallee",lifeform_class)
                                      ,"over"
-                                     ,dplyr::if_else(grepl("Shrubs",LF_Class)
+                                     ,dplyr::if_else(grepl("Shrubs",lifeform_class)
                                               , "mid"
                                               , "ground"
                                               )
                                      )
-                  , ht = ht
-                  , LF_Class_Num = readr::parse_number(LF_Class)
-                  , str = gsub("^\\d_|Low ","",LF_Class)
+                  , str = gsub("^\\d_|Low ","",lifeform_class)
                   , str = dplyr::if_else(lifeform == "H","Hummock grasses",str)
                   , str = dplyr::if_else(lifeform == "P","Mat plants",str)
                   , str = dplyr::if_else(lifeform == "X","Ferns",str)
                   , str = dplyr::if_else(lifeform == "MI","Mistletoe",str)
-                  , str = forcats::fct_reorder(str,LF_Class_Num)
+                  , str = forcats::fct_reorder(str,sort)
                   # , storey = replace(storey,grepl("Hummock",LF_Description),"hummock")
                   # , storey = replace(storey,grepl("Mistletoe",LF_Description),"mistletoe")
                   # , storey = replace(storey,grepl("Fern",LF_Description),"fern")
@@ -28,12 +25,12 @@
                   , storey = forcats::fct_reorder(storey,ht,.fun=mean)
                   , storey = factor(storey, ordered = TRUE)
                   ) %>%
-    dplyr::select(sort = SortID
+    dplyr::select(sort
                   , lifeform
                   , storey
                   , ht
                   , str
-                  , description = LF_Description
+                  , description
                   ) %>%
     tibble::as_tibble()
 

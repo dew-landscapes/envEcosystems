@@ -1,8 +1,8 @@
 
   library(magrittr)
 
-  cutcov <- tibble::tribble(
-    ~covthresh, ~pfc
+  cut_cov <- tibble::tribble(
+    ~cov_thresh, ~pfc
     , 200, "Extra dense"
     , 70, "Dense"
     , 30, "Mid-dense"
@@ -10,8 +10,8 @@
     , 5, "Very sparse"
     )
 
-  cutht <- tibble::tribble(
-    ~htthresh
+  cut_ht <- tibble::tribble(
+    ~ht_thresh
     , 200
     , 30
     , 10
@@ -24,7 +24,7 @@
   )
 
   savsf <- tibble::tribble(
-    ~covthresh, ~htthresh, ~str, ~storey, ~savsf
+    ~cov_thresh, ~ht_thresh, ~str, ~storey, ~savsf
     , 100, 200, "Trees", "over", "Tall closed forest"
     , 70, 200, "Trees", "over", "Tall open forest"
     , 30, 200, "Trees", "over", "Tall woodland"
@@ -142,16 +142,16 @@
     , 30, 0.5, "Mistletoe", "mistletoe", "Open mistletoe"
     , 10, 0.5, "Mistletoe", "mistletoe", "Very open mistletoe"
     ) %>%
-    dplyr::mutate(covthresh = dplyr::if_else(covthresh == 100,200,covthresh)
-                  , covclass = cut(covthresh
-                                 , breaks = c(unique(covthresh),5)
+    dplyr::mutate(cov_thresh = dplyr::if_else(cov_thresh == 100,200,cov_thresh)
+                  , cov_class = cut(cov_thresh
+                                 , breaks = c(unique(cov_thresh),5)
                                  )
-                  , htclass = cut(htthresh
-                                  , breaks = c(unique(htthresh),0)
+                  , ht_class = cut(ht_thresh
+                                  , breaks = c(unique(ht_thresh),0)
                                   )
                   , storey = forcats::fct_inorder(forcats::fct_rev(storey), ordered = TRUE)
                   ) %>%
-    dplyr::select(storey,str,covclass,htclass,savsf)
+    dplyr::select(storey,str,cov_class,ht_class,savsf)
 
   sfcol <-tibble::tribble(
     ~sf, ~colour, ~order
@@ -167,11 +167,11 @@
     ) %>%
     dplyr::mutate(sf = forcats::fct_reorder(sf,order))
 
-  samphirespp <- c("Salicornia"
+  samphire_taxa <- c("Salicornia"
                  , "Tecticornia"
                  )
 
-  wetlandspp <- c("Phragmites"
+  wetland_taxa <- c("Phragmites"
                   , "Typha"
                   , "Juncus"
                   , "Eragrostis australasica" # Specht Veg of SA
