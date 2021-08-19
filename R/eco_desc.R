@@ -16,9 +16,9 @@
 #' @examples
 eco_desc <- function(str_per,spp_per,taxonomy) {
 
-  apply_savsf <- function(df,cover_col = "sumcov", ht_col = "wtht", str_col = "storey") {
+  apply_sa_vsf <- function(df,cover_col = "sumcov", ht_col = "wtht", str_col = "storey") {
 
-    savsf_cols <- if(str_col == "storey") c("storey","htclass","covclass") else c("str","savsf","htclass","covclass")
+    sa_vsf_cols <- if(str_col == "storey") c("storey","htclass","covclass") else c("str","sa_vsf","htclass","covclass")
 
     df %>%
       dplyr::group_by(!!ensym(str_col)) %>%
@@ -30,8 +30,8 @@ eco_desc <- function(str_per,spp_per,taxonomy) {
                                     )
                     ) %>%
       dplyr::ungroup() %>%
-      dplyr::left_join(savsf %>%
-                         dplyr::select(all_of(savsf_cols)) %>%
+      dplyr::left_join(sa_vsf %>%
+                         dplyr::select(all_of(sa_vsf_cols)) %>%
                          unique() %>%
                          dplyr::arrange(desc(ht_class),desc(cov_class))
                        )
@@ -73,7 +73,7 @@ eco_desc <- function(str_per,spp_per,taxonomy) {
                                        )
                        ) %>%
       dplyr::summarise(per_cov = sum(per_cov)
-                       , text = vec_to_sentence(paste0(if("pres" %in% groups) paste0(pres," ")
+                       , text = envFunc::vec_to_sentence(paste0(if("pres" %in% groups) paste0(pres," ")
                                                        , text
                                                        )
                                                 )
@@ -85,7 +85,7 @@ eco_desc <- function(str_per,spp_per,taxonomy) {
   all_storey <- str_per %>%
     dplyr::group_by(cluster,storey) %>%
     dplyr::summarise(sum_cov = sum(per_cov)
-                     , wt_ht = weighted.mean(ht,per_cov)
+                     , wt_ht = stats::weighted.mean(ht,per_cov)
                      ) %>%
     dplyr::ungroup()
 
@@ -96,7 +96,7 @@ eco_desc <- function(str_per,spp_per,taxonomy) {
     dplyr::filter(wt_ht == max(wt_ht)) %>%
     dplyr::filter(sum_cov == max(sum_cov)) %>%
     dplyr::ungroup() %>%
-    apply_savsf()
+    apply_sa_vsf()
 
   storey_backup <- all_storey %>%
     dplyr::anti_join(storey %>% dplyr::select(cluster)) %>%
@@ -107,7 +107,7 @@ eco_desc <- function(str_per,spp_per,taxonomy) {
     dplyr::mutate(old_cov = sum_cov
                   , sum_cov = 5.1
                   ) %>%
-    apply_savsf() %>%
+    apply_sa_vsf() %>%
     dplyr::mutate(sum_cov = old_cov) %>%
     dplyr::select(-old_cov)
 
@@ -117,7 +117,7 @@ eco_desc <- function(str_per,spp_per,taxonomy) {
   allstr <- str_per %>%
     dplyr::group_by(cluster,lifeform,str) %>%
     dplyr::summarise(sum_cov = sum(per_cov)
-                     , wt_ht = weighted.mean(ht,per_cov)
+                     , wt_ht = stats::weighted.mean(ht,per_cov)
                      ) %>%
     dplyr::ungroup()
 
@@ -135,10 +135,10 @@ eco_desc <- function(str_per,spp_per,taxonomy) {
                                            )
                                  )
                   ) %>%
-    apply_savsf(str_col = "lifeform") %>%
-    dplyr::mutate(savsf = if_else(str == "Mallees" & wt_ht == 4.9999
-                                  , paste0("Tall ",tolower(savsf))
-                                  , savsf
+    apply_sa_vsf(str_col = "lifeform") %>%
+    dplyr::mutate(sa_vsf = if_else(str == "Mallees" & wt_ht == 4.9999
+                                  , paste0("Tall ",tolower(sa_vsf))
+                                  , sa_vsf
                                   )
                   )
 
@@ -152,8 +152,8 @@ eco_desc <- function(str_per,spp_per,taxonomy) {
     dplyr::mutate(old_cov = sum_cov
                   , sum_cov = 5.1
                   ) %>%
-    apply_savsf(str_col = "lifeform") %>%
-    dplyr::mutate(savsf = gsub("open","very open",savsf)) %>%
+    apply_sa_vsf(str_col = "lifeform") %>%
+    dplyr::mutate(sa_vsf = gsub("open","very open",sa_vsf)) %>%
     dplyr::mutate(sum_cov = old_cov) %>%
     dplyr::select(-old_cov)
 
@@ -221,11 +221,11 @@ eco_desc <- function(str_per,spp_per,taxonomy) {
   str <- str %>%
     dplyr::left_join(sf_wtland) %>%
     dplyr::left_join(sf_samphire) %>%
-    dplyr::mutate(savsf = if_else(wet_cov > sum_cov & !is.na(wet_cov)
+    dplyr::mutate(sa_vsf = if_else(wet_cov > sum_cov & !is.na(wet_cov)
                                   ,"Wetland"
                                   , if_else(sam_cov > sum_cov & !is.na(sam_cov)
                                             , "Samphire"
-                                            , savsf
+                                            , sa_vsf
                                             )
                                   )
                   )
@@ -236,35 +236,35 @@ eco_desc <- function(str_per,spp_per,taxonomy) {
     dplyr::left_join(over %>% dplyr::select(cluster,over,over_text)) %>%
     dplyr::left_join(emer %>% dplyr::select(cluster,emer_text)) %>%
     dplyr::left_join(under %>% dplyr::select(cluster,under_text)) %>%
-    dplyr::left_join(str %>% dplyr::select(cluster,sum_cov,savsf)) %>%
-    dplyr::mutate(savsf = if_else(grepl(paste0(paste0("always ",samphire_spp,collapse="|")
+    dplyr::left_join(str %>% dplyr::select(cluster,sum_cov,sa_vsf)) %>%
+    dplyr::mutate(sa_vsf = if_else(grepl(paste0(paste0("always ",samphire_spp,collapse="|")
                                                ,"|"
                                                , paste0("frequent",samphire_spp,collapse="|")
                                                )
                                         ,paste0(over_text," ",under_text)
                                         )
                                   ,"Samphire"
-                                  ,savsf
+                                  ,sa_vsf
                                   )
-                  , savsf = if_else(grepl(paste0(paste0("always ",wetland_spp,collapse="|")
+                  , sa_vsf = if_else(grepl(paste0(paste0("always ",wetland_spp,collapse="|")
                                                  ,"|"
                                                  , paste0("frequent ",wetland_spp,collapse="|")
                                                  )
                                           ,paste0(over_text," ",under_text)
                                           )
                                     ,"Wetland"
-                                    ,savsf
+                                    ,sa_vsf
                                     )
-                  #, overtext = if_else(is.na(overtext) & grepl("very very",tolower(savsf)),emertext,overtext)
+                  #, overtext = if_else(is.na(overtext) & grepl("very very",tolower(sa_vsf)),emertext,overtext)
                   #, emertext = ifelse(overtext == emertext,NA,emertext)
-                  , sf = tolower(stringr::word(savsf,-1))
+                  , sf = tolower(stringr::word(sa_vsf,-1))
                   , sf = factor(sf, levels = levels(sf_col$sf))
                   ) %>%
-    dplyr::group_by(cluster,savsf,sf,sum_cov,over,over_text) %>%
-    dplyr::summarise(saveg = pmap(list(over_text
+    dplyr::group_by(cluster,sa_vsf,sf,sum_cov,over,over_text) %>%
+    dplyr::summarise(saveg = purrr::pmap(list(over_text
                                        , emer_text
                                        , under_text
-                                       , savsf
+                                       , sa_vsf
                                        )
                                   , function(a,b,c,d) paste0(if(!is.na(d)) paste0(d, ": ")
                                                              , if(!is.na(a)) paste0(a)

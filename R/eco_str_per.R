@@ -5,28 +5,28 @@
 #'
 #' @param clust_df Dataframe with column indicating cluster membership.
 #' @param clust_col Name of column in clustdf with cluster membership.
-#' @param taxa_df Dataframe with columns clustcol and taxacol.
+#' @param taxa_df Dataframe with columns site_col, lifeform, and cov_col
 #' @param site_col Name of column in taxadf with 'sites'.
+#' @param cov_col Name of column in taxa_df with numeric cover values.
 #' @param lustr Dataframe of structural information. Needs columns 'lifeform',
-#' 'str' and 'storey': structure and storey, respectively.
+#' 'str' and 'storey': structure and storey, respectively. See lulifeform.
 #'
 #' @return Dataframe with structural information per cluster
 #' @export
 
 # Generate the structural percent cover for each cluster
-str_per <- function(clust_df
-                    , clust_col = "cluster"
-                    , taxa_df
-                    , site_col = "cell"
-                    , taxa_col = "taxa"
-                    , cov_col = "cover"
-                    , lustr
-                    ) {
+eco_str_per <- function(clust_df
+                        , clust_col = "cluster"
+                        , taxa_df
+                        , site_col = "cell"
+                        , cov_col = "cover"
+                        , lustr
+                        ) {
 
   clust_df %>%
     dplyr::select(!!ensym(site_col),!!ensym(clust_col)) %>%
     dplyr::add_count(cluster, name = "cluster_sites") %>%
-    dplyr::inner_join(tax_adf %>%
+    dplyr::inner_join(taxa_df %>%
                         dplyr::filter(!is.na(lifeform))
                       ) %>%
     # cover per lifeform*site (otherwise presences is per taxa, not per str)

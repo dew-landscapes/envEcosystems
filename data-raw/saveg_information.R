@@ -23,8 +23,8 @@
     , 0
   )
 
-  savsf <- tibble::tribble(
-    ~cov_thresh, ~ht_thresh, ~str, ~storey, ~savsf
+  sa_vsf <- tibble::tribble(
+    ~cov_thresh, ~ht_thresh, ~str, ~storey, ~sa_vsf
     , 100, 200, "Trees", "over", "Tall closed forest"
     , 70, 200, "Trees", "over", "Tall open forest"
     , 30, 200, "Trees", "over", "Tall woodland"
@@ -151,9 +151,9 @@
                                   )
                   , storey = forcats::fct_inorder(forcats::fct_rev(storey), ordered = TRUE)
                   ) %>%
-    dplyr::select(storey,str,cov_class,ht_class,savsf)
+    dplyr::select(storey,str,cov_class,ht_class,sa_vsf)
 
-  sfcol <-tibble::tribble(
+  sa_sf <-tibble::tribble(
     ~sf, ~colour, ~order
     , "forest", "forestgreen", 5
     , "grassland", "yellow", 1
@@ -167,11 +167,11 @@
     ) %>%
     dplyr::mutate(sf = forcats::fct_reorder(sf,order))
 
-  samphire_taxa <- c("Salicornia"
+  taxa_samphire <- c("Salicornia"
                  , "Tecticornia"
                  )
 
-  wetland_taxa <- c("Phragmites"
+  taxa_wetland <- c("Phragmites"
                   , "Typha"
                   , "Juncus"
                   , "Eragrostis australasica" # Specht Veg of SA

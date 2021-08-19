@@ -17,6 +17,7 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+RdMacros: Rdpack
 URL: https://github.com/Acanthiza/envEcosystems
 BugReports: https://github.com/Acanthiza/envEcosystems/issues
 Depends: 
@@ -25,4 +26,8 @@ Imports:
     stringr,
     dplyr,
     tibble,
-    tidyr
+    tidyr,
+    Rdpack,
+    magrittr,
+    envFunc,
+    purrr
