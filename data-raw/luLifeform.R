@@ -22,6 +22,10 @@
                   # , storey = replace(storey,grepl("Mat",LF_Description),"mat")
                   , storey = replace(storey,grepl("VT|GT",lifeform),"mid")
                   , storey = replace(storey,grepl("SD",lifeform),"ground")
+                  , storey = replace(storey,grepl("^H$",lifeform),"hummock")
+                  , storey = replace(storey,grepl("^X$",lifeform),"fern")
+                  , storey = replace(storey,grepl("^MI$",lifeform),"mistletoe")
+                  , storey = replace(storey,grepl("^P$",lifeform),"mat")
                   , storey = forcats::fct_reorder(storey,ht,.fun=mean)
                   , storey = factor(storey, ordered = TRUE)
                   ) %>%

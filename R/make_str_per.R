@@ -15,7 +15,7 @@
 #' @export
 
 # Generate the structural percent cover for each cluster
-eco_str_per <- function(clust_df
+make_str_per <- function(clust_df
                         , clust_col = "cluster"
                         , taxa_df
                         , site_col = "cell"
@@ -49,7 +49,7 @@ eco_str_per <- function(clust_df
                   , str = factor(str, levels = levels(lustr$str))
                   , storey = factor(storey, levels = levels(lustr$storey), ordered = TRUE)
                   ) %>%
-    dplyr::select(-sumc_over) %>%
+    dplyr::select(-sum_cover) %>%
     dplyr::arrange(!!ensym(clust_col),desc(ht)) %>%
     dplyr::mutate(storey = factor(storey,levels = levels(lustr$storey), ordered = TRUE))
 

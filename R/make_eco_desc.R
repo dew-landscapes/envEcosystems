@@ -14,11 +14,11 @@
 #' @export
 #'
 #' @examples
-eco_desc <- function(str_per,spp_per,taxonomy) {
+make_eco_desc <- function(str_per,spp_per,taxonomy) {
 
-  apply_sa_vsf <- function(df,cover_col = "sumcov", ht_col = "wtht", str_col = "storey") {
+  apply_sa_vsf <- function(df,cover_col = "sum_cov", ht_col = "wt_ht", str_col = "storey") {
 
-    sa_vsf_cols <- if(str_col == "storey") c("storey","htclass","covclass") else c("str","sa_vsf","htclass","covclass")
+    sa_vsf_cols <- if(str_col == "storey") c("storey","ht_class","cov_class") else c("str","sa_vsf","ht_class","cov_class")
 
     df %>%
       dplyr::group_by(!!ensym(str_col)) %>%
@@ -92,7 +92,7 @@ eco_desc <- function(str_per,spp_per,taxonomy) {
   storey <- all_storey %>%
     dplyr::group_by(cluster) %>%
     dplyr::filter(sum_cov > 5) %>%
-    #dplyr::filter(sumcov == max(sumcov)) %>%
+    #dplyr::filter(sum_cov == max(sum_cov)) %>%
     dplyr::filter(wt_ht == max(wt_ht)) %>%
     dplyr::filter(sum_cov == max(sum_cov)) %>%
     dplyr::ungroup() %>%
