@@ -2,16 +2,16 @@
 % Please edit documentation in R/make_eco_desc.R
 \name{make_eco_desc}
 \alias{make_eco_desc}
-\title{Generate a structural description from cluster_spp_per and the clustering}
+\title{Generate a structural description from cluster_taxa_per and the clustering}
 \usage{
-make_eco_desc(str_per, spp_per, taxonomy)
+make_eco_desc(taxa, str, taxonomy)
 }
 \arguments{
-\item{str_per}{Dataframe of structural information for each ecosystem. Ouput
-from eco_str_per().}
+\item{taxa}{Dataframe of taxa information for each ecosystem. Output from
+\code{make_eco_taxa_per()}.}
 
-\item{spp_per}{Dataframe of taxa information for each ecosystem. Output from
-eco_spp_per().}
+\item{str}{Dataframe of structural information for each ecosystem. Ouput
+from \code{make_eco_str_per()}.}
 
 \item{taxonomy}{Dataframe with ind column indicating indigenous status.}
 }
@@ -20,5 +20,5 @@ Dataframe of full ecosystem floristic * structural descriptions.
 Indcludes text suitable for display in .md
 }
 \description{
-Generate a structural description from cluster_spp_per and the clustering
+Generate a structural description from cluster_taxa_per and the clustering
 }

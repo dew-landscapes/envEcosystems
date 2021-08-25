@@ -149,7 +149,10 @@
                   , ht_class = cut(ht_thresh
                                   , breaks = c(unique(ht_thresh),0)
                                   )
-                  , storey = forcats::fct_inorder(forcats::fct_rev(storey), ordered = TRUE)
+                  , storey = factor(storey
+                                    , levels = levels(lulifeform$storey)
+                                    , ordered = TRUE
+                                    )
                   ) %>%
     dplyr::select(storey,str,cov_class,ht_class,sa_vsf)
 
