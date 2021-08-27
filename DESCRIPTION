@@ -30,4 +30,5 @@ Imports:
     Rdpack,
     magrittr,
     envFunc,
-    purrr
+    purrr,
+    colortools

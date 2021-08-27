@@ -2,7 +2,7 @@
   library(magrittr)
 
   # Muir codes
-  lulifeform <- rio::import("data-raw/luLifeform.csv") %>%
+  lulifeform <- rio::import("data-raw/lulifeform.csv") %>%
     dplyr::mutate(storey = dplyr::if_else(grepl("Trees|Mallee",lifeform_class)
                                      ,"over"
                                      ,dplyr::if_else(grepl("Shrubs",lifeform_class)

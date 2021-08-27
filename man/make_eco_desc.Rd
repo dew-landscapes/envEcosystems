@@ -2,23 +2,45 @@
 % Please edit documentation in R/make_eco_desc.R
 \name{make_eco_desc}
 \alias{make_eco_desc}
-\title{Generate a structural description from cluster_taxa_per and the clustering}
+\title{Generate an ecosystem description}
 \usage{
-make_eco_desc(taxa, str, taxonomy)
+make_eco_desc(
+  bio_df,
+  clust_df,
+  context,
+  cov_col = "use_cover",
+  lustr,
+  taxonomy,
+  use_prop_thresh,
+  type_colours = NULL,
+  add_eco = NULL,
+  add_colours = NULL,
+  add_col_cluster = "use_class"
+)
 }
 \arguments{
-\item{taxa}{Dataframe of taxa information for each ecosystem. Output from
-\code{make_eco_taxa_per()}.}
-
-\item{str}{Dataframe of structural information for each ecosystem. Ouput
-from \code{make_eco_str_per()}.}
-
 \item{taxonomy}{Dataframe with ind column indicating indigenous status.}
+
+\item{type_colours}{Dataframe with \code{type} (usually \code{sf}) and \code{colours} to apply.}
+
+\item{add_eco}{Dataframe with any additional clusters to add (e.g. landcover
+clusters).}
+
+\item{add_colours}{Dataframe with}
+
+\item{taxa_per}{Dataframe of taxa information for each ecosystem. Output from
+eco_taxa_per().}
+
+\item{str_per}{Dataframe of structural information for each ecosystem. Output
+from eco_str_per().}
+
+\item{add_col_cluser}{Character. Name of column in \code{add_eco} that contains
+the cluster/groups/ecosystems.}
 }
 \value{
 Dataframe of full ecosystem floristic * structural descriptions.
 Indcludes text suitable for display in .md
 }
 \description{
-Generate a structural description from cluster_taxa_per and the clustering
+Generate an ecosystem description
 }

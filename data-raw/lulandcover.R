@@ -12,7 +12,7 @@
 
 # Landcover colours
   lulandcover <- tribble(
-    ~use_class, ~definition, ~veg, ~lc_col, ~lc_col_veg
+    ~use_class, ~definition, ~veg, ~lc_col, ~veg_col
     , "built", "to add", FALSE, artificialSurface, artificialSurface
     , "cropping", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
     , "hardwood", "to add", FALSE, cultTerrVegWoodyOpen, cultTerrVegWoodyOpen
@@ -30,5 +30,4 @@
     , "water", "to add", TRUE, water, water
     , "water_coastal", "to add", TRUE, water, water
     ) %>%
-    dplyr::arrange(use_class) %>%
-    dplyr::mutate(lc_num = dplyr::row_number())
+    dplyr::arrange(use_class)
