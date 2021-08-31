@@ -2,11 +2,12 @@
 % Please edit documentation in R/make_eco_desc.R
 \name{make_eco_desc}
 \alias{make_eco_desc}
-\title{Generate an ecosystem description}
+\title{Title}
 \usage{
 make_eco_desc(
   bio_df,
   clust_df,
+  clust_col = "cluster",
   context,
   cov_col = "use_cover",
   lustr,
@@ -14,33 +15,44 @@ make_eco_desc(
   use_prop_thresh,
   type_colours = NULL,
   add_eco = NULL,
-  add_colours = NULL,
-  add_col_cluster = "use_class"
+  add_clust_col = "use_class",
+  add_colours = NULL
 )
 }
 \arguments{
-\item{taxonomy}{Dataframe with ind column indicating indigenous status.}
+\item{bio_df}{Dataframe with biological information.}
 
-\item{type_colours}{Dataframe with \code{type} (usually \code{sf}) and \code{colours} to apply.}
+\item{clust_df}{Dataframe with cluster membership and join columns to \code{bio_df}.}
 
-\item{add_eco}{Dataframe with any additional clusters to add (e.g. landcover
-clusters).}
+\item{clust_col}{Character name of column in \code{clust_df} that defines clusters.}
 
-\item{add_colours}{Dataframe with}
+\item{context}{Character name of columns in \code{bio_df} that define the context.}
 
-\item{taxa_per}{Dataframe of taxa information for each ecosystem. Output from
-eco_taxa_per().}
+\item{cov_col}{Charcter name of column in \code{bio_df} that contain numeric cover
+values.}
 
-\item{str_per}{Dataframe of structural information for each ecosystem. Output
-from eco_str_per().}
+\item{lustr}{Dataframe containing structural information.}
 
-\item{add_col_cluser}{Character. Name of column in \code{add_eco} that contains
-the cluster/groups/ecosystems.}
+\item{taxonomy}{Dataframe containing indigenous status of taxa in \code{bio_df}}
+
+\item{use_prop_thresh}{Numeric. Threshold (proportion) for taxa to include in
+description. Taxa that occur in more than \code{use_prop_thresh} proportion of
+sites in the cluster will be included in the description.}
+
+\item{type_colours}{Colours to use for \code{ecotype}, if available. If no colours
+are provided, viridis::viridis is used.}
+
+\item{add_eco}{Dataframe of additional 'ecosystems' to add. These are usually
+land cover 'ecosystems' such as, say, cropping.}
+
+\item{add_clust_col}{Character name of column in \code{add_eco} that contains
+the additional clusters.}
+
+\item{add_colours}{Dataframe of colours to use for}
 }
 \value{
-Dataframe of full ecosystem floristic * structural descriptions.
-Indcludes text suitable for display in .md
+
 }
 \description{
-Generate an ecosystem description
+Title
 }

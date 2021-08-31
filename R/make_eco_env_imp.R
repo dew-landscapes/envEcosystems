@@ -1,15 +1,24 @@
 
 
-make_eco_env_text <- function(eco_env_df) {
 
-  eco_env_df %>%
-
-    dplyr::filter()
-
-
-}
-
-
+#' Make a dataframe summarising environmental variables per cluster.
+#'
+#' Optionally include the importance object from random forest.
+#'
+#' @param clust_df Dataframe with cluster membership and environmental data.
+#' @param imp_df Importance from random forest.
+#' @param clust_col Character. Name of column in `clust_df` with cluster
+#' membership.
+#' @param env_col Character. Name of column in `imp_df` with
+#' @param env_cols Character. Name of columns in `clust_df` with environmental
+#' data.
+#'
+#' @return Dataframe with `clust_col`, `env_col` and summary columns including
+#' mean, median, standard deviation and (optionally) importance from random
+#' forest.
+#' @export
+#'
+#' @examples
 make_eco_env <- function(clust_df
                          , imp_df = NULL
                          , clust_col = "cluster"
@@ -25,8 +34,15 @@ make_eco_env <- function(clust_df
 
   if(isTRUE(!is.null(imp_df))) {
 
+    if(!is.data.frame(imp_df)) imp_df <-
+        tibble::rownames_to_column(data.frame(imp_df
+                                              , check.names = FALSE
+                                              )
+                                   , var = env_col
+                                   )
+
     imp <- imp_df %>%
-      dplyr::select(!!ensym(env_col),any_of(factor_levels)) %>%
+      dplyr::select(!!ensym(env_col),all_of(factor_levels)) %>%
       tidyr::pivot_longer(all_of(factor_levels)
                           , names_to = clust_col
                           , values_to = "importance"
@@ -36,7 +52,9 @@ make_eco_env <- function(clust_df
                                                  , levels = factor_levels
                                                  )
                     ) %>%
-      dplyr::arrange(!!ensym(clust_col),desc(importance))
+      dplyr::group_by(!!ensym(clust_col)) %>%
+      dplyr::mutate(rank_imp = rank(importance)) %>%
+      dplyr::ungroup()
 
   }
 

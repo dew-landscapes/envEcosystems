@@ -1,27 +1,33 @@
 
 
-
-#' Generate an ecosystem description
+#' Title
 #'
-#' @param taxa_per Dataframe of taxa information for each ecosystem. Output from
-#' eco_taxa_per().
-#' @param str_per Dataframe of structural information for each ecosystem. Output
-#' from eco_str_per().
-#' @param taxonomy Dataframe with ind column indicating indigenous status.
-#' @param type_colours Dataframe with `type` (usually `sf`) and `colours` to apply.
-#' @param add_eco Dataframe with any additional clusters to add (e.g. landcover
-#' clusters).
-#' @param add_colours Dataframe with
-#' @param add_col_cluser Character. Name of column in `add_eco` that contains
-#' the cluster/groups/ecosystems.
+#' @param bio_df Dataframe with biological information.
+#' @param clust_df Dataframe with cluster membership and join columns to `bio_df`.
+#' @param clust_col Character name of column in `clust_df` that defines clusters.
+#' @param context Character name of columns in `bio_df` that define the context.
+#' @param cov_col Charcter name of column in `bio_df` that contain numeric cover
+#' values.
+#' @param lustr Dataframe containing structural information.
+#' @param taxonomy Dataframe containing indigenous status of taxa in `bio_df`
+#' @param use_prop_thresh Numeric. Threshold (proportion) for taxa to include in
+#' description. Taxa that occur in more than `use_prop_thresh` proportion of
+#' sites in the cluster will be included in the description.
+#' @param type_colours Colours to use for `ecotype`, if available. If no colours
+#' are provided, viridis::viridis is used.
+#' @param add_eco Dataframe of additional 'ecosystems' to add. These are usually
+#' land cover 'ecosystems' such as, say, cropping.
+#' @param add_clust_col Character name of column in `add_eco` that contains
+#' the additional clusters.
+#' @param add_colours Dataframe of colours to use for
 #'
-#' @return Dataframe of full ecosystem floristic * structural descriptions.
-#' Indcludes text suitable for display in .md
+#' @return
 #' @export
 #'
 #' @examples
 make_eco_desc <- function(bio_df
                           , clust_df
+                          , clust_col = "cluster"
                           , context
                           , cov_col = "use_cover"
                           , lustr
@@ -29,8 +35,8 @@ make_eco_desc <- function(bio_df
                           , use_prop_thresh
                           , type_colours = NULL
                           , add_eco = NULL
+                          , add_clust_col = "use_class"
                           , add_colours = NULL
-                          , add_col_cluster = "use_class"
                           ) {
 
   #------str-------
