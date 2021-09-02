@@ -7,7 +7,7 @@
 #'   \item{definition}{Character}
 #'   \item{veg}{Logical. Does the landcover class represent a native ecosystem?}
 #'   \item{lc_col}{Character. What colour to map `use_class` in land cover map?}
-#'   \item{veg_col}{Character. What colour to map `use_class` in vegetation map?}
+#'   \item{colour}{Character. What colour to map `use_class` in vegetation map?}
 #'   ...
 #' }
 "lulandcover"

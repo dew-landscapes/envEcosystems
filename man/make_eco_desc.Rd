@@ -7,16 +7,14 @@
 make_eco_desc(
   bio_df,
   clust_df,
+  bio_wide,
   clust_col = "cluster",
   context,
   cov_col = "use_cover",
+  taxa_col = "taxa",
   lustr,
   taxonomy,
-  use_prop_thresh,
-  type_colours = NULL,
-  add_eco = NULL,
-  add_clust_col = "use_class",
-  add_colours = NULL
+  use_prop_thresh
 )
 }
 \arguments{
@@ -24,12 +22,16 @@ make_eco_desc(
 
 \item{clust_df}{Dataframe with cluster membership and join columns to \code{bio_df}.}
 
+\item{bio_wide}{Dataframe of taxa by sites.}
+
 \item{clust_col}{Character name of column in \code{clust_df} that defines clusters.}
 
 \item{context}{Character name of columns in \code{bio_df} that define the context.}
 
-\item{cov_col}{Charcter name of column in \code{bio_df} that contain numeric cover
+\item{cov_col}{Character name of column in \code{bio_df} that contain numeric cover
 values.}
+
+\item{taxa_col}{Character name of column with taxa.}
 
 \item{lustr}{Dataframe containing structural information.}
 
@@ -38,17 +40,6 @@ values.}
 \item{use_prop_thresh}{Numeric. Threshold (proportion) for taxa to include in
 description. Taxa that occur in more than \code{use_prop_thresh} proportion of
 sites in the cluster will be included in the description.}
-
-\item{type_colours}{Colours to use for \code{ecotype}, if available. If no colours
-are provided, viridis::viridis is used.}
-
-\item{add_eco}{Dataframe of additional 'ecosystems' to add. These are usually
-land cover 'ecosystems' such as, say, cropping.}
-
-\item{add_clust_col}{Character name of column in \code{add_eco} that contains
-the additional clusters.}
-
-\item{add_colours}{Dataframe of colours to use for}
 }
 \value{
 

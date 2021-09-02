@@ -1,25 +1,85 @@
 
 
+
+#' Add 'extra' ecosystem (usually landcover) descriptions to ecosystem descriptions
+#'
+#' @param eco_desc Dataframe of ecosystem descriptions.
+#' @param add_eco Dataframe of ecosystems to add.
+#' @param clust_col Character name of column with cluster membership.
+#'
+#' @return Dataframe with the same columns as `eco_desc` but with added rows for
+#' each row of `add_eco`
+#' @export
+#'
+#' @examples
+add_landcover_desc <- function(eco_desc
+                               , add_eco
+                               , clust_col = "cluster"
+                               , add_name = "Landcover"
+                               , colour_map = NULL
+                               ) {
+
+  eco_add <- add_eco %>%
+    dplyr::count(!!ensym(add_clust_col)
+                 , name = "sites"
+                 ) %>%
+    dplyr::mutate(desc = paste0(add_name,": ", gsub("_"," ",!!ensym(add_clust_col)))) %>%
+    dplyr::rename(!!ensym(clust_col) := !!ensym(add_clust_col))
+
+  missing_names <- setdiff(names(eco_desc)[sapply(eco_desc
+                                                  , function(x) is.character(x)|is.factor(x))
+                                           ]
+                           , names(eco_add)
+                           )
+
+  eco_add <- eco_add %>%
+    dplyr::bind_cols(purrr::map(missing_names[!grepl("desc|md",missing_names)]
+                                , function(x) eco_add$x = as.character(eco_add[clust_col][[1]])
+                                ) %>%
+                       stats::setNames(missing_names[!grepl("desc|md",missing_names)]) %>%
+                       as_tibble()
+                     ) %>%
+    dplyr::bind_cols(purrr::map(missing_names[grepl("desc|md",missing_names)]
+                                , function(x) eco_add$x = eco_add$desc
+                                ) %>%
+                       stats::setNames(missing_names[grepl("desc|md",missing_names)]) %>%
+                       as_tibble()
+                     ) %>%
+    dplyr::select(-colour)
+
+  if(isTRUE(!is.null(colour_map))) {
+
+    colour_map <- tibble(!!ensym(clust_col) := unique(eco_add[clust_col][[1]])) %>%
+      dplyr::mutate(colour = map_chr(row_number()
+                                     , function(x) grey.colors(nrow(.))[x]
+                                     )
+                    )
+  }
+
+  eco_desc %>%
+    dplyr::bind_rows(eco_add %>%
+                       dplyr::left_join(colour_map)
+                     )
+
+}
+
+
+
 #' Title
 #'
 #' @param bio_df Dataframe with biological information.
 #' @param clust_df Dataframe with cluster membership and join columns to `bio_df`.
+#' @param bio_wide Dataframe of taxa by sites.
 #' @param clust_col Character name of column in `clust_df` that defines clusters.
 #' @param context Character name of columns in `bio_df` that define the context.
-#' @param cov_col Charcter name of column in `bio_df` that contain numeric cover
+#' @param cov_col Character name of column in `bio_df` that contain numeric cover
 #' values.
+#' @param taxa_col Character name of column with taxa.
 #' @param lustr Dataframe containing structural information.
 #' @param taxonomy Dataframe containing indigenous status of taxa in `bio_df`
 #' @param use_prop_thresh Numeric. Threshold (proportion) for taxa to include in
 #' description. Taxa that occur in more than `use_prop_thresh` proportion of
 #' sites in the cluster will be included in the description.
-#' @param type_colours Colours to use for `ecotype`, if available. If no colours
-#' are provided, viridis::viridis is used.
-#' @param add_eco Dataframe of additional 'ecosystems' to add. These are usually
-#' land cover 'ecosystems' such as, say, cropping.
-#' @param add_clust_col Character name of column in `add_eco` that contains
-#' the additional clusters.
-#' @param add_colours Dataframe of colours to use for
 #'
 #' @return
 #' @export
@@ -27,17 +87,23 @@
 #' @examples
 make_eco_desc <- function(bio_df
                           , clust_df
+                          , bio_wide
                           , clust_col = "cluster"
                           , context
                           , cov_col = "use_cover"
+                          , taxa_col = "taxa"
                           , lustr
                           , taxonomy
                           , use_prop_thresh
-                          , type_colours = NULL
-                          , add_eco = NULL
-                          , add_clust_col = "use_class"
-                          , add_colours = NULL
                           ) {
+
+  .clust_df = clust_df
+  .bio_wide = bio_wide
+  .clust_col = clust_col
+  .context = context
+  .cov_col = cov_col
+  .taxa_col = taxa_col
+  .taxas <- unique(taxonomy[taxa_col][[1]])
 
   #------str-------
 
@@ -47,7 +113,7 @@ make_eco_desc <- function(bio_df
     dplyr::group_by(!!ensym(clust_col), across(all_of(context)), across(all_of(names(lustr)))) %>%
     dplyr::summarise(cov = sum(!!ensym(cov_col))) %>%
     dplyr::ungroup() %>%
-    dplyr::arrange(cluster,across(all_of(context)),desc(sort))
+    dplyr::arrange(!!ensym(clust_col),across(all_of(context)),desc(sort))
 
   context_vsf_all <- lifeforms_all %>%
     dplyr::group_by(!!ensym(clust_col)
@@ -73,6 +139,7 @@ make_eco_desc <- function(bio_df
     dplyr::group_by(!!ensym(clust_col)
                     , across(all_of(context))
                     ) %>%
+    dplyr::mutate(tot_cov = sum(sum_cov)) %>%
     dplyr::filter(sum_cov > 0.05) %>%
     dplyr::filter(sort == min(sort, na.rm = TRUE)) %>%
     dplyr::ungroup() %>%
@@ -82,6 +149,7 @@ make_eco_desc <- function(bio_df
   eco_sf <- context_vsf %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::summarise(sites = n()
+                     , cov = median(tot_cov)
                      , range_sf = paste0(vec_to_sentence(names(table(sf)[table(sf) > quantile(table(sf),probs = 0.5)])))
                      , sf = names(which.max(table(sf)))
                      , range_sf = if_else(range_sf == "", sf, range_sf)
@@ -90,7 +158,7 @@ make_eco_desc <- function(bio_df
 
   eco_vsf <- context_vsf %>%
     dplyr::inner_join(eco_sf) %>%
-    dplyr::group_by(!!ensym(clust_col)) %>%
+    dplyr::group_by(!!ensym(clust_col),cov) %>%
     dplyr::summarise(range_vsf = paste0(vec_to_sentence(names(table(sa_vsf)[table(sa_vsf) > quantile(table(sa_vsf),probs = 0.5)])))
                      , vsf = names(which.max(table(sa_vsf)[.data$sf == sf]))
                      , range_vsf = if_else(range_vsf == "", vsf, range_vsf)
@@ -106,7 +174,7 @@ make_eco_desc <- function(bio_df
     dplyr::mutate(cluster_sites = n_distinct(cell)) %>%
     dplyr::ungroup() %>%
     dplyr::left_join(taxonomy) %>%
-    dplyr::count(cluster, cluster_sites, taxa, ind, name = "taxa_sites") %>%
+    dplyr::count(!!ensym(clust_col), cluster_sites, taxa, ind, name = "taxa_sites") %>%
     dplyr::mutate(prop = taxa_sites/cluster_sites) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::filter(prop > use_prop_thresh) %>%
@@ -122,31 +190,26 @@ make_eco_desc <- function(bio_df
     dplyr::summarise(range_taxa = envFunc::vec_to_sentence(text)) %>%
     dplyr::ungroup()
 
-  eco_ind <- models_final$ind_val[[1]] %>%
+  eco_ind <- make_ind_val_df(clust_df = .clust_df
+                             , bio_wide = .bio_wide
+                             , clust_col = .clust_col
+                             , taxas = .taxas
+                             , context = .context
+                             ) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::filter(ind_val > quantile(ind_val, probs = 0.95)) %>%
-    dplyr::select(cluster,everything()) %>%
-    dplyr::arrange(cluster) %>%
+    dplyr::select(!!ensym(clust_col),everything()) %>%
+    dplyr::arrange(!!ensym(clust_col)) %>%
     dplyr::left_join(taxa_taxonomy) %>%
     dplyr::mutate(use_taxa = if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::summarise(range_ind = envFunc::vec_to_sentence(use_taxa)) %>%
     dplyr::ungroup()
 
-  if(isTRUE(!is.null(add_eco))) {
 
-    eco_add <- add_eco %>%
-      dplyr::count(!!ensym(clust_col)
-                   , name = "sites"
-                   ) %>%
-      dplyr::mutate(loose_md = paste0("Landcover: ", cluster)
-                    , loose = loose_md
-                    , desc = loose_md
-                    )
+  #--------desc ---------
 
-  }
-
-  eco_desc <- eco_sf %>%
+  eco_sf %>%
     dplyr::left_join(eco_vsf) %>%
     dplyr::left_join(eco_taxa) %>%
     dplyr::left_join(eco_ind) %>%
@@ -167,13 +230,17 @@ make_eco_desc <- function(bio_df
                                  , range_taxa
                                  )
                   , loose = gsub("_","",loose_md)
-                  , desc_md = paste0(vsf
+                  , desc_md = paste0(clust_col
+                                     , " "
+                                     , !!ensym(clust_col)
+                                     , ": "
+                                     , vsf
                                   , range_ind
                                   , range_taxa
                                   )
                   , desc = gsub("_","",desc_md)
                   ) %>%
-    {if(isTRUE(!is.null(add_eco))) (.) %>% dplyr::bind_rows(eco_add) else (.)}
+    dplyr::select(-range_taxa,-range_ind)
 
 }
 

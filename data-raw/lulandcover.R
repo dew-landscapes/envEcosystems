@@ -12,7 +12,7 @@
 
 # Landcover colours
   lulandcover <- tribble(
-    ~use_class, ~definition, ~veg, ~lc_col, ~veg_col
+    ~use_class, ~definition, ~veg, ~lc_col, ~colour
     , "built", "to add", FALSE, artificialSurface, artificialSurface
     , "cropping", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
     , "hardwood", "to add", FALSE, cultTerrVegWoodyOpen, cultTerrVegWoodyOpen
