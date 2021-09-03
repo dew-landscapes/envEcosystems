@@ -15,6 +15,7 @@
 add_landcover_desc <- function(eco_desc
                                , add_eco
                                , clust_col = "cluster"
+                               , add_clust_col = "cluster"
                                , add_name = "Landcover"
                                , colour_map = NULL
                                ) {
@@ -213,34 +214,26 @@ make_eco_desc <- function(bio_df
     dplyr::left_join(eco_vsf) %>%
     dplyr::left_join(eco_taxa) %>%
     dplyr::left_join(eco_ind) %>%
-    dplyr::mutate(range_taxa = if_else(is.na(range_taxa)
-                                       , " and with no widespread taxa"
-                                       , paste0(" and with "
-                                                , range_taxa
-                                                )
-                                       )
-                  , range_ind = if_else(is.na(range_ind)
-                                        , " with no good indicators"
-                                        , paste0(" best indicated by "
-                                                 , range_ind
-                                                 )
-                                        )
-                  , loose_md = paste0(range_sf
-                                 , range_ind
-                                 , range_taxa
-                                 )
-                  , loose = gsub("_","",loose_md)
-                  , desc_md = paste0(clust_col
+    dplyr::mutate(desc_md = paste0(clust_col
                                      , " "
                                      , !!ensym(clust_col)
                                      , ": "
-                                     , vsf
-                                  , range_ind
-                                  , range_taxa
-                                  )
+                                     , range_sf
+                                     , if_else(is.na(range_ind)
+                                               , " with no good indicators"
+                                               , paste0(" best indicated by "
+                                                        , range_ind
+                                                        )
+                                               )
+                                     , if_else(is.na(range_taxa)
+                                               , " and with no widespread taxa"
+                                               , paste0(" and with "
+                                                        , range_taxa
+                                                        )
+                                               )
+                                     )
                   , desc = gsub("_","",desc_md)
-                  ) %>%
-    dplyr::select(-range_taxa,-range_ind)
+                  )
 
 }
 

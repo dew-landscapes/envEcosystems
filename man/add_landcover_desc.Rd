@@ -8,6 +8,7 @@ add_landcover_desc(
   eco_desc,
   add_eco,
   clust_col = "cluster",
+  add_clust_col = "cluster",
   add_name = "Landcover",
   colour_map = NULL
 )
