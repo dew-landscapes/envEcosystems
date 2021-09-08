@@ -1,3 +1,14 @@
+#' Lookup for lifespan classes
+#'
+#'
+#' @format A data frame with 4 rows and 2 variables:
+#' \describe{
+#'   \item{lifespan}{Character. Lifespan code}
+#'   \item{definition}{Character. Lifespan description}
+#'   ...
+#' }
+"lulifespan"
+
 #' Lookup for landcover classes and their associated colours
 #'
 #'

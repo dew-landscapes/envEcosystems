@@ -31,4 +31,6 @@ Imports:
     magrittr,
     envFunc,
     purrr,
-    colortools
+    colortools,
+    viridis,
+    colourvalues
