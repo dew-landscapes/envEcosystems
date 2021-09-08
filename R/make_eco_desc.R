@@ -51,10 +51,8 @@ add_landcover_desc <- function(eco_desc
   if(isTRUE(!is.null(colour_map))) {
 
     colour_map <- tibble(!!ensym(clust_col) := unique(eco_add[clust_col][[1]])) %>%
-      dplyr::mutate(colour = map_chr(row_number()
-                                     , function(x) grey.colors(nrow(.))[x]
-                                     )
-                    )
+      dplyr::mutate(colour = paste0("grey",ceiling(100/(2*row_number()))))
+
   }
 
   eco_desc %>%
@@ -199,12 +197,15 @@ make_eco_desc <- function(bio_df
                              ) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::filter(ind_val > quantile(ind_val, probs = 0.95)) %>%
+    dplyr::mutate(best = ind_val == max(ind_val, na.rm = TRUE)) %>%
     dplyr::select(!!ensym(clust_col),everything()) %>%
     dplyr::arrange(!!ensym(clust_col)) %>%
     dplyr::left_join(taxa_taxonomy) %>%
     dplyr::mutate(use_taxa = if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
-    dplyr::summarise(range_ind = envFunc::vec_to_sentence(use_taxa)) %>%
+    dplyr::summarise(range_ind = envFunc::vec_to_sentence(use_taxa)
+                     , best_ind = envFunc::vec_to_sentence(ifelse(best, use_taxa, NA))
+                     ) %>%
     dplyr::ungroup()
 
 
@@ -233,6 +234,7 @@ make_eco_desc <- function(bio_df
                                                )
                                      )
                   , desc = gsub("_","",desc_md)
+                  , desc = gsub("&ast;","*",desc)
                   )
 
 }
