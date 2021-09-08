@@ -149,7 +149,7 @@ make_eco_desc <- function(bio_df
     dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::summarise(sites = n()
                      , cov = median(tot_cov)
-                     , range_sf = paste0(vec_to_sentence(names(table(sf)[table(sf) > quantile(table(sf),probs = 0.5)])))
+                     , range_sf = paste0(vec_to_sentence(names(table(sf)[table(sf) > quantile(table(sf),probs = 2/3)])))
                      , sf = names(which.max(table(sf)))
                      , range_sf = if_else(range_sf == "", sf, range_sf)
                      ) %>%
@@ -158,7 +158,7 @@ make_eco_desc <- function(bio_df
   eco_vsf <- context_vsf %>%
     dplyr::inner_join(eco_sf) %>%
     dplyr::group_by(!!ensym(clust_col),cov) %>%
-    dplyr::summarise(range_vsf = paste0(vec_to_sentence(names(table(sa_vsf)[table(sa_vsf) > quantile(table(sa_vsf),probs = 0.5)])))
+    dplyr::summarise(range_vsf = paste0(vec_to_sentence(names(table(sa_vsf)[table(sa_vsf) > quantile(table(sa_vsf),probs = 2/3)])))
                      , vsf = names(which.max(table(sa_vsf)[.data$sf == sf]))
                      , range_vsf = if_else(range_vsf == "", vsf, range_vsf)
                      ) %>%
@@ -166,6 +166,26 @@ make_eco_desc <- function(bio_df
 
 
   #------taxa-------
+  eco_ind_val_df <- make_ind_val_df(clust_df = .clust_df
+                             , bio_wide = .bio_wide
+                             , clust_col = .clust_col
+                             , taxas = .taxas
+                             , context = .context
+                             )
+
+  eco_ind <- eco_ind_val_df %>%
+    dplyr::group_by(!!ensym(clust_col)) %>%
+    dplyr::mutate(best = ind_val == max(ind_val, na.rm = TRUE)) %>%
+    dplyr::filter(ind_val > quantile(ind_val, probs = 0.95) | best) %>%
+    dplyr::select(!!ensym(clust_col),everything()) %>%
+    dplyr::arrange(!!ensym(clust_col)) %>%
+    dplyr::left_join(taxa_taxonomy) %>%
+    dplyr::mutate(use_taxa = if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))) %>%
+    dplyr::group_by(!!ensym(clust_col)) %>%
+    dplyr::summarise(range_ind = envFunc::vec_to_sentence(use_taxa)
+                     , best_ind = envFunc::vec_to_sentence(ifelse(best, use_taxa, NA))
+                     ) %>%
+    dplyr::ungroup()
 
   eco_taxa <- flor_tidy %>%
     dplyr::left_join(clust_df) %>%
@@ -176,7 +196,16 @@ make_eco_desc <- function(bio_df
     dplyr::count(!!ensym(clust_col), cluster_sites, taxa, ind, name = "taxa_sites") %>%
     dplyr::mutate(prop = taxa_sites/cluster_sites) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
-    dplyr::filter(prop > use_prop_thresh) %>%
+
+    dplyr::anti_join(eco_ind_val_df %>%
+                       dplyr::group_by(!!ensym(clust_col)) %>%
+                       dplyr::mutate(best = ind_val == max(ind_val, na.rm = TRUE)) %>%
+                       dplyr::filter(best) %>%
+                       dplyr::select(!!ensym(clust_col),!!ensym(taxa_col))
+                     ) %>%
+
+    dplyr::mutate(best = prop == max(prop, na.rm = TRUE)) %>%
+    dplyr::filter(prop > use_prop_thresh | best) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(freq = add_freq_class(prop*100)
                   , use_taxa = if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))
@@ -189,46 +218,24 @@ make_eco_desc <- function(bio_df
     dplyr::summarise(range_taxa = envFunc::vec_to_sentence(text)) %>%
     dplyr::ungroup()
 
-  eco_ind <- make_ind_val_df(clust_df = .clust_df
-                             , bio_wide = .bio_wide
-                             , clust_col = .clust_col
-                             , taxas = .taxas
-                             , context = .context
-                             ) %>%
-    dplyr::group_by(!!ensym(clust_col)) %>%
-    dplyr::filter(ind_val > quantile(ind_val, probs = 0.95)) %>%
-    dplyr::mutate(best = ind_val == max(ind_val, na.rm = TRUE)) %>%
-    dplyr::select(!!ensym(clust_col),everything()) %>%
-    dplyr::arrange(!!ensym(clust_col)) %>%
-    dplyr::left_join(taxa_taxonomy) %>%
-    dplyr::mutate(use_taxa = if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))) %>%
-    dplyr::group_by(!!ensym(clust_col)) %>%
-    dplyr::summarise(range_ind = envFunc::vec_to_sentence(use_taxa)
-                     , best_ind = envFunc::vec_to_sentence(ifelse(best, use_taxa, NA))
-                     ) %>%
-    dplyr::ungroup()
-
-
   #--------desc ---------
 
-  eco_sf %>%
+  desc_res <- eco_sf %>%
     dplyr::left_join(eco_vsf) %>%
     dplyr::left_join(eco_taxa) %>%
     dplyr::left_join(eco_ind) %>%
-    dplyr::mutate(desc_md = paste0(clust_col
-                                     , " "
-                                     , !!ensym(clust_col)
+    dplyr::mutate(desc_md = paste0(!!ensym(clust_col)
                                      , ": "
                                      , range_sf
                                      , if_else(is.na(range_ind)
-                                               , " with no good indicators"
-                                               , paste0(" best indicated by "
-                                                        , range_ind
+                                               , ""
+                                               , paste0(" indicated by "
+                                                        , best_ind
                                                         )
                                                )
                                      , if_else(is.na(range_taxa)
-                                               , " and with no widespread taxa"
-                                               , paste0(" and with "
+                                               , ""
+                                               , paste0(" with "
                                                         , range_taxa
                                                         )
                                                )
