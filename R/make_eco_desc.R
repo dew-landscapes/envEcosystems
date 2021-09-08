@@ -48,10 +48,15 @@ add_landcover_desc <- function(eco_desc
                      ) %>%
     dplyr::select(-colour)
 
-  if(isTRUE(!is.null(colour_map))) {
+  if(isTRUE(is.null(colour_map))) {
 
     colour_map <- tibble(!!ensym(clust_col) := unique(eco_add[clust_col][[1]])) %>%
       dplyr::mutate(colour = paste0("grey",ceiling(100/(2*row_number()))))
+
+  } else {
+
+    colour_map <- colour_map %>%
+      dplyr::rename(!!ensym(clust_col) := !!ensym(add_clust_col))
 
   }
 
