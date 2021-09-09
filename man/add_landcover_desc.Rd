@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_eco_desc.R
 \name{add_landcover_desc}
 \alias{add_landcover_desc}
-\title{Add 'extra' ecosystem (usually landcover) descriptions to ecosystem descriptions}
+\title{Add 'extra' ecosystem descriptions}
 \usage{
 add_landcover_desc(
   eco_desc,
@@ -18,12 +18,23 @@ add_landcover_desc(
 
 \item{add_eco}{Dataframe of ecosystems to add.}
 
-\item{clust_col}{Character name of column with cluster membership.}
+\item{clust_col}{Character name of column with cluster membership in
+\code{eco_desc}.}
+
+\item{add_clust_col}{Character name of column with cluster membership in
+\code{add_eco}.}
+
+\item{add_name}{Character name of any prefix to use in descriptions for extra
+ecosystems. e.g. "Landcover" to make, say, "cropping" into "Landcover:
+cropping".}
+
+\item{colour_map}{Dataframe mapping \code{add_clust_col} to colour values to use
+in mapping.}
 }
 \value{
 Dataframe with the same columns as \code{eco_desc} but with added rows for
 each row of \code{add_eco}
 }
 \description{
-Add 'extra' ecosystem (usually landcover) descriptions to ecosystem descriptions
+These are usually 'landcover' descriptions.
 }

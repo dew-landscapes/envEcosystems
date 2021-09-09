@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_eco_desc.R
 \name{make_eco_desc}
 \alias{make_eco_desc}
-\title{Title}
+\title{Make a description for an ecosystem}
 \usage{
 make_eco_desc(
   bio_df,
@@ -45,5 +45,5 @@ sites in the cluster will be included in the description.}
 
 }
 \description{
-Title
+Make a description for an ecosystem
 }

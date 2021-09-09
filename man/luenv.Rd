@@ -8,14 +8,15 @@
 A data frame with 65 rows and 9 variables:
 \describe{
 \item{data_name}{Character. Source of \code{data_name}}
-\item{layer}{Character. File name for environmental data}
+\item{file}{Character. File name for environmental data}
+\item{layer}{Name to use for \code{file}}
+\item{desc}{Description of the data in \code{layer}}
+\item{group}{Broad groupings of \code{layer} types}
+\item{indicator}{Why is the data in \code{layer} useful in predicting ecosystem
+distribution?}
 \item{transform}{Numeric. Divide by \code{transform} to convert to \code{units}
 from numbers in \code{layer}}
 \item{units}{Units for number in \code{layer} / \code{transform}}
-\item{desc}{Description of the data in \code{layer}}
-\item{indicator}{Why is the data in \code{layer} useful in predicting ecosystem
-distribution?}
-\item{group}{Broad groupings of \code{layer} types}
 \item{link}{Link to webpage for \code{data_name}}
 \item{link_md}{\code{link} formatted for use in markdown}
 ...

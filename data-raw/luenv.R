@@ -17,7 +17,9 @@
 
   luenv <- rio::import("data-raw/luenv.xlsx") %>%
     tibble::as_tibble() %>%
-    dplyr::left_join(temp)
+    dplyr::mutate(layer = gsub("\\..*$","",file)) %>%
+    dplyr::left_join(temp) %>%
+    dplyr::select(data_name,file,layer,desc,group,indicator,everything())
 
   rm(temp)
 
