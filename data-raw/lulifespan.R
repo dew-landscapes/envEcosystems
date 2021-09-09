@@ -2,7 +2,7 @@
 
   # Lifespan
   lulifespan <- tibble::tribble(
-    ~lifespan, ~description
+    ~lifespan, ~desc
     , "A", "Annual"
     , "P", "Perennial"
     , "R", "Ruderal"

@@ -1,10 +1,30 @@
+#' Lookup for environmental data
+#'
+#'
+#' @format A data frame with 65 rows and 9 variables:
+#' \describe{
+#'   \item{data_name}{Character. Source of `data_name`}
+#'   \item{layer}{Character. File name for environmental data}
+#'   \item{transform}{Numeric. Divide by `transform` to convert to `units`
+#'   from numbers in `layer`}
+#'   \item{units}{Units for number in `layer` / `transform`}
+#'   \item{desc}{Description of the data in `layer`}
+#'   \item{indicator}{Why is the data in `layer` useful in predicting ecosystem
+#'   distribution?}
+#'   \item{group}{Broad groupings of `layer` types}
+#'   \item{link}{Link to webpage for `data_name`}
+#'   \item{link_md}{`link` formatted for use in markdown}
+#'   ...
+#' }
+"luenv"
+
 #' Lookup for lifespan classes
 #'
 #'
 #' @format A data frame with 4 rows and 2 variables:
 #' \describe{
 #'   \item{lifespan}{Character. Lifespan code}
-#'   \item{definition}{Character. Lifespan description}
+#'   \item{desc}{Character. Lifespan description}
 #'   ...
 #' }
 "lulifespan"

@@ -1,11 +1,21 @@
 
 
 
-#' Add 'extra' ecosystem (usually landcover) descriptions to ecosystem descriptions
+#' Add 'extra' ecosystem descriptions
+#'
+#' These are usually 'landcover' descriptions.
 #'
 #' @param eco_desc Dataframe of ecosystem descriptions.
 #' @param add_eco Dataframe of ecosystems to add.
-#' @param clust_col Character name of column with cluster membership.
+#' @param clust_col Character name of column with cluster membership in
+#' `eco_desc`.
+#' @param add_clust_col Character name of column with cluster membership in
+#' `add_eco`.
+#' @param add_name Character name of any prefix to use in descriptions for extra
+#' ecosystems. e.g. "Landcover" to make, say, "cropping" into "Landcover:
+#' cropping".
+#' @param colour_map Dataframe mapping `add_clust_col` to colour values to use
+#' in mapping.
 #'
 #' @return Dataframe with the same columns as `eco_desc` but with added rows for
 #' each row of `add_eco`
@@ -69,7 +79,7 @@ add_landcover_desc <- function(eco_desc
 
 
 
-#' Title
+#' Make a description for an ecosystem
 #'
 #' @param bio_df Dataframe with biological information.
 #' @param clust_df Dataframe with cluster membership and join columns to `bio_df`.
