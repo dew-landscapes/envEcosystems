@@ -7,8 +7,8 @@
 #'
 #' @param clust_df Dataframe with column indicating cluster membership.
 #' @param clust_col Name of column in clustdf with cluster membership.
-#' @param taxa_df Dataframe with columns clustcol and taxacol.
-#' @param site_col Name of column with 'sites'.
+#' @param bio_df Dataframe with taxa records. Linked to clust_df by context.
+#' @param context Name of columns defining the context.
 #' @param taxa_col Name of column with taxa.
 #' @param cov_col Name of column with (numeric) cover values.
 #' @param lustr Dataframe of structural information. Needs columns 'str' and
@@ -18,10 +18,10 @@
 #' @export
 #'
 #' @examples
-  make_spp_per <- function(clust_df
+  make_eco_taxa_per <- function(clust_df
                       , clust_col = "cluster"
-                      , taxa_df
-                      , site_col = "cell"
+                      , bio_df
+                      , context
                       , taxa_col = "taxa"
                       , cov_col = "cover"
                       , lustr = NULL
@@ -34,17 +34,17 @@
                               , storey = factor("unknown")
                               )
 
-      taxa_df <- taxa_df %>% dplyr::mutate(join = 1)
+      bio_df <- bio_df %>% dplyr::mutate(join = 1)
 
     }
 
     clust_df %>%
       dplyr::add_count(!!ensym(clust_col), name = "cluster_sites") %>%
-      dplyr::select(!!ensym(site_col)
+      dplyr::select(any_of(context)
                     , !!ensym(clust_col)
                     , cluster_sites
                     ) %>%
-      dplyr::inner_join(taxa_df) %>%
+      dplyr::inner_join(bio_df) %>%
       dplyr::inner_join(lustr) %>%
       dplyr::filter(!is.na(str)) %>%
       dplyr::group_by(!!ensym(clust_col),!!ensym(taxa_col),cluster_sites) %>%

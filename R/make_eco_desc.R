@@ -66,11 +66,13 @@ add_landcover_desc <- function(eco_desc
   } else {
 
     colour_map <- colour_map %>%
-      dplyr::rename(!!ensym(clust_col) := !!ensym(add_clust_col))
+      dplyr::rename(!!ensym(clust_col) := !!ensym(add_clust_col)) %>%
+      dplyr::mutate(!!ensym(clust_col) := forcats::fct_inorder(!!ensym(clust_col)))
 
   }
 
   eco_desc %>%
+    dplyr::mutate(cluster = fct_expand(cluster, levels(eco_add[clust_col][[1]]))) %>%
     dplyr::bind_rows(eco_add %>%
                        dplyr::left_join(colour_map)
                      )
