@@ -16,6 +16,8 @@
 #' cropping".
 #' @param colour_map Dataframe mapping `add_clust_col` to colour values to use
 #' in mapping.
+#' @param add_colour_map Character name of column in `colour_map` that has
+#' colour values.
 #'
 #' @return Dataframe with the same columns as `eco_desc` but with added rows for
 #' each row of `add_eco`
@@ -28,13 +30,17 @@ add_landcover_desc <- function(eco_desc
                                , add_clust_col = "cluster"
                                , add_name = "Landcover"
                                , colour_map = NULL
+                               , add_colour_col = "lc_col"
                                ) {
 
   eco_add <- add_eco %>%
     dplyr::count(!!ensym(add_clust_col)
                  , name = "sites"
                  ) %>%
-    dplyr::mutate(desc = paste0(add_name,": ", gsub("_"," ",!!ensym(add_clust_col)))) %>%
+    dplyr::mutate(ecotype = factor(add_name)
+                  , ecotype_id = gsub(" ","",ecotype)
+                  , desc = paste0(add_name,": ", gsub("_"," ",!!ensym(add_clust_col)))
+                  ) %>%
     dplyr::rename(!!ensym(clust_col) := !!ensym(add_clust_col))
 
   missing_names <- setdiff(names(eco_desc)[sapply(eco_desc
@@ -66,16 +72,19 @@ add_landcover_desc <- function(eco_desc
   } else {
 
     colour_map <- colour_map %>%
-      dplyr::rename(!!ensym(clust_col) := !!ensym(add_clust_col)) %>%
-      dplyr::mutate(!!ensym(clust_col) := forcats::fct_inorder(!!ensym(clust_col)))
+      dplyr::mutate(!!ensym(clust_col) := !!ensym(add_clust_col)) %>%
+      dplyr::mutate(!!ensym(clust_col) := forcats::fct_inorder(!!ensym(clust_col))
+                    , colour = !!ensym(add_colour_col)
+                    )
 
   }
 
-  eco_desc %>%
+  res <- eco_desc %>%
     dplyr::mutate(cluster = fct_expand(cluster, levels(eco_add[clust_col][[1]]))) %>%
     dplyr::bind_rows(eco_add %>%
                        dplyr::left_join(colour_map)
-                     )
+                     ) %>%
+    dplyr::select(names(eco_desc))
 
 }
 
@@ -162,6 +171,9 @@ make_eco_desc <- function(bio_df
     dplyr::filter(!is.na(sa_vsf)) %>%
     dplyr::mutate(sf = tolower(gsub(".* ","",sa_vsf)))
 
+
+  id_col <- paste0(clust_col,"_id")
+
   eco_sf <- context_vsf %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::summarise(sites = n()
@@ -170,6 +182,8 @@ make_eco_desc <- function(bio_df
                      , sf = names(which.max(table(sf)))
                      , range_sf = if_else(range_sf == "", sf, range_sf)
                      ) %>%
+    dplyr::mutate(!!ensym(id_col) := gsub(" ","",!!ensym(clust_col))) %>%
+    dplyr::select(!!ensym(clust_col), !!ensym(id_col), everything()) %>%
     dplyr::ungroup()
 
   eco_vsf <- context_vsf %>%
@@ -193,7 +207,7 @@ make_eco_desc <- function(bio_df
   eco_ind <- eco_ind_val_df %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::mutate(best = ind_val == max(ind_val, na.rm = TRUE)) %>%
-    dplyr::filter(ind_val > quantile(ind_val, probs = 0.95) | best) %>%
+    dplyr::filter(p_val <= 0.05 | best) %>%
     dplyr::select(!!ensym(clust_col),everything()) %>%
     dplyr::arrange(!!ensym(clust_col)) %>%
     dplyr::left_join(taxa_taxonomy) %>%
