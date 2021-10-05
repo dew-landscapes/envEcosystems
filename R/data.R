@@ -13,6 +13,8 @@
 #'   \item{transform}{Numeric. Divide by `transform` to convert to `units`
 #'   from numbers in `layer`}
 #'   \item{units}{Units for number in `layer` / `transform`}
+#'   \item{env_id}{Useful in rmarkdown chunk labels (no punctuation version of
+#'   `layer`)}
 #'   \item{link}{Link to webpage for `data_name`}
 #'   \item{link_md}{`link` formatted for use in markdown}
 #'   ...

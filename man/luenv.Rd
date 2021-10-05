@@ -17,6 +17,8 @@ distribution?}
 \item{transform}{Numeric. Divide by \code{transform} to convert to \code{units}
 from numbers in \code{layer}}
 \item{units}{Units for number in \code{layer} / \code{transform}}
+\item{env_id}{Useful in rmarkdown chunk labels (no punctuation version of
+\code{layer})}
 \item{link}{Link to webpage for \code{data_name}}
 \item{link_md}{\code{link} formatted for use in markdown}
 ...

@@ -17,7 +17,9 @@
 
   luenv <- rio::import("data-raw/luenv.xlsx") %>%
     tibble::as_tibble() %>%
-    dplyr::mutate(layer = gsub("\\..*$","",file)) %>%
+    dplyr::mutate(layer = gsub("\\..*$","",file)
+                  , env_id = gsub("[[:punct:]]","",layer)
+                  ) %>%
     dplyr::left_join(temp) %>%
     dplyr::select(data_name,file,layer,desc,group,indicator,everything())
 

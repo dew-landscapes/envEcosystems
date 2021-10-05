@@ -10,7 +10,8 @@ add_landcover_desc(
   clust_col = "cluster",
   add_clust_col = "cluster",
   add_name = "Landcover",
-  colour_map = NULL
+  colour_map = NULL,
+  add_colour_col = "lc_col"
 )
 }
 \arguments{

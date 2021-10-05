@@ -16,7 +16,7 @@
 #' cropping".
 #' @param colour_map Dataframe mapping `add_clust_col` to colour values to use
 #' in mapping.
-#' @param add_colour_map Character name of column in `colour_map` that has
+#' @param add_colour_col Character name of column in `colour_map` that has the
 #' colour values.
 #'
 #' @return Dataframe with the same columns as `eco_desc` but with added rows for
@@ -182,7 +182,7 @@ make_eco_desc <- function(bio_df
                      , sf = names(which.max(table(sf)))
                      , range_sf = if_else(range_sf == "", sf, range_sf)
                      ) %>%
-    dplyr::mutate(!!ensym(id_col) := gsub(" ","",!!ensym(clust_col))) %>%
+    dplyr::mutate(!!ensym(id_col) := gsub(" |[[:punct:]]","",!!ensym(clust_col))) %>%
     dplyr::select(!!ensym(clust_col), !!ensym(id_col), everything()) %>%
     dplyr::ungroup()
 
