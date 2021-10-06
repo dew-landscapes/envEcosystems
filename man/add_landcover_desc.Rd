@@ -31,6 +31,9 @@ cropping".}
 
 \item{colour_map}{Dataframe mapping \code{add_clust_col} to colour values to use
 in mapping.}
+
+\item{add_colour_col}{Character name of column in \code{colour_map} that has the
+colour values.}
 }
 \value{
 Dataframe with the same columns as \code{eco_desc} but with added rows for

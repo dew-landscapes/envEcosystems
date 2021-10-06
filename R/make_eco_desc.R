@@ -216,7 +216,8 @@ make_eco_desc <- function(bio_df
     dplyr::summarise(range_ind = envFunc::vec_to_sentence(use_taxa)
                      , best_ind = envFunc::vec_to_sentence(ifelse(best, use_taxa, NA))
                      ) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    dplyr::mutate(best_ind_nomd = gsub("_","",best_ind))
 
   eco_taxa <- flor_tidy %>%
     dplyr::left_join(clust_df) %>%
@@ -228,11 +229,8 @@ make_eco_desc <- function(bio_df
     dplyr::mutate(prop = taxa_sites/cluster_sites) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
 
-    dplyr::anti_join(eco_ind_val_df %>%
-                       dplyr::group_by(!!ensym(clust_col)) %>%
-                       dplyr::mutate(best = ind_val == max(ind_val, na.rm = TRUE)) %>%
-                       dplyr::filter(best) %>%
-                       dplyr::select(!!ensym(clust_col),!!ensym(taxa_col))
+    dplyr::anti_join(eco_ind %>%
+                       dplyr::select(!!ensym(clust_col), !!ensym(taxa_col) := best_ind_nomd)
                      ) %>%
 
     dplyr::mutate(best = prop == max(prop, na.rm = TRUE)) %>%
