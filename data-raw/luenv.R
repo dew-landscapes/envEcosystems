@@ -8,7 +8,8 @@
     "Landsat", "https://landsat.gsfc.nasa.gov/",
     "Sentinel", "https://www.sentinel-hub.com/",
     "SRTM", "https://www2.jpl.nasa.gov/srtm/",
-    "ASRIS", "https://www.asris.csiro.au/"
+    "ASRIS", "https://www.asris.csiro.au/",
+    "KIDTM1m", "https://www.airborneresearch.org.au/ki-fires-2020-downloads"
     ) %>%
     dplyr::mutate(link_md = paste0("[",data_name,"]"
                                    , "(",link,")"
