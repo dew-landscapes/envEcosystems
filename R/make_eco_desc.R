@@ -134,7 +134,7 @@ make_eco_desc <- function(bio_df
 
   lifeforms_all <- bio_df %>%
     dplyr::left_join(lustr) %>%
-    dplyr::left_join(clust_df) %>%
+    dplyr::inner_join(clust_df) %>%
     dplyr::group_by(!!ensym(clust_col), across(all_of(context)), across(all_of(names(lustr)))) %>%
     dplyr::summarise(cov = sum(!!ensym(cov_col))) %>%
     dplyr::ungroup() %>%
@@ -220,7 +220,7 @@ make_eco_desc <- function(bio_df
     dplyr::mutate(best_ind_nomd = gsub("_","",best_ind))
 
   eco_taxa <- flor_tidy %>%
-    dplyr::left_join(clust_df) %>%
+    dplyr::inner_join(clust_df) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::mutate(cluster_sites = n_distinct(cell)) %>%
     dplyr::ungroup() %>%
