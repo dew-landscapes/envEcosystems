@@ -7,7 +7,8 @@
 make_eco_desc(
   bio_df,
   clust_df,
-  bio_wide,
+  bio_wide = NULL,
+  bio_ind = NULL,
   clust_col = "cluster",
   context,
   cov_col = "use_cover",
@@ -23,6 +24,9 @@ make_eco_desc(
 \item{clust_df}{Dataframe with cluster membership and join columns to \code{bio_df}.}
 
 \item{bio_wide}{Dataframe of taxa by sites.}
+
+\item{bio_ind}{Dataframe of indicator taxa per class. Output from
+\code{envCluster::make_ind_val_df}. Will be created if not supplied.}
 
 \item{clust_col}{Character name of column in \code{clust_df} that defines clusters.}
 

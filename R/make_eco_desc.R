@@ -95,6 +95,8 @@ add_landcover_desc <- function(eco_desc
 #' @param bio_df Dataframe with biological information.
 #' @param clust_df Dataframe with cluster membership and join columns to `bio_df`.
 #' @param bio_wide Dataframe of taxa by sites.
+#' @param bio_ind Dataframe of indicator taxa per class. Output from
+#' `envCluster::make_ind_val_df`. Will be created if not supplied.
 #' @param clust_col Character name of column in `clust_df` that defines clusters.
 #' @param context Character name of columns in `bio_df` that define the context.
 #' @param cov_col Character name of column in `bio_df` that contain numeric cover
@@ -112,7 +114,8 @@ add_landcover_desc <- function(eco_desc
 #' @examples
 make_eco_desc <- function(bio_df
                           , clust_df
-                          , bio_wide
+                          , bio_wide = NULL
+                          , bio_ind = NULL
                           , clust_col = "cluster"
                           , context
                           , cov_col = "use_cover"
@@ -171,10 +174,24 @@ make_eco_desc <- function(bio_df
     dplyr::filter(!is.na(sa_vsf)) %>%
     dplyr::mutate(sf = tolower(gsub(".* ","",sa_vsf)))
 
+  context_vsf_backup <- context_vsf_all %>%
+    dplyr::anti_join(context_vsf %>%
+                       dplyr::distinct(!!ensym(clust_col))
+                     ) %>%
+    dplyr::group_by(!!ensym(clust_col)
+                    , across(all_of(context))
+                    ) %>%
+    dplyr::mutate(tot_cov = sum(sum_cov)) %>%
+    dplyr::filter(sum_cov == max(sum_cov)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(sf = "open vegetation"
+                  , sa_vsf = "Open vegetation"
+                  )
 
   id_col <- paste0(clust_col,"_id")
 
   eco_sf <- context_vsf %>%
+    dplyr::bind_rows(context_vsf_backup) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::summarise(sites = n()
                      , cov = median(tot_cov)
@@ -187,6 +204,7 @@ make_eco_desc <- function(bio_df
     dplyr::ungroup()
 
   eco_vsf <- context_vsf %>%
+    dplyr::bind_rows(context_vsf_backup) %>%
     dplyr::inner_join(eco_sf) %>%
     dplyr::group_by(!!ensym(clust_col),cov) %>%
     dplyr::summarise(range_vsf = paste0(vec_to_sentence(names(table(sa_vsf)[table(sa_vsf) > quantile(table(sa_vsf),probs = 2/3)])))
@@ -197,12 +215,17 @@ make_eco_desc <- function(bio_df
 
 
   #------taxa-------
-  eco_ind_val_df <- make_ind_val_df(clust_df = .clust_df
-                             , bio_wide = .bio_wide
-                             , clust_col = .clust_col
-                             , taxas = .taxas
-                             , context = .context
-                             )
+
+  if(isTRUE(is.null(bio_ind))) {
+
+    eco_ind_val_df <- make_ind_val_df(clust_df = .clust_df
+                               , bio_wide = .bio_wide
+                               , clust_col = .clust_col
+                               , taxas = .taxas
+                               , context = .context
+                               )
+
+  } else eco_ind_val_df <- bio_ind
 
   eco_ind <- eco_ind_val_df %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
