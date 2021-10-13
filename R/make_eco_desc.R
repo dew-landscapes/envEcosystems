@@ -38,7 +38,7 @@ add_landcover_desc <- function(eco_desc
                  , name = "sites"
                  ) %>%
     dplyr::mutate(ecotype = factor(add_name)
-                  , ecotype_id = gsub(" ","",ecotype)
+                  , ecotype_id = gsub(" |[[:punct:]]","",ecotype)
                   , desc = paste0(add_name,": ", gsub("_"," ",!!ensym(add_clust_col)))
                   ) %>%
     dplyr::rename(!!ensym(clust_col) := !!ensym(add_clust_col))
@@ -84,7 +84,8 @@ add_landcover_desc <- function(eco_desc
     dplyr::bind_rows(eco_add %>%
                        dplyr::left_join(colour_map)
                      ) %>%
-    dplyr::select(names(eco_desc))
+    dplyr::select(names(eco_desc)) %>%
+    dplyr::mutate(across(contains("_id"), ~gsub(" |[[:punct:]]","",.x)))
 
 }
 
