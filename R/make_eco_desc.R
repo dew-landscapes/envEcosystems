@@ -194,8 +194,7 @@ make_eco_desc <- function(bio_df
   eco_sf <- context_vsf %>%
     dplyr::bind_rows(context_vsf_backup) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
-    dplyr::summarise(sites = n()
-                     , cov = median(tot_cov)
+    dplyr::summarise(cov = median(tot_cov)
                      , range_sf = paste0(vec_to_sentence(names(table(sf)[table(sf) > quantile(table(sf),probs = 2/3)])))
                      , sf = names(which.max(table(sf)))
                      , range_sf = if_else(range_sf == "", sf, range_sf)
@@ -273,7 +272,9 @@ make_eco_desc <- function(bio_df
 
   #--------desc ---------
 
-  desc_res <- eco_sf %>%
+  desc_res <- clust_df %>%
+    dplyr::count(!!ensym(clust_col), name = "sites") %>%
+    dplyr::left_join(eco_sf) %>%
     dplyr::left_join(eco_vsf) %>%
     dplyr::left_join(eco_taxa) %>%
     dplyr::left_join(eco_ind) %>%
