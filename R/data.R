@@ -1,6 +1,36 @@
 #' Lookup for environmental data
 #'
 #'
+#' @format A data frame with `r nrow(env)` rows and `r ncol(env)` variables:
+#' \describe{
+#'   \item{group}{Broad type of environmental layer.}
+#'   \item{category}{Another broad grouping of environmental layer.}
+#'   \item{provider}{Who made this environmental layer?}
+#'   \item{data_name}{The level at which a reference applies.}
+#'   \item{prod}{Three letter code identifying the product.}
+#'   \item{band}{Name to any bands in multi-band `prod`.}
+#'   \item{layer}{Generic name given to that band in file names
+#'   derived from `prod`.}
+#'   \item{process}{What process was used to summarise `prod`.}
+#'   \item{season_type}{One of; year: whole year, each: split by season or NA}
+#'   \item{year_min}{Minimum year available for `data_name` and `prod`.}
+#'   \item{transform}{Numeric. Divide by `transform` to convert to `units`
+#'   from numbers in `layer`.}
+#'   \item{units}{Units for number in `layer` / `transform`.}
+#'   \item{desc}{Description of the data in `prod`.}
+#'   \item{detail}{Other relevant details.}
+#'   \item{indicates}{Why is the data in `layer` useful in predicting ecosystem
+#'   distribution?}
+#'   \item{link}{Link to webpage for `data_name`.}
+#'   \item{DOI}{Digital object identifier for `data_name`.}
+#'   ...
+#' }
+"env"
+
+
+#' Lookup for environmental data
+#'
+#'
 #' @format A data frame with 65 rows and 9 variables:
 #' \describe{
 #'   \item{data_name}{Character. Source of `data_name`}

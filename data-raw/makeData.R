@@ -9,7 +9,7 @@
 
   lapply(codes,source)
 
-  datas <- ls(pattern = "lu|cut|taxa|sa")
+  datas <- ls(pattern = "lu|cut|taxa|sa|env")
 
   do.call(save, c(lapply(datas,as.name), file = "data/data.rda"))
 
