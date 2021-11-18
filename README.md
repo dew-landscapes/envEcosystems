@@ -30,9 +30,6 @@ Load `envEcosystems`
 
 ```r
 library("envEcosystems")
-#> Warning in FUN(X[[i]], ...): restarting interrupted promise evaluation
-#> Warning in FUN(X[[i]], ...): internal error -3 in R_decompress1
-#> Error in FUN(X[[i]], ...): lazy-load database 'C:/Users/nwilloughby/Documents/R/win-library/4.0/envEcosystems/data/Rdata.rdb' is corrupt
 ```
 
 ## Convert between cover value systems
@@ -58,14 +55,6 @@ library("envEcosystems")
 ## What else is in `envEcosystems`
 
 The following functions and data sets are provided in `envEcosystems`. See https://acanthiza.github.io/envEcosystems/ for more examples.
-
-
-```
-#> Error: Problem with `mutate()` column `class`.
-#> i `class = purrr::map_chr(object, ~envFunc::vec_to_sentence(class(get(.))))`.
-#> x object 'add_landcover_desc' not found
-```
-
 
 
 |object                 |class                      |description                                                            |
