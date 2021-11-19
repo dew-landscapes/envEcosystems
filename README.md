@@ -12,7 +12,7 @@ output:
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of `envEcosystems` is to provide tools and objects for creating ecosystem descriptions based on outputs from other `env`Packages.
+The goal of `envEcosystems` is to help create ecosystem descriptions based on outputs from other `env`Packages.
 
 ## Installation
 
