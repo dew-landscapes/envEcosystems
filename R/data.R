@@ -7,7 +7,7 @@
 #'   \item{category}{Another broad grouping of environmental layer.}
 #'   \item{provider}{Who made this environmental layer?}
 #'   \item{data_name}{The level at which a reference applies.}
-#'   \item{prod}{Three letter code identifying the product.}
+#'   \item{product}{Three letter code identifying the product.}
 #'   \item{band}{Name to any bands in multi-band `prod`.}
 #'   \item{layer}{Generic name given to that band in file names
 #'   derived from `prod`.}
@@ -17,12 +17,14 @@
 #'   \item{transform}{Numeric. Divide by `transform` to convert to `units`
 #'   from numbers in `layer`.}
 #'   \item{units}{Units for number in `layer` / `transform`.}
-#'   \item{desc}{Description of the data in `prod`.}
+#'   \item{description}{Description of the data in `prod`.}
 #'   \item{detail}{Other relevant details.}
 #'   \item{indicates}{Why is the data in `layer` useful in predicting ecosystem
 #'   distribution?}
 #'   \item{link}{Link to webpage for `data_name`.}
 #'   \item{DOI}{Digital object identifier for `data_name`.}
+#'   \item{ref_md}{Citation for use in rmarkdown.}
+#'   \item{link_md}{`link` formatted for use in rmarkdown.}
 #'   ...
 #' }
 "env"

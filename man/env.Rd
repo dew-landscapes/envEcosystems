@@ -11,7 +11,7 @@ A data frame with 55 rows and 19 variables:
 \item{category}{Another broad grouping of environmental layer.}
 \item{provider}{Who made this environmental layer?}
 \item{data_name}{The level at which a reference applies.}
-\item{prod}{Three letter code identifying the product.}
+\item{product}{Three letter code identifying the product.}
 \item{band}{Name to any bands in multi-band \code{prod}.}
 \item{layer}{Generic name given to that band in file names
 derived from \code{prod}.}
@@ -21,12 +21,14 @@ derived from \code{prod}.}
 \item{transform}{Numeric. Divide by \code{transform} to convert to \code{units}
 from numbers in \code{layer}.}
 \item{units}{Units for number in \code{layer} / \code{transform}.}
-\item{desc}{Description of the data in \code{prod}.}
+\item{description}{Description of the data in \code{prod}.}
 \item{detail}{Other relevant details.}
 \item{indicates}{Why is the data in \code{layer} useful in predicting ecosystem
 distribution?}
 \item{link}{Link to webpage for \code{data_name}.}
 \item{DOI}{Digital object identifier for \code{data_name}.}
+\item{ref_md}{Citation for use in rmarkdown.}
+\item{link_md}{\code{link} formatted for use in rmarkdown.}
 ...
 }
 }
