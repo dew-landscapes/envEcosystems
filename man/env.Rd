@@ -5,7 +5,7 @@
 \alias{env}
 \title{Lookup for environmental data}
 \format{
-A data frame with 55 rows and 19 variables:
+A data frame with 55 rows and 18 variables:
 \describe{
 \item{group}{Broad type of environmental layer.}
 \item{category}{Another broad grouping of environmental layer.}
