@@ -8,9 +8,7 @@
 #'   \item{provider}{Who made this environmental layer?}
 #'   \item{data_name}{The level at which a reference applies.}
 #'   \item{product}{Three letter code identifying the product.}
-#'   \item{band}{Name to any bands in multi-band `prod`.}
-#'   \item{layer}{Generic name given to that band in file names
-#'   derived from `prod`.}
+#'   \item{layer}{Index of band/layer in `product`.}
 #'   \item{process}{What process was used to summarise `prod`.}
 #'   \item{season_type}{One of; year: whole year, each: split by season or NA}
 #'   \item{year_min}{Minimum year available for `data_name` and `prod`.}

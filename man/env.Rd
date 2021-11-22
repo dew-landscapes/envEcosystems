@@ -5,16 +5,14 @@
 \alias{env}
 \title{Lookup for environmental data}
 \format{
-A data frame with 55 rows and 18 variables:
+A data frame with 65 rows and 18 variables:
 \describe{
 \item{group}{Broad type of environmental layer.}
 \item{category}{Another broad grouping of environmental layer.}
 \item{provider}{Who made this environmental layer?}
 \item{data_name}{The level at which a reference applies.}
 \item{product}{Three letter code identifying the product.}
-\item{band}{Name to any bands in multi-band \code{prod}.}
-\item{layer}{Generic name given to that band in file names
-derived from \code{prod}.}
+\item{layer}{Index of band/layer in \code{product}.}
 \item{process}{What process was used to summarise \code{prod}.}
 \item{season_type}{One of; year: whole year, each: split by season or NA}
 \item{year_min}{Minimum year available for \code{data_name} and \code{prod}.}
