@@ -5,7 +5,7 @@
 \alias{env}
 \title{Lookup for environmental data}
 \format{
-A data frame with 65 rows and 18 variables:
+A data frame with 65 rows and 19 variables:
 \describe{
 \item{group}{Broad type of environmental layer.}
 \item{category}{Another broad grouping of environmental layer.}
@@ -14,6 +14,7 @@ A data frame with 65 rows and 18 variables:
 \item{product}{Three letter code identifying the product.}
 \item{layer}{Index of band/layer in \code{product}.}
 \item{process}{What process was used to summarise \code{prod}.}
+\item{static}{Does the concept in this layer remain the same through time?}
 \item{season_type}{One of; year: whole year, each: split by season or NA}
 \item{year_min}{Minimum year available for \code{data_name} and \code{prod}.}
 \item{transform}{Numeric. Divide by \code{transform} to convert to \code{units}

@@ -10,6 +10,7 @@
 #'   \item{product}{Three letter code identifying the product.}
 #'   \item{layer}{Index of band/layer in `product`.}
 #'   \item{process}{What process was used to summarise `prod`.}
+#'   \item{static}{Does the concept in this layer remain the same through time?}
 #'   \item{season_type}{One of; year: whole year, each: split by season or NA}
 #'   \item{year_min}{Minimum year available for `data_name` and `prod`.}
 #'   \item{transform}{Numeric. Divide by `transform` to convert to `units`
