@@ -10,7 +10,7 @@
 #'   \item{process}{Three letter code identifying the process used to generate
 #'   the layer}
 #'   \item{layer}{Index of band/layer in `process`.}
-#'   \item{function}{What function was used to summarise `process`.}
+#'   \item{method}{What method was used to summarise `process`.}
 #'   \item{static}{Does the concept in this layer remain the same through time?}
 #'   \item{season_type}{One of; year: whole year, each: split by season or NA}
 #'   \item{year_min}{Minimum year available for `data_name` and `prod`.}
