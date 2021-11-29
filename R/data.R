@@ -22,8 +22,6 @@
 #'   \item{indicates}{Why is the data in `layer` useful in predicting ecosystem
 #'   distribution?}
 #'   \item{link}{Link to webpage for `data_name`.}
-#'   \item{DOI}{Digital object identifier for `data_name`.}
-#'   \item{ref_md}{Citation for use in rmarkdown.}
 #'   \item{link_md}{`link` formatted for use in rmarkdown.}
 #'   ...
 #' }

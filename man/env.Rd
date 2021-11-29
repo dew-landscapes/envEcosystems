@@ -5,7 +5,7 @@
 \alias{env}
 \title{Lookup for environmental data}
 \format{
-A data frame with 65 rows and 19 variables:
+A data frame with 65 rows and 17 variables:
 \describe{
 \item{group}{Broad type of environmental layer.}
 \item{category}{Another broad grouping of environmental layer.}
@@ -26,8 +26,6 @@ from numbers in \code{layer}.}
 \item{indicates}{Why is the data in \code{layer} useful in predicting ecosystem
 distribution?}
 \item{link}{Link to webpage for \code{data_name}.}
-\item{DOI}{Digital object identifier for \code{data_name}.}
-\item{ref_md}{Citation for use in rmarkdown.}
 \item{link_md}{\code{link} formatted for use in rmarkdown.}
 ...
 }
