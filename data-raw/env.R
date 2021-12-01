@@ -20,6 +20,7 @@
                   )
 
   env <- rio::import("data-raw/env.xlsx") %>%
+    dplyr::mutate(layer = as.character(layer)) %>%
     tibble::as_tibble() %>%
     dplyr::left_join(temp)
 
