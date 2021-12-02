@@ -10,9 +10,12 @@
     "SRTM", "https://www2.jpl.nasa.gov/srtm/",
     "ASRIS", "https://www.asris.csiro.au/",
     "KIDTM1m", "https://www.airborneresearch.org.au/ki-fires-2020-downloads",
-    "Seasonal persistent green", "https://geonetwork.tern.org.au/geonetwork/srv/eng/catalog.search#/metadata/e60f5125-ed2f-47cb-99a7-c9a201e44d2f",
-    "Seasonal fractional cover", "https://geonetwork.tern.org.au/geonetwork/srv/eng/catalog.search#/metadata/f0c32576-9ad7-4c9c-9aa9-22787867e28b",
-    "Seasonal surface reflectance", "https://geonetwork.tern.org.au/geonetwork/srv/eng/catalog.search#/metadata/5a31eed4-e43a-404d-b534-3f820305ed61",
+    "persistent green", "https://geonetwork.tern.org.au/geonetwork/srv/eng/catalog.search#/metadata/e60f5125-ed2f-47cb-99a7-c9a201e44d2f",
+    "green cover", "https://geonetwork.tern.org.au/geonetwork/srv/eng/catalog.search#/metadata/f0c32576-9ad7-4c9c-9aa9-22787867e28b",
+    "bare ground", "https://geonetwork.tern.org.au/geonetwork/srv/eng/catalog.search#/metadata/f0c32576-9ad7-4c9c-9aa9-22787867e28b",
+    "non-green cover", "https://geonetwork.tern.org.au/geonetwork/srv/eng/catalog.search#/metadata/f0c32576-9ad7-4c9c-9aa9-22787867e28b",
+    "surface reflectance", "https://geonetwork.tern.org.au/geonetwork/srv/eng/catalog.search#/metadata/5a31eed4-e43a-404d-b534-3f820305ed61",
+    "water from space", "https://www.ga.gov.au/scientific-topics/community-safety/flood/wofs"
     ) %>%
     dplyr::mutate(link_md = paste0("[",data_name,"]"
                                    , "(",link,")"
