@@ -22,7 +22,10 @@
     , "irrigated_tree_crops", "to add", FALSE, "green2", "gray50"
     , "mangrove", "to add", TRUE, "green4", "green4"
     , "outcrop", "to add", FALSE, "black", "black"
-    , "pasture", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
+    , "pasture_annual", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
+    , "pasture_grass", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
+    , "pasture_legumes", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
+    , "pasture_mixed", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
     , "saltlake", "to add", TRUE, "thistle1", "thistle1"
     , "sand", "to add", TRUE, "beige", "beige"
     , "willow", "to add", FALSE, "green2", "gray80"
