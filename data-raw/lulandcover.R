@@ -14,7 +14,9 @@
   lulandcover <- tribble(
     ~use_class, ~definition, ~veg, ~lc_col, ~colour
     , "built", "to add", FALSE, artificialSurface, artificialSurface
-    , "cropping", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
+    , "cropping_cereals", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
+    , "cropping_oilseeds", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
+    , "cropping_pulses", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
     , "hardwood", "to add", FALSE, cultTerrVegWoodyOpen, cultTerrVegWoodyOpen
     , "irrigated_citrus", "to add", FALSE, "green2", "gray50"
     , "irrigated_crop_pasture", "to add", FALSE, "green2", "gray50"
