@@ -12,27 +12,40 @@
 
 # Landcover colours
   lulandcover <- tribble(
-    ~use_class, ~definition, ~veg, ~lc_col, ~colour
-    , "built", "to add", FALSE, artificialSurface, artificialSurface
-    , "cropping_cereals", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
-    , "cropping_oilseeds", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
-    , "cropping_pulses", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
-    , "hardwood", "to add", FALSE, cultTerrVegWoodyOpen, cultTerrVegWoodyOpen
-    , "irrigated_citrus", "to add", FALSE, "green2", "gray50"
-    , "irrigated_crop_pasture", "to add", FALSE, "green2", "gray50"
-    , "irrigated_grapes", "to add", FALSE, "green2", "gray40"
-    , "irrigated_tree_crops", "to add", FALSE, "green2", "gray50"
-    , "mangrove", "to add", TRUE, "green4", "green4"
-    , "outcrop", "to add", FALSE, "black", "black"
-    , "pasture_annual", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
-    , "pasture_grass", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
-    , "pasture_legumes", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
-    , "pasture_mixed", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
-    , "saltlake", "to add", TRUE, "thistle1", "thistle1"
-    , "sand", "to add", TRUE, "beige", "beige"
-    , "willow", "to add", FALSE, "green2", "gray80"
-    , "softwood", "to add", FALSE, cultTerrVegWoodyClosed, cultTerrVegWoodyClosed
-    , "water", "to add", TRUE, water, water
-    , "water_coastal", "to add", TRUE, water, water
+    ~ecotype, ~use_class, ~definition, ~veg, ~lc_col, ~colour
+    , "built", "built", "to add", FALSE, artificialSurface, artificialSurface
+    , "cropping", "cropping_cereals", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
+    , "cropping", "cropping_oilseeds", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
+    , "cropping", "cropping_pulses", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
+    , "plantation", "hardwood", "to add", FALSE, cultTerrVegWoodyOpen, cultTerrVegWoodyOpen
+    , "irrigated", "irrigated_citrus", "to add", FALSE, "green2", "gray50"
+    , "irrigated", "irrigated_crop_pasture", "to add", FALSE, "green2", "gray50"
+    , "irrigated", "irrigated_grapes", "to add", FALSE, "green2", "gray40"
+    , "irrigated", "irrigated_tree_crops", "to add", FALSE, "green2", "gray50"
+    , "mangrove", "mangrove", "to add", TRUE, "green4", "green4"
+    , "outcrop", "outcrop", "to add", FALSE, "black", "black"
+    , "pasture", "pasture_annual", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
+    , "pasture", "pasture_grass", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
+    , "pasture", "pasture_legumes", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
+    , "pasture", "pasture_mixed", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
+    , "saltlake", "saltlake", "to add", TRUE, "thistle1", "thistle1"
+    , "sand", "sand", "to add", TRUE, "beige", "beige"
+    , "willow", "willow", "to add", FALSE, "green2", "gray80"
+    , "plantation", "softwood", "to add", FALSE, cultTerrVegWoodyClosed, cultTerrVegWoodyClosed
+    , "water", "water", "to add", TRUE, water, water
+    , "water", "water_coastal", "to add", TRUE, water, water
     ) %>%
-    dplyr::arrange(use_class)
+    dplyr::arrange(ecotype, use_class) %>%
+    dplyr::mutate(desc = purrr::map2_chr(ecotype
+                                  , use_class
+                                  , ~if(.x == .y) .y else paste0(.x
+                                                                 , ": "
+                                                                 , gsub(paste0(.x
+                                                                               , "_"
+                                                                               )
+                                                                        , ""
+                                                                        , .y
+                                                                        )
+                                                                 )
+                                  )
+                  )

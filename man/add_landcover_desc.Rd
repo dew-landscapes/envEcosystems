@@ -15,7 +15,7 @@ add_landcover_desc(
 )
 }
 \arguments{
-\item{eco_desc}{Dataframe of ecosystem descriptions.}
+\item{eco_desc}{Dataframe of existing (floristic) ecosystem descriptions.}
 
 \item{add_eco}{Dataframe of ecosystems to add.}
 

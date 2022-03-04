@@ -5,7 +5,7 @@
 #'
 #' These are usually 'landcover' descriptions.
 #'
-#' @param eco_desc Dataframe of ecosystem descriptions.
+#' @param eco_desc Dataframe of existing (floristic) ecosystem descriptions.
 #' @param add_eco Dataframe of ecosystems to add.
 #' @param clust_col Character name of column with cluster membership in
 #' `eco_desc`.
