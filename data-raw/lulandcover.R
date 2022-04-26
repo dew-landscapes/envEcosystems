@@ -36,7 +36,8 @@
     , "water", "water_coastal", "to add", TRUE, water, water
     ) %>%
     dplyr::arrange(ecotype, use_class) %>%
-    dplyr::mutate(desc = purrr::map2_chr(ecotype
+    dplyr::mutate(ecotype = factor(ecotype)
+                  , desc = purrr::map2_chr(ecotype
                                   , use_class
                                   , ~if(.x == .y) .y else paste0(.x
                                                                  , ": "
