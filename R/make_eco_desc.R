@@ -242,7 +242,7 @@ make_eco_desc <- function(bio_df
     dplyr::ungroup() %>%
     dplyr::mutate(best_ind_nomd = gsub("_","",best_ind))
 
-  eco_taxa <- flor_tidy %>%
+  eco_taxa <- bio_df %>%
     dplyr::inner_join(clust_df) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::mutate(cluster_sites = n_distinct(cell)) %>%
