@@ -132,7 +132,7 @@ make_eco_desc <- function(bio_df
   .context = context
   .cov_col = cov_col
   .taxa_col = taxa_col
-  .taxas <- unique(taxonomy[taxa_col][[1]])
+  .taxas <- unique(taxonomy$taxonomy[taxa_col][[1]])
 
   #------str-------
 
@@ -233,7 +233,7 @@ make_eco_desc <- function(bio_df
     dplyr::filter(p_val <= 0.05 | best) %>%
     dplyr::select(!!ensym(clust_col),everything()) %>%
     dplyr::arrange(!!ensym(clust_col)) %>%
-    dplyr::left_join(taxa_taxonomy) %>%
+    dplyr::left_join(taxonomy$ind) %>%
     dplyr::mutate(use_taxa = if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::summarise(range_ind = envFunc::vec_to_sentence(use_taxa)
@@ -247,7 +247,7 @@ make_eco_desc <- function(bio_df
     dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::mutate(cluster_sites = n_distinct(cell)) %>%
     dplyr::ungroup() %>%
-    dplyr::left_join(taxonomy) %>%
+    dplyr::left_join(taxonomy$ind) %>%
     dplyr::count(!!ensym(clust_col), cluster_sites, taxa, ind, name = "taxa_sites") %>%
     dplyr::mutate(prop = taxa_sites/cluster_sites) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
@@ -308,7 +308,7 @@ make_eco_name <- function(blahdyblahblah) {
     groups <- if(keep_storey) c("cluster","AD","overstorey",groups) else c("cluster","AD",groups)
 
     df %>%
-      dplyr::left_join(taxonomy) %>%
+      dplyr::left_join(taxonomy$ind) %>%
       dplyr::arrange(cluster,per_pres) %>%
       dplyr::mutate(use_taxa = if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))) %>%
       dplyr::group_by(!!!syms(groups)) %>%
