@@ -34,7 +34,7 @@ Imports:
     colourvalues,
     forcats
 Remotes:
-    github::gastonstat/colortools
-    github::acanthiza/envFunc
+    github::gastonstat/colortools,
+    github::acanthiza/envFunc,
     github::acanthiza/envRaster
     
