@@ -45,9 +45,6 @@ values.}
 description. Taxa that occur in more than \code{use_prop_thresh} proportion of
 sites in the cluster will be included in the description.}
 }
-\value{
-
-}
 \description{
 Make a description for an ecosystem
 }

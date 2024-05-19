@@ -12,11 +12,11 @@ Description: Create ecosystem: descriptions; taxa lists; indicator taxa;
     repens_, _Salicornia quinqueflora_ and frequent _Frankenia pauciflora_; with
     emergent occasional _Austrostipa stipoides_, _Chenopodium candolleanum_,
     _Enchylaena tomentosa_'.
-License: GPL (>= 3)
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 RdMacros: Rdpack
 URL: https://github.com/Acanthiza/envEcosystems
 BugReports: https://github.com/Acanthiza/envEcosystems/issues
@@ -29,9 +29,12 @@ Imports:
     tidyr,
     Rdpack,
     magrittr,
-    envFunc,
     purrr,
-    colortools,
     viridis,
     colourvalues,
     forcats
+Remotes:
+    github::gastonstat/colortools
+    github::acanthiza/envFunc
+    github::acanthiza/envRaster
+    
