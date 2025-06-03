@@ -18,6 +18,8 @@
 #' in mapping.
 #' @param add_colour_col Character name of column in `colour_map` that has the
 #' colour values.
+#' @param use_p_val Numeric 0 to 1. The p-value to use to accept a taxa as an
+#' indicator for an ecosystem.
 #'
 #' @return Dataframe with the same columns as `eco_desc` but with added rows for
 #' each row of `add_eco`

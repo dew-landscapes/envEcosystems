@@ -11,7 +11,8 @@ add_landcover_desc(
   add_clust_col = "cluster",
   add_name = "Landcover",
   colour_map = NULL,
-  add_colour_col = "lc_col"
+  add_colour_col = "lc_col",
+  use_p_val = 0.05
 )
 }
 \arguments{
@@ -34,6 +35,9 @@ in mapping.}
 
 \item{add_colour_col}{Character name of column in \code{colour_map} that has the
 colour values.}
+
+\item{use_p_val}{Numeric 0 to 1. The p-value to use to accept a taxa as an
+indicator for an ecosystem.}
 }
 \value{
 Dataframe with the same columns as \code{eco_desc} but with added rows for

@@ -9,10 +9,12 @@ make_eco_desc(
   clust_df,
   bio_wide = NULL,
   bio_ind = NULL,
-  clust_col = "cluster",
   context,
+  clust_col = "cluster",
   cov_col = "use_cover",
   taxa_col = "taxa",
+  str_col = "lifeform",
+  ind_col = "ind",
   lustr,
   taxonomy,
   use_prop_thresh
@@ -28,9 +30,9 @@ make_eco_desc(
 \item{bio_ind}{Dataframe of indicator taxa per class. Output from
 \code{envCluster::make_ind_val_df}. Will be created if not supplied.}
 
-\item{clust_col}{Character name of column in \code{clust_df} that defines clusters.}
-
 \item{context}{Character name of columns in \code{bio_df} that define the context.}
+
+\item{clust_col}{Character name of column in \code{clust_df} that defines clusters.}
 
 \item{cov_col}{Character name of column in \code{bio_df} that contain numeric cover
 values.}

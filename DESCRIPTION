@@ -16,7 +16,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 RdMacros: Rdpack
 URL: https://github.com/Acanthiza/envEcosystems
 BugReports: https://github.com/Acanthiza/envEcosystems/issues
@@ -37,4 +37,3 @@ Remotes:
     github::gastonstat/colortools,
     github::acanthiza/envFunc,
     github::acanthiza/envRaster
-    
