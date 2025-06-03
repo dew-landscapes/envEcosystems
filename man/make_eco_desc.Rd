@@ -17,7 +17,8 @@ make_eco_desc(
   ind_col = "ind",
   lustr,
   taxonomy,
-  use_prop_thresh
+  use_prop_thresh,
+  use_p_val = 0.05
 )
 }
 \arguments{
@@ -46,6 +47,9 @@ values.}
 \item{use_prop_thresh}{Numeric. Threshold (proportion) for taxa to include in
 description. Taxa that occur in more than \code{use_prop_thresh} proportion of
 sites in the cluster will be included in the description.}
+
+\item{use_p_val}{Numeric 0 to 1. The p-value to use to accept a taxa as an
+indicator for an ecosystem.}
 }
 \description{
 Make a description for an ecosystem

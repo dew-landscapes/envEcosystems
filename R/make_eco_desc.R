@@ -18,8 +18,6 @@
 #' in mapping.
 #' @param add_colour_col Character name of column in `colour_map` that has the
 #' colour values.
-#' @param use_p_val Numeric 0 to 1. The p-value to use to accept a taxa as an
-#' indicator for an ecosystem.
 #'
 #' @return Dataframe with the same columns as `eco_desc` but with added rows for
 #' each row of `add_eco`
@@ -33,7 +31,6 @@ add_landcover_desc <- function(eco_desc
                                , add_name = "Landcover"
                                , colour_map = NULL
                                , add_colour_col = "lc_col"
-                               , use_p_val = 0.05
                                ) {
 
   eco_add <- add_eco %>%
@@ -111,6 +108,8 @@ add_landcover_desc <- function(eco_desc
 #' @param use_prop_thresh Numeric. Threshold (proportion) for taxa to include in
 #' description. Taxa that occur in more than `use_prop_thresh` proportion of
 #' sites in the cluster will be included in the description.
+#' @param use_p_val Numeric 0 to 1. The p-value to use to accept a taxa as an
+#' indicator for an ecosystem.
 #'
 #' @return
 #' @export
@@ -129,6 +128,7 @@ make_eco_desc <- function(bio_df
                           , lustr
                           , taxonomy
                           , use_prop_thresh
+                          , use_p_val = 0.05
                           ) {
 
   taxas <- unique(taxonomy$taxonomy[taxa_col][[1]])
