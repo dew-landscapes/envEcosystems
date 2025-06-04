@@ -17,10 +17,10 @@
     , "cropping", "cropping_cereals", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
     , "cropping", "cropping_oilseeds", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
     , "cropping", "cropping_pulses", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
-    , "plantation", "hardwood", "to add", FALSE, cultTerrVegWoodyOpen, cultTerrVegWoodyOpen
+    , "plantation", "hardwood", "to add", FALSE, cultTerrVegWoodyClosed, cultTerrVegWoodyClosed
     , "irrigated", "irrigated_citrus", "to add", FALSE, "green2", "gray50"
     , "irrigated", "irrigated_crop_pasture", "to add", FALSE, "green2", "gray50"
-    , "irrigated", "irrigated_grapes", "to add", FALSE, "green2", "gray40"
+    , "irrigated", "irrigated_grapes", "to add", FALSE, "green2", "gray50"
     , "irrigated", "irrigated_tree_crops", "to add", FALSE, "green2", "gray50"
     , "mangrove", "mangrove", "to add", TRUE, "green4", "green4"
     , "outcrop", "outcrop", "to add", FALSE, "black", "black"
@@ -30,7 +30,7 @@
     , "pasture", "pasture_mixed", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
     , "saltlake", "saltlake", "to add", TRUE, "thistle1", "thistle1"
     , "sand", "sand", "to add", TRUE, "beige", "beige"
-    , "willow", "willow", "to add", FALSE, "green2", "gray80"
+    , "willow", "willow", "to add", FALSE, "gray80", "gray80"
     , "plantation", "softwood", "to add", FALSE, cultTerrVegWoodyClosed, cultTerrVegWoodyClosed
     , "water", "water", "to add", TRUE, water, water
     , "water", "water_coastal", "to add", TRUE, water, water

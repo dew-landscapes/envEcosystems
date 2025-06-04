@@ -1,72 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>/reference/add_landcover_desc.html</loc>
-  </url>
-  <url>
-    <loc>/reference/cut_cov.html</loc>
-  </url>
-  <url>
-    <loc>/reference/cut_ht.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lucover.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lulandcover.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lulifeform.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lulifespan.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_eco_desc.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_eco_env.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_eco_str_per.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_eco_taxa_per.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>/reference/sa_sf.html</loc>
-  </url>
-  <url>
-    <loc>/reference/sa_vsf.html</loc>
-  </url>
-  <url>
-    <loc>/reference/set_eco_col.html</loc>
-  </url>
-  <url>
-    <loc>/reference/taxa_samphire.html</loc>
-  </url>
-  <url>
-    <loc>/reference/taxa_wetland.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/LICENSE.html</loc></url>
+<url><loc>/reference/add_landcover_desc.html</loc></url>
+<url><loc>/reference/cut_cov.html</loc></url>
+<url><loc>/reference/cut_ht.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/lucover.html</loc></url>
+<url><loc>/reference/lulandcover.html</loc></url>
+<url><loc>/reference/lulifeform.html</loc></url>
+<url><loc>/reference/lulifespan.html</loc></url>
+<url><loc>/reference/make_eco_desc.html</loc></url>
+<url><loc>/reference/make_eco_env.html</loc></url>
+<url><loc>/reference/make_eco_str_per.html</loc></url>
+<url><loc>/reference/make_eco_taxa_per.html</loc></url>
+<url><loc>/reference/pipe.html</loc></url>
+<url><loc>/reference/sa_sf.html</loc></url>
+<url><loc>/reference/sa_vsf.html</loc></url>
+<url><loc>/reference/set_eco_col.html</loc></url>
+<url><loc>/reference/taxa_samphire.html</loc></url>
+<url><loc>/reference/taxa_wetland.html</loc></url>
 </urlset>
+
