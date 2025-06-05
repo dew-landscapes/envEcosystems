@@ -162,14 +162,16 @@ make_eco_desc <- function(bio_df
                                     , numitr = ind_val_iter
                                     )
 
-  eco_ind <- eco_ind_val_df %>%
+  eco_ind_prep <- eco_ind_val_df %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
     dplyr::filter(p_val <= use_p_val) %>%
     dplyr::mutate(best = p_val == min(p_val)) |>
     dplyr::slice_max(ind_val
                      , n = n_ind_max
                      ) |>
-    dplyr::ungroup() |>
+    dplyr::ungroup()
+
+  eco_ind <- eco_ind_prep |>
     dplyr::arrange(!!rlang::ensym(clust_col)) %>%
     dplyr::left_join(dplyr::distinct(taxonomy$ind)) %>%
     dplyr::mutate(use_taxa = dplyr::if_else(ind == "N"
@@ -193,16 +195,15 @@ make_eco_desc <- function(bio_df
     dplyr::count(!!rlang::ensym(clust_col), cluster_sites, taxa, ind, name = "taxa_sites") %>%
     dplyr::mutate(prop = taxa_sites / cluster_sites) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
-    dplyr::anti_join(eco_ind %>%
+    dplyr::anti_join(eco_ind_prep %>%
                        dplyr::select(!!rlang::ensym(clust_col)
-                                     , !!rlang::ensym(taxa_col) := best_ind_nomd
-                                     ) |>
-                       dplyr::mutate(!!rlang::ensym(taxa_col) := gsub("&ast;", "", !!rlang::ensym(taxa_col)))
+                                     , !!rlang::ensym(taxa_col)
+                                     )
                      ) %>%
     dplyr::mutate(best = prop == max(prop, na.rm = TRUE)) %>%
     dplyr::filter(prop > use_prop_thresh | best) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(freq = add_freq_class(prop*100)
+    dplyr::mutate(freq = add_freq_class(prop * 100)
                   , use_taxa = dplyr::if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))
                   ) %>%
     dplyr::group_by(!!rlang::ensym(clust_col),freq) %>%
