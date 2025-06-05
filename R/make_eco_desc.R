@@ -156,13 +156,9 @@ make_eco_desc <- function(bio_df
 
   ## ind -------
   eco_ind_val_df <- make_ind_val_df(clust_df = clust_df
-                                    , bio_wide = envCluster::make_wide_df(bio_df = bio_df
-                                                                          , context = context
-                                                                          , taxa_col = taxa_col
-                                                                          )
-                                    , clust_col = clust_col
-                                    , taxas = taxas
+                                    , bio_df = bio_df
                                     , context = context
+                                    , clust_col = clust_col
                                     , numitr = ind_val_iter
                                     )
 
