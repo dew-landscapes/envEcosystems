@@ -7,40 +7,38 @@
 make_eco_desc(
   bio_df,
   clust_df,
-  bio_wide = NULL,
-  bio_ind = NULL,
   context,
   clust_col = "cluster",
-  cov_col = "use_cover",
   taxa_col = "taxa",
+  cov_col = "use_cover",
   str_col = "lifeform",
-  ind_col = "ind",
   lustr,
   taxonomy,
   use_prop_thresh,
-  use_p_val = 0.05
+  use_p_val = 0.05,
+  n_ind_max = 3,
+  ind_val_iter = 3000
 )
 }
 \arguments{
-\item{bio_df}{Dataframe with biological information.}
+\item{bio_df}{Dataframe containing the site and taxa data in long format.}
 
-\item{clust_df}{Dataframe with cluster membership and join columns to \code{bio_df}.}
+\item{clust_df}{Dataframe with \code{context} column(s) and a column with cluster
+membership for that context. Optional if \code{clust_col} appears in bio_df.}
 
-\item{bio_wide}{Dataframe of taxa by sites.}
+\item{context}{Character. Name(s) of column(s) that define the context.}
 
-\item{bio_ind}{Dataframe of indicator taxa per class. Output from
-\code{envCluster::make_ind_val_df}. Will be created if not supplied.}
+\item{clust_col}{Character. Name of column containing cluster membership.}
 
-\item{context}{Character name of columns in \code{bio_df} that define the context.}
-
-\item{clust_col}{Character name of column in \code{clust_df} that defines clusters.}
+\item{taxa_col}{Character. Name of column containing the taxa names.}
 
 \item{cov_col}{Character name of column in \code{bio_df} that contain numeric cover
 values.}
 
-\item{taxa_col}{Character name of column with taxa.}
+\item{str_col}{Character name of column in \code{bio_df} containing lifeform (or
+structural) information.}
 
-\item{lustr}{Dataframe containing structural information.}
+\item{lustr}{Dataframe containing lifeform (structural) information.}
 
 \item{taxonomy}{Dataframe containing indigenous status of taxa in \code{bio_df}}
 
@@ -50,6 +48,12 @@ sites in the cluster will be included in the description.}
 
 \item{use_p_val}{Numeric 0 to 1. The p-value to use to accept a taxa as an
 indicator for an ecosystem.}
+
+\item{n_ind_max}{Maximum number of taxa to list as indicators.}
+
+\item{ind_val_iter}{Passed to the \code{...} argument of
+\code{envCluster::make_ind_val_df()}, and then into the \code{numitr} argument of
+\code{labdsv::indval()}.}
 }
 \description{
 Make a description for an ecosystem
