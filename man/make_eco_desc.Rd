@@ -10,7 +10,8 @@ make_eco_desc(
   context,
   clust_col = "cluster",
   taxa_col = "taxa",
-  cov_col = "use_cover",
+  cov_col = "cover_adj",
+  ind_abu_col = "use_cover",
   str_col = "lifeform",
   lustr,
   taxonomy,
@@ -32,8 +33,12 @@ membership for that context. Optional if \code{clust_col} appears in bio_df.}
 
 \item{taxa_col}{Character. Name of column containing the taxa names.}
 
-\item{cov_col}{Character name of column in \code{bio_df} that contain numeric cover
-values.}
+\item{cov_col}{Character. Name of column containing numeric abundance data (
+usually 'cover' for plants).}
+
+\item{ind_abu_col}{Character. Name of column containing numeric abundance
+data for use in indicator analysis (\code{labdsv::indval()}). This can be the same
+as \code{cov_col} but at times a different measure of abundance is helpful here.}
 
 \item{str_col}{Character name of column in \code{bio_df} containing lifeform (or
 structural) information.}

@@ -7,8 +7,11 @@
 #' @param context Character. Name(s) of column(s) that define the context.
 #' @param clust_col Character. Name of column containing cluster membership.
 #' @param taxa_col Character. Name of column containing the taxa names.
-#' @param cov_col Character name of column in `bio_df` that contain numeric cover
-#' values.
+#' @param cov_col Character. Name of column containing numeric abundance data (
+#' usually 'cover' for plants).
+#' @param ind_abu_col Character. Name of column containing numeric abundance
+#' data for use in indicator analysis (`labdsv::indval()`). This can be the same
+#' as `cov_col` but at times a different measure of abundance is helpful here.
 #' @param str_col Character name of column in `bio_df` containing lifeform (or
 #' structural) information.
 #' @param lustr Dataframe containing lifeform (structural) information.
@@ -32,7 +35,8 @@ make_eco_desc <- function(bio_df
                           , context
                           , clust_col = "cluster"
                           , taxa_col = "taxa"
-                          , cov_col = "use_cover"
+                          , cov_col = "cover_adj"
+                          , ind_abu_col = "use_cover"
                           , str_col = "lifeform"
                           , lustr
                           , taxonomy
@@ -44,7 +48,7 @@ make_eco_desc <- function(bio_df
 
   taxas <- unique(taxonomy$taxonomy[taxa_col][[1]])
 
-  keep_cols <- c(clust_col, cov_col, taxa_col, str_col, "ind")
+  keep_cols <- c(clust_col, cov_col, taxa_col, str_col, ind_abu_col, "ind")
 
   # unique ------
   bio_df <- dplyr::distinct(bio_df
@@ -157,6 +161,7 @@ make_eco_desc <- function(bio_df
   ## ind -------
   eco_ind_val_df <- make_ind_val_df(clust_df = clust_df
                                     , bio_df = bio_df
+                                    , cov_col = ind_abu_col
                                     , context = context
                                     , clust_col = clust_col
                                     , numitr = ind_val_iter
