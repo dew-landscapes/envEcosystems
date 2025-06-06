@@ -6,6 +6,7 @@
 \usage{
 make_eco_desc(
   bio_df,
+  bio_wide,
   clust_df,
   context,
   clust_col = "cluster",
@@ -23,6 +24,8 @@ make_eco_desc(
 }
 \arguments{
 \item{bio_df}{Dataframe containing the site and taxa data in long format.}
+
+\item{bio_wide}{Wide version of \code{bio_df}.}
 
 \item{clust_df}{Dataframe with \code{context} column(s) and a column with cluster
 membership for that context. Optional if \code{clust_col} appears in bio_df.}

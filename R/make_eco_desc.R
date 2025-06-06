@@ -4,6 +4,7 @@
 #' @param clust_df Dataframe with `context` column(s) and a column with cluster
 #' membership for that context. Optional if `clust_col` appears in bio_df.
 #' @param bio_df Dataframe containing the site and taxa data in long format.
+#' @param bio_wide Wide version of `bio_df`.
 #' @param context Character. Name(s) of column(s) that define the context.
 #' @param clust_col Character. Name of column containing cluster membership.
 #' @param taxa_col Character. Name of column containing the taxa names.
@@ -31,6 +32,7 @@
 #'
 #' @examples
 make_eco_desc <- function(bio_df
+                          , bio_wide
                           , clust_df
                           , context
                           , clust_col = "cluster"
@@ -160,7 +162,7 @@ make_eco_desc <- function(bio_df
 
   ## ind -------
   eco_ind_val_df <- make_ind_val_df(clust_df = clust_df
-                                    , bio_df = bio_df
+                                    , bio_wide = bio_wide
                                     , cov_col = ind_abu_col
                                     , context = context
                                     , clust_col = clust_col
