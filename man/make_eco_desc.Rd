@@ -8,6 +8,7 @@ make_eco_desc(
   bio_df,
   bio_wide,
   clust_df,
+  ind_val_df = NULL,
   context,
   clust_col = "cluster",
   taxa_col = "taxa",
@@ -29,6 +30,9 @@ make_eco_desc(
 
 \item{clust_df}{Dataframe with \code{context} column(s) and a column with cluster
 membership for that context. Optional if \code{clust_col} appears in bio_df.}
+
+\item{ind_val_df}{Result from \code{envCluster::make_ind_val_df()}. If not
+provided it will be made from the other provided dfs (which is slow).}
 
 \item{context}{Character. Name(s) of column(s) that define the context.}
 
