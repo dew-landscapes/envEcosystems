@@ -5,6 +5,8 @@
 #' membership for that context. Optional if `clust_col` appears in bio_df.
 #' @param bio_df Dataframe containing the site and taxa data in long format.
 #' @param bio_wide Wide version of `bio_df`.
+#' @param ind_val_df Result from `envCluster::make_ind_val_df()`. If not
+#' provided it will be made from the other provided dfs (which is slow).
 #' @param context Character. Name(s) of column(s) that define the context.
 #' @param clust_col Character. Name of column containing cluster membership.
 #' @param taxa_col Character. Name of column containing the taxa names.
@@ -34,6 +36,7 @@
 make_eco_desc <- function(bio_df
                           , bio_wide
                           , clust_df
+                          , ind_val_df = NULL
                           , context
                           , clust_col = "cluster"
                           , taxa_col = "taxa"
@@ -71,105 +74,119 @@ make_eco_desc <- function(bio_df
 
   #------str-------
 
-  lifeforms_all <- bio_df %>%
-    dplyr::left_join(lustr) %>%
-    dplyr::inner_join(clust_df) %>%
-    dplyr::group_by(!!rlang::ensym(clust_col)
-                    , dplyr::across(tidyselect::all_of(context))
-                    , dplyr::across(tidyselect::all_of(names(lustr)))
-                    ) %>%
-    dplyr::summarise(sum_cov = sum(!!rlang::ensym(cov_col)
-                                   , na.rm = TRUE
-                                   )
-                     ) %>%
-    dplyr::ungroup() %>%
-    dplyr::arrange(!!rlang::ensym(clust_col)
-                   , dplyr::across(tidyselect::all_of(context))
-                   , desc(sort)
-                   )
 
-  context_vsf_all <- lifeforms_all %>%
+
+  lifeforms_all <- bio_df |>
+    dplyr::left_join(lustr) |>
+    dplyr::inner_join(clust_df) |>
     dplyr::group_by(!!rlang::ensym(clust_col)
                     , dplyr::across(tidyselect::all_of(context))
                     , str
-                    , sum_cov
-                    #, storey
-                    ) %>%
-    dplyr::summarise(wt_ht = weighted.mean(ht, sum_cov)
-                     , sort = min(sort)
-                     ) %>%
+                    ) |>
+    dplyr::mutate(str_cov = sum(!!rlang::ensym(cov_col)
+                                   , na.rm = TRUE
+                                   )
+                  , wt_ht = weighted.mean(ht, cover_adj)
+                  ) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(cov_class = cut(sum_cov * 100
+    dplyr::group_by(!!rlang::ensym(clust_col)
+                    , dplyr::across(tidyselect::all_of(context))
+                    ) %>%
+    dplyr::mutate(tot_cov = sum(str_cov)) |>
+    dplyr::ungroup() |>
+    dplyr::arrange(!!rlang::ensym(clust_col)
+                   , dplyr::across(tidyselect::all_of(context))
+                   , desc(sort)
+                   ) |>
+    dplyr::distinct(dplyr::across(tidyselect::all_of(c(taxa_col, clust_col, context)))
+                    , sort
+                    , str
+                    , str_cov
+                    , tot_cov
+                    , wt_ht
+                    ) |>
+    dplyr::mutate(cov_class = cut(str_cov * 100
                                   , breaks = c(cut_cov$cov_thresh, 0)
                                   )
                   , ht_class = cut(wt_ht
                                    , breaks = c(cut_ht$ht_thresh)
                                    )
-                  ) %>%
-    dplyr::left_join(sa_vsf)
-
-  context_vsf <- context_vsf_all %>%
-    dplyr::group_by(!!rlang::ensym(clust_col)
-                    , dplyr::across(tidyselect::all_of(context))
-                    ) %>%
-    dplyr::mutate(tot_cov = sum(sum_cov)) %>%
-    dplyr::filter(sum_cov > 0.05) %>%
-    dplyr::filter(sort == min(sort, na.rm = TRUE)) %>%
-    dplyr::ungroup() %>%
-    dplyr::filter(!is.na(sa_vsf)) %>%
+                  ) |>
+    dplyr::left_join(sa_vsf) |>
     dplyr::mutate(sf = tolower(gsub(".* ", "", sa_vsf)))
 
-  context_vsf_backup <- context_vsf_all %>%
-    dplyr::anti_join(context_vsf %>%
+  context_vsf <- lifeforms_all |>
+    dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
+                    , str_cov, sort, wt_ht, sf
+                    ) |>
+    dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context)))) |>
+    dplyr::filter(str_cov > 0.05) |>
+    dplyr::filter(wt_ht == max(wt_ht, na.rm = TRUE)) |>
+    dplyr::ungroup() |>
+    dplyr::filter(!is.na(sf)) |>
+    dplyr::distinct()
+
+  context_vsf_backup <- lifeforms_all |>
+    dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
+                    , str_cov, sort, wt_ht, sf
+                    ) |>
+    dplyr::anti_join(context_vsf |>
                        dplyr::distinct(!!rlang::ensym(clust_col))
-                     ) %>%
-    dplyr::group_by(!!rlang::ensym(clust_col)
-                    , dplyr::across(tidyselect::all_of(context))
-                    ) %>%
-    dplyr::mutate(tot_cov = sum(sum_cov)) %>%
-    dplyr::filter(sum_cov == max(sum_cov)) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(sf = "open vegetation"
-                  , sa_vsf = "Open vegetation"
-                  )
+                     ) |>
+    dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context)))) |>
+    dplyr::mutate(tot_cov = sum(str_cov)) |>
+    dplyr::filter(str_cov == max(tot_cov)) |>
+    dplyr::ungroup() |>
+    dplyr::select(- tot_cov) |>
+    dplyr::mutate(sf = "open vegetation")
 
-  id_col <- paste0(clust_col, "_id")
-
-  eco_sf <- context_vsf %>%
-    dplyr::bind_rows(context_vsf_backup) %>%
-    dplyr::group_by(!!rlang::ensym(clust_col)) %>%
-    dplyr::summarise(cov = median(tot_cov)
-                     , range_sf = paste0(vec_to_sentence(names(table(sf)[table(sf) > quantile(table(sf),probs = 2/3)])))
-                     , sf = names(which.max(table(sf)))
-                     , range_sf = dplyr::if_else(range_sf == "", sf, range_sf)
-                     ) %>%
-    dplyr::mutate(!!rlang::ensym(id_col) := gsub(" |[[:punct:]]","",!!rlang::ensym(clust_col))) %>%
-    dplyr::select(!!rlang::ensym(clust_col), !!rlang::ensym(id_col), everything()) %>%
+  eco_sf <- context_vsf |>
+    dplyr::bind_rows(context_vsf_backup) |>
+    dplyr::count(!!rlang::ensym(clust_col), sf) |>
+    dplyr::group_by(!!rlang::ensym(clust_col)) |>
+    dplyr::filter(n == max(n)) |>
     dplyr::ungroup()
 
-  eco_vsf <- context_vsf %>%
-    dplyr::bind_rows(context_vsf_backup) %>%
-    dplyr::inner_join(eco_sf) %>%
-    dplyr::group_by(!!rlang::ensym(clust_col),cov) %>%
-    dplyr::summarise(range_vsf = paste0(vec_to_sentence(names(table(sa_vsf)[table(sa_vsf) > quantile(table(sa_vsf),probs = 2/3)])))
-                     , vsf = names(which.max(table(sa_vsf)[.data$sf == sf]))
-                     , range_vsf = dplyr::if_else(range_vsf == "", vsf, range_vsf)
-                     ) %>%
+
+  # str taxa ---------
+
+  eco_sf_taxa_prep <- eco_sf |>
+    dplyr::inner_join(lifeforms_all) |>
+    dplyr::count(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))), sf) |>
+    dplyr::group_by(!!rlang::ensym(clust_col), sf) |>
+    dplyr::filter(n == max(n)) |>
     dplyr::ungroup()
 
+  eco_sf_taxa <- eco_sf_taxa_prep |>
+    dplyr::left_join(dplyr::distinct(taxonomy$ind)) |>
+    dplyr::mutate(str_taxa = dplyr::if_else(ind == "N"
+                                            , paste0("&ast;_", taxa, "_"), paste0("_", taxa, "_")
+                                            )
+                  ) |>
+    dplyr::group_by(!!rlang::ensym(clust_col), sf) |>
+    dplyr::summarise(str_taxa = envFunc::vec_to_sentence(str_taxa, end = "and/or")) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(str_taxa = paste0(sf, " (e.g. ", str_taxa, ")")) |>
+    dplyr::group_by(!!rlang::ensym(clust_col)) |>
+    dplyr::summarise(str_taxa = envFunc::vec_to_sentence(str_taxa, sep = "/", end = "/")) |>
+    dplyr::ungroup()
 
   #------taxa-------
 
   ## ind -------
-  eco_ind_val_df <- make_ind_val_df(clust_df = clust_df
-                                    , bio_wide = bio_wide
-                                    , cov_col = ind_abu_col
-                                    , context = context
-                                    , clust_col = clust_col
-                                    , numitr = ind_val_iter
-                                    )
+  if(is.null(ind_val_df)) {
 
-  eco_ind_prep <- eco_ind_val_df %>%
+    ind_val_df <- make_ind_val_df(clust_df = clust_df
+                                  , bio_wide = bio_wide
+                                  , cov_col = ind_abu_col
+                                  , context = context
+                                  , clust_col = clust_col
+                                  , numitr = ind_val_iter
+                                  )
+
+  }
+
+  eco_ind_prep <- ind_val_df %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
     dplyr::filter(p_val <= use_p_val) %>%
     dplyr::mutate(best = p_val == min(p_val)) |>
@@ -187,26 +204,29 @@ make_eco_desc <- function(bio_df
                                             )
                   ) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
-    dplyr::summarise(range_ind = envFunc::vec_to_sentence(use_taxa)
-                     , best_ind = envFunc::vec_to_sentence(ifelse(best, use_taxa, NA))
+    dplyr::summarise(range_ind = envFunc::vec_to_sentence(use_taxa, end = "and/or")
+                     , best_ind = envFunc::vec_to_sentence(ifelse(best, use_taxa, NA), end = "and/or")
                      ) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(best_ind_nomd = gsub("_", "", best_ind))
 
+
+  ## prop -----
   eco_taxa <- bio_df %>%
     dplyr::inner_join(clust_df) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
     dplyr::mutate(cluster_sites = dplyr::n_distinct(dplyr::across(tidyselect::any_of(context)))) %>%
     dplyr::ungroup() %>%
-    dplyr::left_join(taxonomy$ind) %>%
+    dplyr::left_join(dplyr::distinct(taxonomy$ind)) %>%
     dplyr::count(!!rlang::ensym(clust_col), cluster_sites, taxa, ind, name = "taxa_sites") %>%
     dplyr::mutate(prop = taxa_sites / cluster_sites) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
-    dplyr::anti_join(eco_ind_prep %>%
-                       dplyr::select(!!rlang::ensym(clust_col)
-                                     , !!rlang::ensym(taxa_col)
-                                     )
+    dplyr::anti_join(eco_ind_prep |>
+                       dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))))
                      ) %>%
+    dplyr::anti_join(eco_sf_taxa_prep |>
+                       dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))))
+                     ) |>
     dplyr::mutate(best = prop == max(prop, na.rm = TRUE)) %>%
     dplyr::filter(prop > use_prop_thresh | best) %>%
     dplyr::ungroup() %>%
@@ -214,24 +234,27 @@ make_eco_desc <- function(bio_df
                   , use_taxa = dplyr::if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))
                   ) %>%
     dplyr::group_by(!!rlang::ensym(clust_col),freq) %>%
-    dplyr::summarise(text = envFunc::vec_to_sentence(use_taxa)) %>%
+    dplyr::summarise(text = envFunc::vec_to_sentence(use_taxa, end = "and/or")) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(text = paste0(freq, " ", text)) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
-    dplyr::summarise(range_taxa = envFunc::vec_to_sentence(text)) %>%
+    dplyr::summarise(range_taxa = envFunc::vec_to_sentence(text, end = "and/or")) %>%
     dplyr::ungroup()
+
 
   #--------desc ---------
 
+  id_col <- paste0(clust_col, "_id")
+
   desc_res <- clust_df %>%
-    dplyr::count(!!rlang::ensym(clust_col), name = "sites") %>%
-    dplyr::left_join(eco_sf) %>%
-    dplyr::left_join(eco_vsf) %>%
-    dplyr::left_join(eco_taxa) %>%
-    dplyr::left_join(eco_ind) %>%
+    dplyr::count(!!rlang::ensym(clust_col), name = "sites") |>
+    dplyr::left_join(eco_vsf) |>
+    dplyr::left_join(eco_taxa) |>
+    dplyr::left_join(eco_ind) |>
+    dplyr::left_join(eco_sf_taxa) |>
     dplyr::mutate(desc_md = paste0(!!rlang::ensym(clust_col)
                                    , ": "
-                                   , range_sf
+                                   , str_taxa
                                    , dplyr::if_else(is.na(range_ind)
                                                     , ""
                                                     , paste0(" indicated by "
@@ -245,8 +268,10 @@ make_eco_desc <- function(bio_df
                                                              )
                                                     )
                                    )
-                  , desc = gsub("_","",desc_md)
-                  , desc = gsub("&ast;","*",desc)
-                  )
+                  , desc_html = gsub("&ast;", "*", desc_md)
+                  , desc = gsub("_", "", desc_html)
+                  ) |>
+    dplyr::mutate(!!rlang::ensym(id_col) := gsub(" |[[:punct:]]","",!!rlang::ensym(clust_col)))
+
 
 }
