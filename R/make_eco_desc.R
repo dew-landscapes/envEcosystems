@@ -74,8 +74,6 @@ make_eco_desc <- function(bio_df
 
   #------str-------
 
-
-
   lifeforms_all <- bio_df |>
     dplyr::left_join(lustr) |>
     dplyr::inner_join(clust_df) |>
@@ -117,7 +115,7 @@ make_eco_desc <- function(bio_df
 
   context_vsf <- lifeforms_all |>
     dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
-                    , str_cov, sort, wt_ht, sf
+                    , str_cov, wt_ht, sf
                     ) |>
     dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context)))) |>
     dplyr::filter(str_cov > 0.05) |>
@@ -230,7 +228,7 @@ make_eco_desc <- function(bio_df
     dplyr::mutate(best = prop == max(prop, na.rm = TRUE)) %>%
     dplyr::filter(prop > use_prop_thresh | best) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(freq = add_freq_class(prop * 100)
+    dplyr::mutate(freq = envFunc::add_freq_class(prop * 100)
                   , use_taxa = dplyr::if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))
                   ) %>%
     dplyr::group_by(!!rlang::ensym(clust_col),freq) %>%
@@ -248,9 +246,9 @@ make_eco_desc <- function(bio_df
 
   desc_res <- clust_df %>%
     dplyr::count(!!rlang::ensym(clust_col), name = "sites") |>
-    dplyr::left_join(eco_vsf) |>
     dplyr::left_join(eco_taxa) |>
     dplyr::left_join(eco_ind) |>
+    dplyr::left_join(eco_sf) |>
     dplyr::left_join(eco_sf_taxa) |>
     dplyr::mutate(desc_md = paste0(!!rlang::ensym(clust_col)
                                    , ": "
