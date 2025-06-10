@@ -118,6 +118,7 @@ make_eco_desc <- function(bio_df
                     , str_cov, wt_ht, sf
                     ) |>
     dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context)))) |>
+    dplyr::mutate(tot_cov = sum(str_cov, na.rm = TRUE)) |>
     dplyr::filter(str_cov > 0.05) |>
     dplyr::filter(wt_ht == max(wt_ht, na.rm = TRUE)) |>
     dplyr::ungroup() |>
@@ -126,7 +127,7 @@ make_eco_desc <- function(bio_df
 
   context_vsf_backup <- lifeforms_all |>
     dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
-                    , str_cov, sort, wt_ht, sf
+                    , str_cov, wt_ht, sf
                     ) |>
     dplyr::anti_join(context_vsf |>
                        dplyr::distinct(!!rlang::ensym(clust_col))
@@ -135,13 +136,16 @@ make_eco_desc <- function(bio_df
     dplyr::mutate(tot_cov = sum(str_cov)) |>
     dplyr::filter(str_cov == max(tot_cov)) |>
     dplyr::ungroup() |>
-    dplyr::select(- tot_cov) |>
     dplyr::mutate(sf = "open vegetation")
 
   eco_sf <- context_vsf |>
     dplyr::bind_rows(context_vsf_backup) |>
-    dplyr::count(!!rlang::ensym(clust_col), sf) |>
+    dplyr::group_by(!!rlang::ensym(clust_col), sf) |>
+    dplyr::mutate(ht = median(wt_ht, na.rm = TRUE)) |>
+    dplyr::ungroup() |>
     dplyr::group_by(!!rlang::ensym(clust_col)) |>
+    dplyr::mutate(cov = median(tot_cov, na.rm = TRUE)) |>
+    dplyr::count(!!rlang::ensym(clust_col), sf, cov, ht) |>
     dplyr::filter(n == max(n)) |>
     dplyr::ungroup()
 
