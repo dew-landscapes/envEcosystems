@@ -147,6 +147,7 @@ make_eco_desc <- function(bio_df
     dplyr::mutate(cov = median(tot_cov, na.rm = TRUE)) |>
     dplyr::count(!!rlang::ensym(clust_col), sf, cov, ht) |>
     dplyr::filter(n == max(n)) |>
+    dplyr::filter(ht == max(ht)) |>
     dplyr::ungroup()
 
 
