@@ -147,9 +147,11 @@ make_eco_desc <- function(bio_df
     dplyr::group_by(!!rlang::ensym(clust_col), sf) |>
     dplyr::mutate(ht = median(wt_ht, na.rm = TRUE)) |>
     dplyr::ungroup() |>
-    # median cover for each cluster
+    # median cover and max ht for each cluster
     dplyr::group_by(!!rlang::ensym(clust_col)) |>
-    dplyr::mutate(cov = median(tot_cov, na.rm = TRUE)) |>
+    dplyr::mutate(cov = median(tot_cov, na.rm = TRUE)
+                  , ht = max(ht, na.rm = TRUE)
+                  ) |>
     # find the most frequent, highest sf
     dplyr::count(!!rlang::ensym(clust_col), sf, cov, ht) |>
     dplyr::filter(n > quantile(n, probs = 0.3) | n == max(n)) |>
@@ -161,8 +163,8 @@ make_eco_desc <- function(bio_df
 
   eco_sf_taxa_prep <- eco_sf |>
     dplyr::inner_join(lifeforms_all) |>
-    dplyr::count(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))), sf) |>
-    dplyr::group_by(!!rlang::ensym(clust_col), sf) |>
+    dplyr::count(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))), sf, cov, ht) |>
+    dplyr::group_by(!!rlang::ensym(clust_col), sf, cov) |>
     dplyr::filter(n > quantile(n, probs = 0.975) | n == max(n)) |>
     dplyr::ungroup()
 
@@ -172,11 +174,11 @@ make_eco_desc <- function(bio_df
                                             , paste0("&ast;_", taxa, "_"), paste0("_", taxa, "_")
                                             )
                   ) |>
-    dplyr::group_by(!!rlang::ensym(clust_col), sf) |>
+    dplyr::group_by(!!rlang::ensym(clust_col), sf, cov, ht) |>
     dplyr::summarise(str_taxa = envFunc::vec_to_sentence(str_taxa, end = "and/or")) |>
     dplyr::mutate(str_taxa = paste0(sf, " (e.g. ", str_taxa, ")")) |>
     dplyr::ungroup() |>
-    dplyr::group_by(!!rlang::ensym(clust_col)) |>
+    dplyr::group_by(!!rlang::ensym(clust_col), cov, ht) |>
     dplyr::summarise(str_taxa = envFunc::vec_to_sentence(str_taxa, end = "or")) |>
     dplyr::ungroup()
 
