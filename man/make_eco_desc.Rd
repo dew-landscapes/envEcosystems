@@ -17,10 +17,14 @@ make_eco_desc(
   str_col = "lifeform",
   lustr,
   taxonomy,
-  use_prop_thresh,
+  use_prop_thresh = 0.8,
   use_p_val = 0.05,
   n_ind_max = 3,
-  ind_val_iter = 3000
+  ind_val_iter = 3000,
+  wt_ht_quant = 0.5,
+  sites_sf_quant = 0.75,
+  ht_sf_quant = 0.5,
+  sites_sf_taxa_quant = 0.95
 )
 }
 \arguments{
@@ -66,6 +70,18 @@ indicator for an ecosystem.}
 \item{ind_val_iter}{Passed to the \code{...} argument of
 \code{envCluster::make_ind_val_df()}, and then into the \code{numitr} argument of
 \code{labdsv::indval()}.}
+
+\item{wt_ht_quant}{Numeric. Threshold (quantile) of weighted heights per site
+that are allowed through to further definition analysis.}
+
+\item{sites_sf_quant}{Numeric. Threshold (quantile) of counts above which to
+select structural features for the description.}
+
+\item{ht_sf_quant}{Numeric. Threshold (quantile) of heights above which to
+select structural features for the description.}
+
+\item{sites_sf_taxa_quant}{Numeric. Threshold (quantile) of counts above
+which a taxa will be used as an example of a structural feature.}
 }
 \description{
 Make a description for an ecosystem

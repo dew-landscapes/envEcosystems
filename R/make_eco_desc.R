@@ -28,6 +28,14 @@
 #' @param ind_val_iter Passed to the `...` argument of
 #' `envCluster::make_ind_val_df()`, and then into the `numitr` argument of
 #' `labdsv::indval()`.
+#' @param wt_ht_quant Numeric. Threshold (quantile) of weighted heights per site
+#' that are allowed through to further definition analysis.
+#' @param sites_sf_quant Numeric. Threshold (quantile) of counts above which to
+#' select structural features for the description.
+#' @param ht_sf_quant Numeric. Threshold (quantile) of heights above which to
+#' select structural features for the description.
+#' @param sites_sf_taxa_quant Numeric. Threshold (quantile) of counts above
+#' which a taxa will be used as an example of a structural feature.
 #'
 #' @return
 #' @export
@@ -45,10 +53,14 @@ make_eco_desc <- function(bio_df
                           , str_col = "lifeform"
                           , lustr
                           , taxonomy
-                          , use_prop_thresh
+                          , use_prop_thresh = 0.8
                           , use_p_val = 0.05
                           , n_ind_max = 3
                           , ind_val_iter = 3000
+                          , wt_ht_quant = 0.5
+                          , sites_sf_quant = 0.75
+                          , ht_sf_quant = 0.5
+                          , sites_sf_taxa_quant = 0.95
                           ) {
 
   taxas <- unique(taxonomy$taxonomy[taxa_col][[1]])
@@ -123,7 +135,7 @@ make_eco_desc <- function(bio_df
     # find any sf with more than 5% cover per context
     dplyr::filter(str_cov > 0.05) |>
     # find highest sf(s) per context (allows multiple 'high' sf per context)
-    dplyr::filter(wt_ht > quantile(wt_ht, probs = 0.5, na.rm = TRUE)) |>
+    dplyr::filter(wt_ht > quantile(wt_ht, probs = wt_ht_quant, na.rm = TRUE)) |>
     dplyr::ungroup() |>
     dplyr::filter(!is.na(sf)) |>
     dplyr::distinct()
@@ -158,8 +170,8 @@ make_eco_desc <- function(bio_df
     dplyr::count(!!rlang::ensym(clust_col), sf, cov, wt_ht, ht, sf_most
                  , name = "sites_sf"
                  ) |>
-    dplyr::filter(sites_sf > quantile(sites_sf, probs = 0.3, na.rm = TRUE) | sites_sf == max(sites_sf, na.rm = TRUE)) |>
-    dplyr::filter(wt_ht > quantile(wt_ht, probs = 0.3, na.rm = TRUE) | wt_ht == max(wt_ht, na.rm = TRUE)) |>
+    dplyr::filter(sites_sf > quantile(sites_sf, probs = sites_sf_quant, na.rm = TRUE) | sites_sf == max(sites_sf, na.rm = TRUE)) |>
+    dplyr::filter(wt_ht > quantile(wt_ht, probs = ht_sf_quant, na.rm = TRUE) | wt_ht == max(wt_ht, na.rm = TRUE)) |>
     # find a value for 'ht' across all clust_col * sf (still need cov below)
     dplyr::group_by(!!rlang::ensym(clust_col), sf, cov) |>
     dplyr::mutate(ht = max(ht, na.rm = TRUE)) |>
@@ -174,7 +186,7 @@ make_eco_desc <- function(bio_df
                  , name = "sites_sf_taxa"
                  ) |>
     dplyr::group_by(!!rlang::ensym(clust_col), sf, cov, sf_most) |>
-    dplyr::filter(sites_sf_taxa > quantile(sites_sf_taxa, probs = 0.975) | sites_sf_taxa == max(sites_sf_taxa)) |>
+    dplyr::filter(sites_sf_taxa > quantile(sites_sf_taxa, probs = sites_sf_taxa_quant) | sites_sf_taxa == max(sites_sf_taxa)) |>
     dplyr::ungroup()
 
   eco_sf_taxa <- eco_sf_taxa_prep |>
@@ -256,8 +268,7 @@ make_eco_desc <- function(bio_df
     dplyr::anti_join(eco_sf_taxa_prep |>
                        dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))))
                      ) |>
-    dplyr::mutate(best = prop == max(prop, na.rm = TRUE)) %>%
-    dplyr::filter(prop > use_prop_thresh | best) %>%
+    dplyr::filter(prop > use_prop_thresh | prop == max(prop, na.rm = TRUE)) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(freq = envFunc::add_freq_class(prop * 100)
                   , use_taxa = dplyr::if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))
