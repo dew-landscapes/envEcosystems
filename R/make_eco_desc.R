@@ -126,7 +126,7 @@ make_eco_desc <- function(bio_df
                    , desc(sort)
                    ) |>
     dplyr::mutate(cov_class = cut(storey_cov * 100
-                                  , breaks = c(cut_cov$cov_thresh, 0)
+                                  , breaks = c(cut_cov$cov_thresh)
                                   )
                   , ht_class = cut(wt_ht
                                    , breaks = c(cut_ht$ht_thresh)
