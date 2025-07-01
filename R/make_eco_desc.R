@@ -237,7 +237,7 @@ make_eco_desc <- function(bio_df
                      , n = n_ind_max
                      ) |>
     dplyr::filter(p_val <= use_p_val) |>
-    dplyr::arrange(cluster
+    dplyr::arrange(!!rlang::ensym(clust_col)
                    , p_val
                    , desc(ind_val)
                    ) |>
