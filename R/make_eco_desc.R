@@ -115,6 +115,7 @@ make_eco_desc <- function(bio_df
     dplyr::distinct(dplyr::across(tidyselect::all_of(c(taxa_col, clust_col, context)))
                     , sort
                     , str
+                    , storey
                     , storey_cov
                     , tot_cov
                     , wt_ht
@@ -132,13 +133,11 @@ make_eco_desc <- function(bio_df
                                    )
                   ) |>
     dplyr::left_join(sa_vsf) |>
-    dplyr::mutate(sf = tolower(gsub(".* ", "", sa_vsf))
-                  , sf = dplyr::if_else(is.na(sf), "open vegetation", sf)
-                  )
+    dplyr::mutate(sf = tolower(gsub(".* ", "", sa_vsf)))
 
   context_vsf <- lifeforms_all |>
     dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
-                    , storey_cov, wt_ht, sf, tot_cov, cluster_sites
+                    , storey_cov, wt_ht, storey, sf, sa_vsf, tot_cov, cluster_sites
                     ) |>
     dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), cluster_sites) |>
     # find any storey with more than 5% cover per context
@@ -151,15 +150,14 @@ make_eco_desc <- function(bio_df
 
   context_vsf_backup <- lifeforms_all |>
     dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
-                    , storey_cov, wt_ht, sf, tot_cov, cluster_sites
+                    , storey_cov, wt_ht, sf, sa_vsf, tot_cov, cluster_sites
                     ) |>
     dplyr::anti_join(context_vsf |>
-                       dplyr::distinct(dplyr::across(tidyselect::any_of(context)))
+                       dplyr::distinct(!!rlang::ensym(clust_col))
                      ) |>
     dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), cluster_sites) |>
-    dplyr::filter(storey_cov == max(storey_cov)) |>
-    dplyr::ungroup() |>
-    dplyr::mutate(sf = "open vegetation")
+    dplyr::filter(storey_cov == max(storey_cov) & wt_ht > quantile(wt_ht, probs = wt_ht_quant, na.rm = TRUE)) |>
+    dplyr::ungroup()
 
   eco_sf <- context_vsf |>
     dplyr::bind_rows(context_vsf_backup) |>
@@ -257,12 +255,12 @@ make_eco_desc <- function(bio_df
                                             )
                   ) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
-    dplyr::summarise(range_ind = envFunc::vec_to_sentence(x = use_taxa, end = "and/or")
-                     , best_ind = ifelse(best, use_taxa, NA) |>
-                       na.omit(object = _)
+    dplyr::summarise(range_ind = stringr::str_flatten_comma(taxa)
+                     , best_ind = ifelse(best, taxa, NA) |> na.omit(object = _)
+                     , range_ind_md = envFunc::vec_to_sentence(use_taxa, end = "and/or")
+                     , best_ind_md = ifelse(best, use_taxa, NA) |> na.omit(object = _)
                      ) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(best_ind_nomd = gsub("_", "", best_ind))
+    dplyr::ungroup()
 
 
   ## prop -----
@@ -275,18 +273,20 @@ make_eco_desc <- function(bio_df
     dplyr::count(!!rlang::ensym(clust_col), cluster_sites, taxa, ind, name = "taxa_sites") %>%
     dplyr::mutate(prop = taxa_sites / cluster_sites) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
+    # prevent indicators turning up again in common taxa
     dplyr::anti_join(eco_ind_prep |>
                        dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))))
                      ) %>%
+    # prevent structural taxa turning up again in common taxa
     dplyr::anti_join(eco_sf_taxa_prep |>
                        dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))))
                      ) |>
-    dplyr::filter(prop > use_prop_thresh | prop == max(prop, na.rm = TRUE)) %>%
+    dplyr::filter(prop > use_prop_thresh) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(freq = envFunc::add_freq_class(prop * 100)
                   , use_taxa = dplyr::if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))
                   ) %>%
-    dplyr::group_by(!!rlang::ensym(clust_col),freq) %>%
+    dplyr::group_by(!!rlang::ensym(clust_col), freq) %>%
     dplyr::summarise(text = envFunc::vec_to_sentence(use_taxa, end = "and/or")) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(text = paste0(freq, " ", text)) %>%
@@ -307,10 +307,10 @@ make_eco_desc <- function(bio_df
     dplyr::mutate(desc_md = paste0(!!rlang::ensym(clust_col)
                                    , ": "
                                    , sf_taxa_range
-                                   , dplyr::if_else(is.na(range_ind)
+                                   , dplyr::if_else(is.na(range_ind_md)
                                                     , ""
                                                     , paste0(" indicated by "
-                                                             , range_ind
+                                                             , range_ind_md
                                                              )
                                                     )
                                    , dplyr::if_else(is.na(range_taxa)
