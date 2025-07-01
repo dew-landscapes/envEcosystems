@@ -52,19 +52,25 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_eco_desc</span><span class="op">(</span></span>
 <span>  <span class="va">bio_df</span>,</span>
+<span>  <span class="va">bio_wide</span>,</span>
 <span>  <span class="va">clust_df</span>,</span>
-<span>  bio_wide <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  bio_ind <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ind_val_df <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">context</span>,</span>
 <span>  clust_col <span class="op">=</span> <span class="st">"cluster"</span>,</span>
-<span>  cov_col <span class="op">=</span> <span class="st">"use_cover"</span>,</span>
 <span>  taxa_col <span class="op">=</span> <span class="st">"taxa"</span>,</span>
+<span>  cov_col <span class="op">=</span> <span class="st">"cover_adj"</span>,</span>
+<span>  ind_abu_col <span class="op">=</span> <span class="st">"use_cover"</span>,</span>
 <span>  str_col <span class="op">=</span> <span class="st">"lifeform"</span>,</span>
-<span>  ind_col <span class="op">=</span> <span class="st">"ind"</span>,</span>
 <span>  <span class="va">lustr</span>,</span>
 <span>  <span class="va">taxonomy</span>,</span>
-<span>  <span class="va">use_prop_thresh</span>,</span>
-<span>  use_p_val <span class="op">=</span> <span class="fl">0.05</span></span>
+<span>  use_prop_thresh <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  use_p_val <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  n_ind_max <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  ind_val_iter <span class="op">=</span> <span class="fl">3000</span>,</span>
+<span>  wt_ht_quant <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  sites_sf_quant <span class="op">=</span> <span class="fl">0.75</span>,</span>
+<span>  ht_sf_quant <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  sites_sf_taxa_quant <span class="op">=</span> <span class="fl">0.95</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -73,41 +79,53 @@
 
 
 <dl><dt id="arg-bio-df">bio_df<a class="anchor" aria-label="anchor" href="#arg-bio-df"></a></dt>
-<dd><p>Dataframe with biological information.</p></dd>
-
-
-<dt id="arg-clust-df">clust_df<a class="anchor" aria-label="anchor" href="#arg-clust-df"></a></dt>
-<dd><p>Dataframe with cluster membership and join columns to <code>bio_df</code>.</p></dd>
+<dd><p>Dataframe containing the site and taxa data in long format.</p></dd>
 
 
 <dt id="arg-bio-wide">bio_wide<a class="anchor" aria-label="anchor" href="#arg-bio-wide"></a></dt>
-<dd><p>Dataframe of taxa by sites.</p></dd>
+<dd><p>Wide version of <code>bio_df</code>.</p></dd>
 
 
-<dt id="arg-bio-ind">bio_ind<a class="anchor" aria-label="anchor" href="#arg-bio-ind"></a></dt>
-<dd><p>Dataframe of indicator taxa per class. Output from
-<code><a href="https://rdrr.io/pkg/envCluster/man/make_ind_val_df.html" class="external-link">envCluster::make_ind_val_df</a></code>. Will be created if not supplied.</p></dd>
+<dt id="arg-clust-df">clust_df<a class="anchor" aria-label="anchor" href="#arg-clust-df"></a></dt>
+<dd><p>Dataframe with <code>context</code> column(s) and a column with cluster
+membership for that context. Optional if <code>clust_col</code> appears in bio_df.</p></dd>
+
+
+<dt id="arg-ind-val-df">ind_val_df<a class="anchor" aria-label="anchor" href="#arg-ind-val-df"></a></dt>
+<dd><p>Result from <code><a href="https://rdrr.io/pkg/envCluster/man/make_ind_val_df.html" class="external-link">envCluster::make_ind_val_df()</a></code>. If not
+provided it will be made from the other provided dfs (which is slow).</p></dd>
 
 
 <dt id="arg-context">context<a class="anchor" aria-label="anchor" href="#arg-context"></a></dt>
-<dd><p>Character name of columns in <code>bio_df</code> that define the context.</p></dd>
+<dd><p>Character. Name(s) of column(s) that define the context.</p></dd>
 
 
 <dt id="arg-clust-col">clust_col<a class="anchor" aria-label="anchor" href="#arg-clust-col"></a></dt>
-<dd><p>Character name of column in <code>clust_df</code> that defines clusters.</p></dd>
-
-
-<dt id="arg-cov-col">cov_col<a class="anchor" aria-label="anchor" href="#arg-cov-col"></a></dt>
-<dd><p>Character name of column in <code>bio_df</code> that contain numeric cover
-values.</p></dd>
+<dd><p>Character. Name of column containing cluster membership.</p></dd>
 
 
 <dt id="arg-taxa-col">taxa_col<a class="anchor" aria-label="anchor" href="#arg-taxa-col"></a></dt>
-<dd><p>Character name of column with taxa.</p></dd>
+<dd><p>Character. Name of column containing the taxa names.</p></dd>
+
+
+<dt id="arg-cov-col">cov_col<a class="anchor" aria-label="anchor" href="#arg-cov-col"></a></dt>
+<dd><p>Character. Name of column containing numeric abundance data (
+usually 'cover' for plants).</p></dd>
+
+
+<dt id="arg-ind-abu-col">ind_abu_col<a class="anchor" aria-label="anchor" href="#arg-ind-abu-col"></a></dt>
+<dd><p>Character. Name of column containing numeric abundance
+data for use in indicator analysis (<code><a href="https://rdrr.io/pkg/labdsv/man/indval.html" class="external-link">labdsv::indval()</a></code>). This can be the same
+as <code>cov_col</code> but at times a different measure of abundance is helpful here.</p></dd>
+
+
+<dt id="arg-str-col">str_col<a class="anchor" aria-label="anchor" href="#arg-str-col"></a></dt>
+<dd><p>Character name of column in <code>bio_df</code> containing lifeform (or
+structural) information.</p></dd>
 
 
 <dt id="arg-lustr">lustr<a class="anchor" aria-label="anchor" href="#arg-lustr"></a></dt>
-<dd><p>Dataframe containing structural information.</p></dd>
+<dd><p>Dataframe containing lifeform (structural) information.</p></dd>
 
 
 <dt id="arg-taxonomy">taxonomy<a class="anchor" aria-label="anchor" href="#arg-taxonomy"></a></dt>
@@ -123,6 +141,36 @@ sites in the cluster will be included in the description.</p></dd>
 <dt id="arg-use-p-val">use_p_val<a class="anchor" aria-label="anchor" href="#arg-use-p-val"></a></dt>
 <dd><p>Numeric 0 to 1. The p-value to use to accept a taxa as an
 indicator for an ecosystem.</p></dd>
+
+
+<dt id="arg-n-ind-max">n_ind_max<a class="anchor" aria-label="anchor" href="#arg-n-ind-max"></a></dt>
+<dd><p>Maximum number of taxa to list as indicators.</p></dd>
+
+
+<dt id="arg-ind-val-iter">ind_val_iter<a class="anchor" aria-label="anchor" href="#arg-ind-val-iter"></a></dt>
+<dd><p>Passed to the <code>...</code> argument of
+<code><a href="https://rdrr.io/pkg/envCluster/man/make_ind_val_df.html" class="external-link">envCluster::make_ind_val_df()</a></code>, and then into the <code>numitr</code> argument of
+<code><a href="https://rdrr.io/pkg/labdsv/man/indval.html" class="external-link">labdsv::indval()</a></code>.</p></dd>
+
+
+<dt id="arg-wt-ht-quant">wt_ht_quant<a class="anchor" aria-label="anchor" href="#arg-wt-ht-quant"></a></dt>
+<dd><p>Numeric. Threshold (quantile) of weighted heights per site
+that are allowed through to further definition analysis.</p></dd>
+
+
+<dt id="arg-sites-sf-quant">sites_sf_quant<a class="anchor" aria-label="anchor" href="#arg-sites-sf-quant"></a></dt>
+<dd><p>Numeric. Threshold (quantile) of counts above which to
+select structural features for the description.</p></dd>
+
+
+<dt id="arg-ht-sf-quant">ht_sf_quant<a class="anchor" aria-label="anchor" href="#arg-ht-sf-quant"></a></dt>
+<dd><p>Numeric. Threshold (quantile) of heights above which to
+select structural features for the description.</p></dd>
+
+
+<dt id="arg-sites-sf-taxa-quant">sites_sf_taxa_quant<a class="anchor" aria-label="anchor" href="#arg-sites-sf-taxa-quant"></a></dt>
+<dd><p>Numeric. Threshold (quantile) of counts above
+which a taxa will be used as an example of a structural feature.</p></dd>
 
 </dl></div>
 
