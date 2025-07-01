@@ -323,7 +323,8 @@ make_eco_desc <- function(bio_df
                   , desc_html = gsub("&ast;", "*", desc_md)
                   , desc = gsub("_", "", desc_html)
                   ) |>
-    dplyr::mutate(!!rlang::ensym(id_col) := gsub(" |[[:punct:]]","",!!rlang::ensym(clust_col)))
+    dplyr::mutate(!!rlang::ensym(id_col) := gsub(" |[[:punct:]]","",!!rlang::ensym(clust_col))) |>
+    dplyr::rename(sf = sf_most)
 
   return(desc_res)
 
