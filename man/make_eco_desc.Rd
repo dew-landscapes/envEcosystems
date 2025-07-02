@@ -24,7 +24,8 @@ make_eco_desc(
   wt_ht_quant = 0.5,
   sites_sf_quant = 0.75,
   ht_sf_quant = 0.5,
-  sites_sf_taxa_quant = 0.95
+  sites_sf_taxa_quant = 0.95,
+  colour_map = NULL
 )
 }
 \arguments{
@@ -82,6 +83,9 @@ select structural features for the description.}
 
 \item{sites_sf_taxa_quant}{Numeric. Threshold (quantile) of counts above
 which a taxa will be used as an example of a structural feature.}
+
+\item{colour_map}{Dataframe mapping any column in result to colour values
+(in a column called \code{colour}).}
 }
 \description{
 Make a description for an ecosystem

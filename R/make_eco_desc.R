@@ -36,6 +36,8 @@
 #' select structural features for the description.
 #' @param sites_sf_taxa_quant Numeric. Threshold (quantile) of counts above
 #' which a taxa will be used as an example of a structural feature.
+#' @param colour_map Dataframe mapping any column in result to colour values
+#' (in a column called `colour`).
 #'
 #' @return
 #' @export
@@ -61,6 +63,7 @@ make_eco_desc <- function(bio_df
                           , sites_sf_quant = 0.75
                           , ht_sf_quant = 0.5
                           , sites_sf_taxa_quant = 0.95
+                          , colour_map = NULL
                           ) {
 
   taxas <- unique(taxonomy$taxonomy[taxa_col][[1]])
@@ -294,13 +297,20 @@ make_eco_desc <- function(bio_df
     dplyr::summarise(range_taxa = envFunc::vec_to_sentence(text, end = "and/or")) %>%
     dplyr::ungroup()
 
+  # colour --------
+  if(isTRUE(is.null(colour_map))) {
+
+    colour_map <- tibble::tibble(!!rlang::ensym(clust_col) := unique(clust_df[clust_col][[1]])) %>%
+      dplyr::mutate(colour = viridis::viridis(n = nrow(.)))
+
+  }
 
   #--------desc ---------
 
   id_col <- paste0(clust_col, "_id")
 
   desc_res <- clust_df %>%
-    dplyr::count(!!rlang::ensym(clust_col), name = "sites") |>
+    dplyr::count(!!rlang::ensym(clust_col), name = "cluster_sites") |>
     dplyr::left_join(eco_taxa) |>
     dplyr::left_join(eco_ind) |>
     dplyr::left_join(eco_sf_taxa) |>
@@ -323,8 +333,9 @@ make_eco_desc <- function(bio_df
                   , desc_html = gsub("&ast;", "*", desc_md)
                   , desc = gsub("_", "", desc_html)
                   ) |>
-    dplyr::mutate(!!rlang::ensym(id_col) := gsub(" |[[:punct:]]","",!!rlang::ensym(clust_col))) |>
-    dplyr::rename(sf = sf_most)
+    dplyr::mutate(!!rlang::ensym(id_col) := gsub("\\s|[[:punct:]]","",!!rlang::ensym(clust_col))) |>
+    dplyr::rename(sf = sf_most) |>
+    dplyr::left_join(colour_map)
 
   return(desc_res)
 

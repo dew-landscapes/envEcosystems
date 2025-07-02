@@ -10,8 +10,7 @@ add_landcover_desc(
   clust_col = "cluster",
   add_clust_col = "cluster",
   add_name = "Landcover",
-  colour_map = NULL,
-  add_colour_col = "lc_col"
+  colour_map = NULL
 )
 }
 \arguments{
@@ -29,11 +28,8 @@ add_landcover_desc(
 ecosystems. e.g. "Landcover" to make, say, "cropping" into "Landcover:
 cropping".}
 
-\item{colour_map}{Dataframe mapping \code{add_clust_col} to colour values to use
-in mapping.}
-
-\item{add_colour_col}{Character name of column in \code{colour_map} that has the
-colour values.}
+\item{colour_map}{Dataframe mapping any column in \code{add_eco} to colour values
+(in a column called \code{colour}).}
 }
 \value{
 Dataframe with the same columns as \code{eco_desc} but with added rows for
