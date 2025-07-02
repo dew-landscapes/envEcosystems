@@ -17,6 +17,9 @@
 #' as `cov_col` but at times a different measure of abundance is helpful here.
 #' @param str_col Character name of column in `bio_df` containing lifeform (or
 #' structural) information.
+#' @param clust_keep_cols Character. Name of any columns in `clust_df` that
+#' should be passed through to the output. These should not lead to any further
+#' combinations (rows) than `clust_col` alone does.
 #' @param lustr Dataframe containing lifeform (structural) information.
 #' @param taxonomy Dataframe containing indigenous status of taxa in `bio_df`
 #' @param use_prop_thresh Numeric. Threshold (proportion) for taxa to include in
@@ -53,6 +56,7 @@ make_eco_desc <- function(bio_df
                           , cov_col = "cover_adj"
                           , ind_abu_col = "use_cover"
                           , str_col = "lifeform"
+                          , clust_keep_cols = c("landcover", "veg")
                           , lustr
                           , taxonomy
                           , use_prop_thresh = 0.8
@@ -82,6 +86,7 @@ make_eco_desc <- function(bio_df
   clust_df <- dplyr::distinct(clust_df
                               , dplyr::across(tidyselect::any_of(c(context
                                                                    , clust_col
+                                                                   , clust_keep_cols
                                                                    )
                                                                  )
                                               )
@@ -89,11 +94,13 @@ make_eco_desc <- function(bio_df
 
   #------str-------
 
+  sites_col <- paste0(clust_col, "_sites")
+
   lifeforms_all <- bio_df |>
     dplyr::left_join(lustr) |>
     dplyr::inner_join(clust_df |>
                         dplyr::add_count(dplyr::across(tidyselect::any_of(c(clust_col)))
-                                         , name = paste0(clust_col, "_sites")
+                                         , name = sites_col
                                          )
                       ) |>
     dplyr::group_by(!!rlang::ensym(clust_col)
@@ -122,7 +129,7 @@ make_eco_desc <- function(bio_df
                     , storey_cov
                     , tot_cov
                     , wt_ht
-                    , cluster_sites
+                    , !!rlang::ensym(sites_col)
                     ) |>
     dplyr::arrange(!!rlang::ensym(clust_col)
                    , dplyr::across(tidyselect::all_of(context))
@@ -140,9 +147,9 @@ make_eco_desc <- function(bio_df
 
   context_vsf <- lifeforms_all |>
     dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
-                    , storey_cov, wt_ht, storey, sf, sa_vsf, tot_cov, cluster_sites
+                    , storey_cov, wt_ht, storey, sf, sa_vsf, tot_cov, !!rlang::ensym(sites_col)
                     ) |>
-    dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), cluster_sites) |>
+    dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), !!rlang::ensym(sites_col)) |>
     # find any storey with more than 5% cover per context
     dplyr::filter(storey_cov > 0.05) |>
     # find highest storey(s) per context (allows multiple 'high' sf per context)
@@ -153,12 +160,12 @@ make_eco_desc <- function(bio_df
 
   context_vsf_backup <- lifeforms_all |>
     dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
-                    , storey_cov, wt_ht, sf, sa_vsf, tot_cov, cluster_sites
+                    , storey_cov, wt_ht, sf, sa_vsf, tot_cov, !!rlang::ensym(sites_col)
                     ) |>
     dplyr::anti_join(context_vsf |>
                        dplyr::distinct(!!rlang::ensym(clust_col))
                      ) |>
-    dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), cluster_sites) |>
+    dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), !!rlang::ensym(sites_col)) |>
     dplyr::filter(storey_cov == max(storey_cov) & wt_ht > quantile(wt_ht, probs = wt_ht_quant, na.rm = TRUE)) |>
     dplyr::ungroup()
 
@@ -172,7 +179,7 @@ make_eco_desc <- function(bio_df
     dplyr::group_by(!!rlang::ensym(clust_col)) |>
     dplyr::mutate(med_cov = median(tot_cov, na.rm = TRUE)) |>
     # find the most frequent, highest sf
-    dplyr::count(!!rlang::ensym(clust_col), sf, med_cov, med_ht, cluster_sites
+    dplyr::count(!!rlang::ensym(clust_col), sf, med_cov, med_ht, !!rlang::ensym(sites_col)
                  , name = "sites_sf"
                  ) |>
     dplyr::filter(sites_sf > quantile(sites_sf, probs = sites_sf_quant, na.rm = TRUE) | sites_sf == max(sites_sf, na.rm = TRUE)) |>
@@ -188,10 +195,10 @@ make_eco_desc <- function(bio_df
 
   eco_sf_taxa_prep <- eco_sf |>
     dplyr::inner_join(lifeforms_all) |>
-    dplyr::count(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))), sf_most, sf, med_cov, med_ht, cluster_sites
+    dplyr::count(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))), sf_most, sf, med_cov, med_ht, !!rlang::ensym(sites_col)
                  , name = "sites_sf_taxa"
                  ) |>
-    dplyr::group_by(!!rlang::ensym(clust_col), sf, med_cov, med_ht, cluster_sites) |>
+    dplyr::group_by(!!rlang::ensym(clust_col), sf, med_cov, med_ht, !!rlang::ensym(sites_col)) |>
     dplyr::filter(sites_sf_taxa > quantile(sites_sf_taxa, probs = sites_sf_taxa_quant) | sites_sf_taxa == max(sites_sf_taxa)) |>
     dplyr::ungroup()
 
@@ -270,11 +277,11 @@ make_eco_desc <- function(bio_df
   eco_taxa <- bio_df %>%
     dplyr::inner_join(clust_df) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
-    dplyr::mutate(cluster_sites = dplyr::n_distinct(dplyr::across(tidyselect::any_of(context)))) %>%
+    dplyr::mutate(!!rlang::ensym(sites_col) := dplyr::n_distinct(dplyr::across(tidyselect::any_of(context)))) %>%
     dplyr::ungroup() %>%
     dplyr::left_join(dplyr::distinct(taxonomy$ind)) %>%
-    dplyr::count(!!rlang::ensym(clust_col), cluster_sites, taxa, ind, name = "taxa_sites") %>%
-    dplyr::mutate(prop = taxa_sites / cluster_sites) %>%
+    dplyr::count(!!rlang::ensym(clust_col), !!rlang::ensym(sites_col), taxa, ind, name = "taxa_sites") %>%
+    dplyr::mutate(prop = taxa_sites / !!rlang::ensym(sites_col)) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
     # prevent indicators turning up again in common taxa
     dplyr::anti_join(eco_ind_prep |>
@@ -310,7 +317,9 @@ make_eco_desc <- function(bio_df
   id_col <- paste0(clust_col, "_id")
 
   desc_res <- clust_df %>%
-    dplyr::count(!!rlang::ensym(clust_col), name = "cluster_sites") |>
+    dplyr::count(dplyr::across(tidyselect::any_of(c(clust_col, clust_keep_cols)))
+                 , name = sites_col
+                 ) |>
     dplyr::left_join(eco_taxa) |>
     dplyr::left_join(eco_ind) |>
     dplyr::left_join(eco_sf_taxa) |>

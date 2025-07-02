@@ -9,6 +9,7 @@ add_landcover_desc(
   add_eco,
   clust_col = "cluster",
   add_clust_col = "cluster",
+  clust_keep_cols = c("landcover", "veg"),
   add_name = "Landcover",
   colour_map = NULL
 )
@@ -23,6 +24,10 @@ add_landcover_desc(
 
 \item{add_clust_col}{Character name of column with cluster membership in
 \code{add_eco}.}
+
+\item{clust_keep_cols}{Character. Name of any columns in \code{add_eco} that
+should be passed through to the output. These should not lead to any further
+combinations (rows) than \code{clust_col} alone does.}
 
 \item{add_name}{Character name of any prefix to use in descriptions for extra
 ecosystems. e.g. "Landcover" to make, say, "cropping" into "Landcover:

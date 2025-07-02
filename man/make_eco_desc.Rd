@@ -15,6 +15,7 @@ make_eco_desc(
   cov_col = "cover_adj",
   ind_abu_col = "use_cover",
   str_col = "lifeform",
+  clust_keep_cols = c("landcover", "veg"),
   lustr,
   taxonomy,
   use_prop_thresh = 0.8,
@@ -54,6 +55,10 @@ as \code{cov_col} but at times a different measure of abundance is helpful here.
 
 \item{str_col}{Character name of column in \code{bio_df} containing lifeform (or
 structural) information.}
+
+\item{clust_keep_cols}{Character. Name of any columns in \code{clust_df} that
+should be passed through to the output. These should not lead to any further
+combinations (rows) than \code{clust_col} alone does.}
 
 \item{lustr}{Dataframe containing lifeform (structural) information.}
 

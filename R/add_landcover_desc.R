@@ -10,6 +10,9 @@
 #' `eco_desc`.
 #' @param add_clust_col Character name of column with cluster membership in
 #' `add_eco`.
+#' @param clust_keep_cols Character. Name of any columns in `add_eco` that
+#' should be passed through to the output. These should not lead to any further
+#' combinations (rows) than `clust_col` alone does.
 #' @param add_name Character name of any prefix to use in descriptions for extra
 #' ecosystems. e.g. "Landcover" to make, say, "cropping" into "Landcover:
 #' cropping".
@@ -25,12 +28,13 @@ add_landcover_desc <- function(eco_desc
                                , add_eco
                                , clust_col = "cluster"
                                , add_clust_col = "cluster"
+                               , clust_keep_cols = c("landcover", "veg")
                                , add_name = "Landcover"
                                , colour_map = NULL
                                ) {
 
   eco_add <- add_eco |>
-    dplyr::count(!!rlang::ensym(add_clust_col)
+    dplyr::count(dplyr::across(tidyselect::any_of(c(clust_col, clust_keep_cols)))
                  , name = paste0(clust_col, "_sites")
                  ) |>
     dplyr::mutate(desc = paste0(add_name,": ", gsub("_"," ",!!rlang::ensym(add_clust_col))))
@@ -64,17 +68,17 @@ add_landcover_desc <- function(eco_desc
   }
 
   res <- eco_desc %>%
-    dplyr::mutate(!!rlang::ensym(clust_col) := forcats::fct_expand(!!rlang::ensym(clust_col)
-                                                                   , levels(eco_add[clust_col][[1]])
-                                                                   )
-                  ) %>%
-    dplyr::bind_rows(eco_add %>%
+    dplyr::bind_rows(eco_add |>
                        dplyr::left_join(colour_map)
-                     ) %>%
+                     ) |>
     dplyr::select(names(eco_desc)) %>%
     dplyr::mutate(dplyr::across(contains("_id")
                                 , \(x) gsub("\\s|[[:punct:]]", "", x)
                                 )
+                  ) |>
+    dplyr::mutate(!!rlang::ensym(clust_col) := forcats::fct_relevel(!!rlang::ensym(clust_col)
+                                                                    , levels(eco_desc[[clust_col]])
+                                                                    )
                   )
 
   return(res)
