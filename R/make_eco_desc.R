@@ -93,7 +93,7 @@ make_eco_desc <- function(bio_df
     dplyr::left_join(lustr) |>
     dplyr::inner_join(clust_df |>
                         dplyr::add_count(dplyr::across(tidyselect::any_of(c(clust_col)))
-                                         , name = "cluster_sites"
+                                         , name = paste0(clust_col, "_sites")
                                          )
                       ) |>
     dplyr::group_by(!!rlang::ensym(clust_col)
