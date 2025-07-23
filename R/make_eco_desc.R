@@ -204,21 +204,27 @@ make_eco_desc <- function(bio_df
 
   eco_sf_taxa <- eco_sf_taxa_prep |>
     dplyr::left_join(dplyr::distinct(taxonomy$ind)) |>
-    dplyr::mutate(str_taxa = dplyr::if_else(ind == "N"
-                                            , paste0("&ast;_", taxa, "_"), paste0("_", taxa, "_")
-                                            )
+    dplyr::mutate(prop = sites_sf_taxa / !!rlang::ensym(sites_col)
+                  , freq = envFunc::add_freq_class(prop * 100)
+                  , str_taxa = dplyr::if_else(ind == "N"
+                                              , paste0("&ast;_", taxa, "_")
+                                              , paste0("_", taxa, "_")
+                                              )
                   ) |>
+    # build str taxa per frequency
+    dplyr::group_by(!!rlang::ensym(clust_col), freq, sf_most, sf, med_cov, med_ht) |>
+    dplyr::summarise(str_taxa = stringr::str_flatten_comma(str_taxa)) |>
+    dplyr::arrange(!!rlang::ensym(clust_col), freq) |>
     # build desc per sf * clust_col
     dplyr::group_by(!!rlang::ensym(clust_col), sf_most, sf, med_cov, med_ht) |>
-    dplyr::summarise(str_taxa = envFunc::vec_to_sentence(str_taxa, end = "and/or")) |>
-    dplyr::mutate(str_taxa = paste0(sf, " (e.g. ", str_taxa, ")")) |>
-    dplyr::ungroup() |>
-    # build desc per clust_col with median cover and a maximum 'ht'
+    dplyr::mutate(str_taxa = paste0(freq, " ", str_taxa)) |>
+    dplyr::summarise(str_taxa = stringr::str_flatten(str_taxa, collapse = "; ")) |>
+    # add structural component to str_taxa
     dplyr::group_by(!!rlang::ensym(clust_col), med_cov, sf_most) |>
     dplyr::summarise(med_ht = max(med_ht, na.rm = TRUE)
-                  , sf_range = envFunc::vec_to_sentence(sf)
-                  , sf_taxa_range = envFunc::vec_to_sentence(str_taxa, end = "or")
-                  ) |>
+                     , sf_range = envFunc::vec_to_sentence(sf)
+                     , sf_taxa_range = paste0(sf, ": ", str_taxa)
+                     ) |>
     dplyr::ungroup()
 
   #------taxa-------
@@ -324,17 +330,17 @@ make_eco_desc <- function(bio_df
     dplyr::left_join(eco_ind) |>
     dplyr::left_join(eco_sf_taxa) |>
     dplyr::mutate(desc_md = paste0(!!rlang::ensym(clust_col)
-                                   , ": "
+                                   , ". "
                                    , sf_taxa_range
                                    , dplyr::if_else(is.na(range_ind_md)
                                                     , ""
-                                                    , paste0(" indicated by "
+                                                    , paste0(". indicated by "
                                                              , range_ind_md
                                                              )
                                                     )
                                    , dplyr::if_else(is.na(range_taxa)
                                                     , ""
-                                                    , paste0(" with "
+                                                    , paste0(". with "
                                                              , range_taxa
                                                              )
                                                     )
