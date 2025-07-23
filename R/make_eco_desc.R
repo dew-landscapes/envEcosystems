@@ -223,7 +223,7 @@ make_eco_desc <- function(bio_df
     dplyr::group_by(!!rlang::ensym(clust_col), med_cov, sf_most) |>
     dplyr::summarise(med_ht = max(med_ht, na.rm = TRUE)
                      , sf_range = envFunc::vec_to_sentence(sf)
-                     , sf_taxa_range = paste0(sf, ": ", str_taxa)
+                     , sf_taxa_range = paste0(sf, ". ", str_taxa)
                      ) |>
     dplyr::ungroup()
 
@@ -330,7 +330,7 @@ make_eco_desc <- function(bio_df
     dplyr::left_join(eco_ind) |>
     dplyr::left_join(eco_sf_taxa) |>
     dplyr::mutate(desc_md = paste0(!!rlang::ensym(clust_col)
-                                   , ". "
+                                   , ": "
                                    , sf_taxa_range
                                    , dplyr::if_else(is.na(range_ind_md)
                                                     , ""
