@@ -153,7 +153,8 @@ make_eco_desc <- function(bio_df
     # find any storey with more than 5% cover per context
     dplyr::filter(storey_cov > 0.05) |>
     # find highest storey(s) per context (allows multiple 'high' sf per context)
-    dplyr::filter(wt_ht > quantile(wt_ht, probs = wt_ht_quant, na.rm = TRUE)) |>
+    dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), !!rlang::ensym(sites_col)) |>
+    dplyr::filter(wt_ht >= quantile(wt_ht, probs = wt_ht_quant, na.rm = TRUE)) |>
     dplyr::ungroup() |>
     dplyr::filter(!is.na(sf)) |>
     dplyr::distinct()
@@ -220,10 +221,12 @@ make_eco_desc <- function(bio_df
     dplyr::mutate(str_taxa = paste0(freq, " ", str_taxa)) |>
     dplyr::summarise(str_taxa = stringr::str_flatten(str_taxa, collapse = "; ")) |>
     # add structural component to str_taxa
+    dplyr::mutate(str_taxa = paste0(sf, " ", str_taxa)) |>
+    # summarise str_taxa
     dplyr::group_by(!!rlang::ensym(clust_col), med_cov, sf_most) |>
-    dplyr::summarise(med_ht = max(med_ht, na.rm = TRUE)
-                     , sf_range = envFunc::vec_to_sentence(sf)
-                     , sf_taxa_range = paste0(sf, ". ", str_taxa)
+    dplyr::summarise(med_ht = median(med_ht, na.rm = TRUE)
+                     , sf_range = envFunc::vec_to_sentence(sf, end = "or")
+                     , sf_taxa_range = envFunc::vec_to_sentence(str_taxa, end = "or")
                      ) |>
     dplyr::ungroup()
 
