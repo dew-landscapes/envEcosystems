@@ -33,7 +33,7 @@
 #' `labdsv::indval()`.
 #' @param wt_ht_quant Numeric. Threshold (quantile) of weighted heights per site
 #' that are allowed through to further definition analysis.
-#' @param sites_sf_quant Numeric. Threshold (quantile) of counts above which to
+#' @param sites_sf_prop Numeric. Threshold (proportion) of counts above which to
 #' select structural features for the description.
 #' @param ht_sf_quant Numeric. Threshold (quantile) of heights above which to
 #' select structural features for the description.
@@ -64,7 +64,7 @@ make_eco_desc <- function(bio_df
                           , n_ind_max = 3
                           , ind_val_iter = 3000
                           , wt_ht_quant = 0.5
-                          , sites_sf_quant = 0.75
+                          , sites_sf_prop = 1 / 3
                           , ht_sf_quant = 0.5
                           , sites_sf_taxa_quant = 0.95
                           , colour_map = NULL
@@ -142,12 +142,14 @@ make_eco_desc <- function(bio_df
                                    , breaks = c(cut_ht$ht_thresh)
                                    )
                   ) |>
-    dplyr::left_join(sa_vsf) |>
-    dplyr::mutate(sf = tolower(gsub(".* ", "", sa_vsf)))
+    dplyr::left_join(sa_vsf |>
+                       dplyr::mutate(sf = tolower(gsub(".* ", "", sa_vsf))) |>
+                       dplyr::select(! matches("sa_"))
+                     )
 
   context_vsf <- lifeforms_all |>
     dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
-                    , storey_cov, wt_ht, storey, sf, sa_vsf, tot_cov, !!rlang::ensym(sites_col)
+                    , storey_cov, wt_ht, storey, sf, tot_cov, !!rlang::ensym(sites_col)
                     ) |>
     dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), !!rlang::ensym(sites_col)) |>
     # find any storey with more than 5% cover per context
@@ -159,9 +161,10 @@ make_eco_desc <- function(bio_df
     dplyr::filter(!is.na(sf)) |>
     dplyr::distinct()
 
+  suppressWarnings(
   context_vsf_backup <- lifeforms_all |>
     dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
-                    , storey_cov, wt_ht, sf, sa_vsf, tot_cov, !!rlang::ensym(sites_col)
+                    , storey_cov, wt_ht, sf, tot_cov, !!rlang::ensym(sites_col)
                     ) |>
     dplyr::anti_join(context_vsf |>
                        dplyr::distinct(!!rlang::ensym(clust_col))
@@ -169,6 +172,7 @@ make_eco_desc <- function(bio_df
     dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), !!rlang::ensym(sites_col)) |>
     dplyr::filter(storey_cov == max(storey_cov) & wt_ht > quantile(wt_ht, probs = wt_ht_quant, na.rm = TRUE)) |>
     dplyr::ungroup()
+  )
 
   eco_sf <- context_vsf |>
     dplyr::bind_rows(context_vsf_backup) |>
@@ -183,9 +187,10 @@ make_eco_desc <- function(bio_df
     dplyr::count(!!rlang::ensym(clust_col), sf, med_cov, med_ht, !!rlang::ensym(sites_col)
                  , name = "sites_sf"
                  ) |>
-    dplyr::filter(sites_sf > quantile(sites_sf, probs = sites_sf_quant, na.rm = TRUE) | sites_sf == max(sites_sf, na.rm = TRUE)) |>
+    dplyr::mutate(sites_prop = sites_sf / !!rlang::ensym(sites_col)) |>
     dplyr::filter(med_ht > quantile(med_ht, probs = ht_sf_quant, na.rm = TRUE) | med_ht == max(med_ht, na.rm = TRUE)) |>
-    dplyr::mutate(sf_most = names(which.max(table(sf)))) |>
+    dplyr::filter(sites_prop > sites_sf_prop | sites_prop == max(sites_prop)) |>
+    dplyr::mutate(sf_most = sf[which.max(sites_sf)]) |>
     # find a value for 'ht' across all clust_col * sf (still need cov below)
     dplyr::group_by(!!rlang::ensym(clust_col), sf_most, sf, med_cov) |>
     dplyr::mutate(med_ht = max(med_ht, na.rm = TRUE)) |>
