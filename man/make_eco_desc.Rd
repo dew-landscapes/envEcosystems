@@ -23,7 +23,7 @@ make_eco_desc(
   n_ind_max = 3,
   ind_val_iter = 3000,
   wt_ht_quant = 0.5,
-  sites_sf_quant = 0.75,
+  sites_sf_prop = 1/3,
   ht_sf_quant = 0.5,
   sites_sf_taxa_quant = 0.95,
   colour_map = NULL
@@ -80,7 +80,7 @@ indicator for an ecosystem.}
 \item{wt_ht_quant}{Numeric. Threshold (quantile) of weighted heights per site
 that are allowed through to further definition analysis.}
 
-\item{sites_sf_quant}{Numeric. Threshold (quantile) of counts above which to
+\item{sites_sf_prop}{Numeric. Threshold (proportion) of counts above which to
 select structural features for the description.}
 
 \item{ht_sf_quant}{Numeric. Threshold (quantile) of heights above which to
