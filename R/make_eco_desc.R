@@ -126,7 +126,7 @@ make_eco_desc <- function(bio_df
                                    , na.rm = TRUE
                                    )
                   , storey_cov = dplyr::if_else(storey_cov > 1, 1, storey_cov)
-                  , wt_ht = weighted.mean(ht, cover_adj)
+                  , wt_ht = weighted.mean(ht, cover_adj, na.rm = TRUE)
                   ) %>%
     dplyr::ungroup() %>%
     # total cover
@@ -226,17 +226,7 @@ make_eco_desc <- function(bio_df
     # find a value for 'ht' across all clust_col * sf (still need cov below)
     dplyr::group_by(!!rlang::ensym(clust_col), sf_most, sf, med_cov) |>
     dplyr::mutate(med_ht = max(med_ht, na.rm = TRUE)) |>
-    dplyr::ungroup() |>
-    dplyr::mutate(cov_class = cut(dplyr::if_else(med_cov > 1, 1, med_cov) * 100
-                                  , breaks = c(envEcosystems::cut_cov$cov_thresh)
-                                  )
-                  , ht_class = cut(med_ht
-                                   , breaks = c(envEcosystems::cut_ht$ht_thresh)
-                                   )
-                  ) |>
-    dplyr::left_join(envEcosystems::sa_vsf |>
-                       dplyr::mutate(sf = sa_sf)
-                     )
+    dplyr::ungroup()
 
 
   # Structure taxa ---------
