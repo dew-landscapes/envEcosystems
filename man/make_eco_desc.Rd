@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_eco_desc.R
 \name{make_eco_desc}
 \alias{make_eco_desc}
-\title{Make a description for an ecosystem}
+\title{Make a (biotic) description for an ecosystem}
 \usage{
 make_eco_desc(
   bio_df,
@@ -22,7 +22,6 @@ make_eco_desc(
   use_p_val = 0.05,
   n_ind_max = 3,
   ind_val_iter = 3000,
-  wt_ht_quant = 0.5,
   sites_sf_prop = 1/3,
   ht_sf_quant = 0.5,
   sites_sf_taxa_quant = 0.95,
@@ -77,14 +76,11 @@ indicator for an ecosystem.}
 \code{envCluster::make_ind_val_df()}, and then into the \code{numitr} argument of
 \code{labdsv::indval()}.}
 
-\item{wt_ht_quant}{Numeric. Threshold (quantile) of weighted heights per site
-that are allowed through to further definition analysis.}
-
-\item{sites_sf_prop}{Numeric. Threshold (proportion) of counts above which to
-select structural features for the description.}
+\item{sites_sf_prop}{Numeric. Threshold (proportion) of sites above which to
+choose structural features for the description.}
 
 \item{ht_sf_quant}{Numeric. Threshold (quantile) of heights above which to
-select structural features for the description.}
+choose structural features for the description.}
 
 \item{sites_sf_taxa_quant}{Numeric. Threshold (quantile) of counts above
 which a taxa will be used as an example of a structural feature.}
@@ -93,5 +89,24 @@ which a taxa will be used as an example of a structural feature.}
 (in a column called \code{colour}).}
 }
 \description{
-Make a description for an ecosystem
+The description includes: key structural formation; taxa associated with
+that structural formation; indicator taxa; and taxa present at a 'high'
+proportion of sites.
+}
+\details{
+The structural component is determined by:
+\itemize{
+\item finding the highest 'storey' per site with greater than 5\% cover
+\item within that storey, across all sites in a cluster, finding the highest,
+most frequent structural formation(s). See \code{ht_sf_quant} and \code{sites_sf_prop}
+\item finding taxa that represent that structural formation across sites (\code{sites_sf_taxa_quant})
+}
+
+Indicator taxa are determined using \code{labdsv::inval()}. See \code{use_p_val},
+\code{n_ind_max} and \code{inf_val_iter}.
+
+Common taxa are determined as any taxa occurring at more than
+\code{use_prop_thresh} sites within a cluster.
+
+Indicator taxa and structural taxa are prevented from also being common taxa.
 }

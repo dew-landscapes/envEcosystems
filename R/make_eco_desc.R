@@ -1,5 +1,24 @@
 
-#' Make a description for an ecosystem
+#' Make a (biotic) description for an ecosystem
+#'
+#' The description includes: key structural formation; taxa associated with
+#' that structural formation; indicator taxa; and taxa present at a 'high'
+#' proportion of sites.
+#'
+#' The structural component is determined by:
+#'
+#' * finding the highest 'storey' per site with greater than 5% cover
+#' * within that storey, across all sites in a cluster, finding the highest,
+#' most frequent structural formation(s). See `ht_sf_quant` and `sites_sf_prop`
+#' * finding taxa that represent that structural formation across sites (`sites_sf_taxa_quant`)
+#'
+#' Indicator taxa are determined using `labdsv::inval()`. See `use_p_val`,
+#' `n_ind_max` and `inf_val_iter`.
+#'
+#' Common taxa are determined as any taxa occurring at more than
+#' `use_prop_thresh` sites within a cluster.
+#'
+#' Indicator taxa and structural taxa are prevented from also being common taxa.
 #'
 #' @param clust_df Dataframe with `context` column(s) and a column with cluster
 #' membership for that context. Optional if `clust_col` appears in bio_df.
@@ -31,12 +50,10 @@
 #' @param ind_val_iter Passed to the `...` argument of
 #' `envCluster::make_ind_val_df()`, and then into the `numitr` argument of
 #' `labdsv::indval()`.
-#' @param wt_ht_quant Numeric. Threshold (quantile) of weighted heights per site
-#' that are allowed through to further definition analysis.
-#' @param sites_sf_prop Numeric. Threshold (proportion) of counts above which to
-#' select structural features for the description.
+#' @param sites_sf_prop Numeric. Threshold (proportion) of sites above which to
+#' choose structural features for the description.
 #' @param ht_sf_quant Numeric. Threshold (quantile) of heights above which to
-#' select structural features for the description.
+#' choose structural features for the description.
 #' @param sites_sf_taxa_quant Numeric. Threshold (quantile) of counts above
 #' which a taxa will be used as an example of a structural feature.
 #' @param colour_map Dataframe mapping any column in result to colour values
@@ -63,7 +80,6 @@ make_eco_desc <- function(bio_df
                           , use_p_val = 0.05
                           , n_ind_max = 3
                           , ind_val_iter = 3000
-                          , wt_ht_quant = 0.5
                           , sites_sf_prop = 1 / 3
                           , ht_sf_quant = 0.5
                           , sites_sf_taxa_quant = 0.95
@@ -92,10 +108,9 @@ make_eco_desc <- function(bio_df
                                               )
                               )
 
-  #------str-------
-
   sites_col <- paste0(clust_col, "_sites")
 
+  # Add storey and structure -------
   lifeforms_all <- bio_df |>
     dplyr::left_join(lustr) |>
     dplyr::inner_join(clust_df |>
@@ -110,6 +125,7 @@ make_eco_desc <- function(bio_df
     dplyr::mutate(storey_cov = sum(!!rlang::ensym(cov_col)
                                    , na.rm = TRUE
                                    )
+                  , storey_cov = dplyr::if_else(storey_cov > 1, 1, storey_cov)
                   , wt_ht = weighted.mean(ht, cover_adj)
                   ) %>%
     dplyr::ungroup() %>%
@@ -136,46 +152,55 @@ make_eco_desc <- function(bio_df
                    , desc(sort)
                    ) |>
     dplyr::mutate(cov_class = cut(storey_cov * 100
-                                  , breaks = c(cut_cov$cov_thresh)
+                                  , breaks = c(envEcosystems::cut_cov$cov_thresh)
                                   )
                   , ht_class = cut(wt_ht
-                                   , breaks = c(cut_ht$ht_thresh)
+                                   , breaks = c(envEcosystems::cut_ht$ht_thresh)
                                    )
                   ) |>
     dplyr::left_join(sa_vsf |>
-                       dplyr::mutate(sf = tolower(gsub(".* ", "", sa_vsf))) |>
+                       dplyr::mutate(sf = sa_sf) |>
                        dplyr::select(! matches("sa_"))
                      )
 
-  context_vsf <- lifeforms_all |>
-    dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
-                    , storey_cov, wt_ht, storey, sf, tot_cov, !!rlang::ensym(sites_col)
-                    ) |>
-    dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), !!rlang::ensym(sites_col)) |>
-    # find any storey with more than 5% cover per context
-    dplyr::filter(storey_cov > 0.05) |>
-    # find highest storey(s) per context (allows multiple 'high' sf per context)
-    dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), !!rlang::ensym(sites_col)) |>
-    dplyr::filter(wt_ht >= quantile(wt_ht, probs = wt_ht_quant, na.rm = TRUE)) |>
-    dplyr::ungroup() |>
-    dplyr::filter(!is.na(sf)) |>
-    dplyr::distinct()
 
+  # Storey -------
+  # Filter to the tallest storey PER SITE (with > 5% cover)
   suppressWarnings(
-  context_vsf_backup <- lifeforms_all |>
-    dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
-                    , storey_cov, wt_ht, sf, tot_cov, !!rlang::ensym(sites_col)
-                    ) |>
-    dplyr::anti_join(context_vsf |>
-                       dplyr::distinct(!!rlang::ensym(clust_col))
-                     ) |>
-    dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), !!rlang::ensym(sites_col)) |>
-    dplyr::filter(storey_cov == max(storey_cov) & wt_ht > quantile(wt_ht, probs = wt_ht_quant, na.rm = TRUE)) |>
-    dplyr::ungroup()
+    context_storey <- lifeforms_all |>
+      dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
+                      , storey_cov, wt_ht, storey, sf, tot_cov, !!rlang::ensym(sites_col)
+                      ) |>
+      dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), !!rlang::ensym(sites_col)) |>
+      # find any storey with more than 5% cover per context
+      dplyr::filter(storey_cov > 0.05) |>
+      # find highest storey per context
+      dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), !!rlang::ensym(sites_col)) |>
+      dplyr::filter(wt_ht == max(wt_ht, na.rm = TRUE)) |>
+      dplyr::ungroup() |>
+      dplyr::filter(!is.na(sf)) |>
+      dplyr::distinct()
   )
 
-  eco_sf <- context_vsf |>
-    dplyr::bind_rows(context_vsf_backup) |>
+  suppressWarnings(
+    # backup if context has no storey that reaches 5% cover
+    context_storey_backup <- lifeforms_all |>
+      dplyr::distinct(dplyr::across(tidyselect::all_of(c(clust_col, context)))
+                      , storey_cov, wt_ht, sf, tot_cov, !!rlang::ensym(sites_col)
+                      ) |>
+      dplyr::anti_join(context_storey |>
+                         dplyr::distinct(!!rlang::ensym(clust_col))
+                       ) |>
+      dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, context))), !!rlang::ensym(sites_col)) |>
+      dplyr::filter(storey_cov == max(storey_cov, na.rm = TRUE)) |>
+      dplyr::ungroup()
+  )
+
+  # Structure ---------
+  # using only the highest storey from last section
+  # Find the most frequent, tallest, structure PER CLUSTER
+  eco_sf <- context_storey |>
+    dplyr::bind_rows(context_storey_backup) |>
     # median height for each sf and cluster
     dplyr::group_by(!!rlang::ensym(clust_col), sf) |>
     dplyr::mutate(med_ht = median(wt_ht, na.rm = TRUE)) |>
@@ -184,21 +209,38 @@ make_eco_desc <- function(bio_df
     dplyr::group_by(!!rlang::ensym(clust_col)) |>
     dplyr::mutate(med_cov = median(tot_cov, na.rm = TRUE)) |>
     # find the most frequent, highest sf
-    dplyr::count(!!rlang::ensym(clust_col), sf, med_cov, med_ht, !!rlang::ensym(sites_col)
+    dplyr::distinct(dplyr::across(tidyselect::any_of(context))
+                    , !!rlang::ensym(clust_col), sf, med_cov, med_ht
+                    , !!rlang::ensym(sites_col)
+                    ) |>
+    dplyr::count(!!rlang::ensym(clust_col), sf, med_cov, med_ht
+                 , !!rlang::ensym(sites_col)
                  , name = "sites_sf"
                  ) |>
     dplyr::mutate(sites_prop = sites_sf / !!rlang::ensym(sites_col)) |>
+
     dplyr::filter(med_ht > quantile(med_ht, probs = ht_sf_quant, na.rm = TRUE) | med_ht == max(med_ht, na.rm = TRUE)) |>
     dplyr::filter(sites_prop > sites_sf_prop | sites_prop == max(sites_prop)) |>
+
     dplyr::mutate(sf_most = sf[which.max(sites_sf)]) |>
     # find a value for 'ht' across all clust_col * sf (still need cov below)
     dplyr::group_by(!!rlang::ensym(clust_col), sf_most, sf, med_cov) |>
     dplyr::mutate(med_ht = max(med_ht, na.rm = TRUE)) |>
-    dplyr::ungroup()
+    dplyr::ungroup() |>
+    dplyr::mutate(cov_class = cut(dplyr::if_else(med_cov > 1, 1, med_cov) * 100
+                                  , breaks = c(envEcosystems::cut_cov$cov_thresh)
+                                  )
+                  , ht_class = cut(med_ht
+                                   , breaks = c(envEcosystems::cut_ht$ht_thresh)
+                                   )
+                  ) |>
+    dplyr::left_join(envEcosystems::sa_vsf |>
+                       dplyr::mutate(sf = sa_sf)
+                     )
 
 
-  # str taxa ---------
-
+  # Structure taxa ---------
+  # Find the taxa that represent the previously determined structure per cluster
   eco_sf_taxa_prep <- eco_sf |>
     dplyr::inner_join(lifeforms_all) |>
     dplyr::count(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))), sf_most, sf, med_cov, med_ht, !!rlang::ensym(sites_col)
@@ -235,9 +277,7 @@ make_eco_desc <- function(bio_df
                      ) |>
     dplyr::ungroup()
 
-  #------taxa-------
-
-  ## ind -------
+  # Indicator taxa ---------
   if(is.null(ind_val_df)) {
 
     ind_val_df <- make_ind_val_df(clust_df = clust_df
@@ -287,7 +327,7 @@ make_eco_desc <- function(bio_df
     dplyr::ungroup()
 
 
-  ## prop -----
+  # Common taxa  -----
   eco_taxa <- bio_df %>%
     dplyr::inner_join(clust_df) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
@@ -318,7 +358,7 @@ make_eco_desc <- function(bio_df
     dplyr::summarise(range_taxa = envFunc::vec_to_sentence(text, end = "and/or")) %>%
     dplyr::ungroup()
 
-  # colour --------
+  # Cluster colour --------
   if(isTRUE(is.null(colour_map))) {
 
     colour_map <- tibble::tibble(!!rlang::ensym(clust_col) := unique(clust_df[clust_col][[1]])) %>%
@@ -326,7 +366,7 @@ make_eco_desc <- function(bio_df
 
   }
 
-  #--------desc ---------
+  # Final description ---------
 
   id_col <- paste0(clust_col, "_id")
 
