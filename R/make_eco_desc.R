@@ -37,9 +37,6 @@
 #' abundance is helpful here.
 #' @param str_col Character name of column in `bio_df` and `lustr`containing
 #' lifeform (or structural) information.
-#' @param keep_cols Character. Name of any columns in `bio_df` that
-#' should be passed through to the output. These should not lead to any further
-#' combinations (rows) than `clust_col` alone does.
 #' @param lustr Dataframe containing lifeform (structural) information.
 #' @param indigenous_df dataframe containing indigenous status for each unique
 #' `taxa_col` in `bio_df`
@@ -76,7 +73,6 @@ make_eco_desc <- function(bio_df
                           , ht_col = "ht"
                           , lustr
                           , str_col = "lifeform"
-                          , keep_cols = c("landcover", "veg")
                           , indigenous_df = NULL
                           , indicator_p_val = 0.05
                           , indicator_max_n = 3
@@ -86,13 +82,14 @@ make_eco_desc <- function(bio_df
                           , colour_map = NULL
                           ) {
 
-  keep_cols <- c(clust_col, cov_col, taxa_col, str_col, ht_col, ind_abu_col, "ind")
-
   # unique ------
   bio_df <- bio_df |>
     tibble::as_tibble() |>
     dplyr::distinct(dplyr::across(tidyselect::any_of(c(context
-                                                       , keep_cols
+                                                       , clust_col, cov_col
+                                                       , taxa_col, str_col
+                                                       , ht_col, ind_abu_col
+                                                       , "ind"
                                                        )
                                                      )
                                   )
@@ -103,7 +100,7 @@ make_eco_desc <- function(bio_df
   # sites col --------
   clust_col_sites <- bio_df |>
     dplyr::count(dplyr::across(tidyselect::any_of(c(clust_col, context)))) |>
-    dplyr::count(!!rlang::ensym(clust_col)
+    dplyr::count(dplyr::across(tidyselect::any_of(clust_col))
                  , name = sites_col
                  )
 
@@ -130,6 +127,18 @@ make_eco_desc <- function(bio_df
     return(result)
 
   }
+
+  # ht and cov -----
+  eco_ht_cov <- lifeforms_all |>
+    dplyr::group_by(dplyr::across(tidyselect::any_of(c(clust_col, context)))) |>
+    dplyr::summarise(cov = sum(cover_adj, na.rm = TRUE)
+                     , ht = max(ht, na.rm = TRUE)
+                     ) |>
+    dplyr::ungroup() |>
+    dplyr::group_by(!!rlang::ensym(clust_col)) |>
+    dplyr::summarise(med_cov = median(cov)
+                     , med_ht = median(ht)
+                     )
 
   # Important ---------
   # Find the most important taxa PER CLUSTER
@@ -188,6 +197,7 @@ make_eco_desc <- function(bio_df
     dplyr::summarise(imp_taxa = envFunc::vec_to_sentence(imp_taxa, end = "and/or")) |>
     dplyr::ungroup()
 
+  # indicator -----
   eco_ind_prep <- ind_val_df |>
     dplyr::group_by(!!rlang::ensym(clust_col)) |>
     dplyr::slice_min(p_val
@@ -223,8 +233,8 @@ make_eco_desc <- function(bio_df
     dplyr::ungroup()
 
 
-  # Common taxa  -----
-  eco_taxa <- bio_df |>
+  # Common  -----
+  eco_common <- bio_df |>
     dplyr::left_join(dplyr::distinct(taxonomy$ind)) |>
     dplyr::count(!!rlang::ensym(clust_col), taxa, ind, name = "taxa_sites") |>
     dplyr::left_join(clust_col_sites) |>
@@ -248,7 +258,7 @@ make_eco_desc <- function(bio_df
     dplyr::ungroup() |>
     dplyr::mutate(text = paste0(freq, " ", text)) |>
     dplyr::group_by(!!rlang::ensym(clust_col)) |>
-    dplyr::summarise(range_taxa = envFunc::vec_to_sentence(text, end = "and/or")) |>
+    dplyr::summarise(common_taxa = envFunc::vec_to_sentence(text, end = "and/or")) |>
     dplyr::ungroup()
 
   # Cluster colour --------
@@ -264,7 +274,8 @@ make_eco_desc <- function(bio_df
   id_col <- paste0(clust_col, "_id")
 
   desc_res <- clust_col_sites |>
-    dplyr::left_join(eco_taxa) |>
+    dplyr::left_join(eco_ht_cov) |>
+    dplyr::left_join(eco_common) |>
     dplyr::left_join(eco_ind) |>
     dplyr::left_join(eco_imp) |>
     dplyr::mutate(desc_md = paste0(!!rlang::ensym(clust_col)
@@ -276,10 +287,10 @@ make_eco_desc <- function(bio_df
                                                              , range_ind_md
                                                              )
                                                     )
-                                   , dplyr::if_else(is.na(range_taxa)
+                                   , dplyr::if_else(is.na(common_taxa)
                                                     , ""
                                                     , paste0(". with "
-                                                             , range_taxa
+                                                             , common_taxa
                                                              )
                                                     )
                                    )
