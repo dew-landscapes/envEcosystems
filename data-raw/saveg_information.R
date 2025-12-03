@@ -92,6 +92,12 @@
     , 10, 1, "Mallees", "over", "Very open low mallee"
     , 5, 1, "Mallees", "over", "Very very open low mallee"
 
+    , 100, 5, "Shrubs", "over", "Tall closed shrubland"
+    , 70, 5, "Shrubs", "over", "Tall shrubland"
+    , 30, 5, "Shrubs", "over", "Tall open shrubland"
+    , 10, 5, "Shrubs", "over", "Tall very open shrubland"
+    , 5, 5, "Shrubs", "over", "Tall very very open shrubland"
+
     , 100, 3, "Shrubs", "mid", "Tall closed shrubland"
     , 70, 3, "Shrubs", "mid", "Tall shrubland"
     , 30, 3, "Shrubs", "mid", "Tall open shrubland"
@@ -128,11 +134,11 @@
     , 10, 1, "Hummock grasses", "hummock", "Tall very open hummock grassland"
     , 5, 1, "Hummock grasses", "hummock", "Tall very very open hummock grassland"
 
-    , 100, 1, "Sedges", "mid", "Tall closed grassland"
-    , 70, 1, "Sedges", "mid", "Tall grassland"
-    , 30, 1, "Sedges", "mid", "Tall open grassland"
-    , 10, 1, "Sedges", "mid", "Tall very open grassland"
-    , 5, 1, "Sedges", "mid", "Tall very very open grassland"
+    , 100, 1, "Sedges", "mid", "Tall closed sedgeland"
+    , 70, 1, "Sedges", "mid", "Tall sedgeland"
+    , 30, 1, "Sedges", "mid", "Tall open sedgeland"
+    , 10, 1, "Sedges", "mid", "Tall very open sedgeland"
+    , 5, 1, "Sedges", "mid", "Tall very very open sedgeland"
 
     , 100, 1, "Forbs", "mid", "Tall closed grassland"
     , 70, 1, "Forbs", "mid", "Tall grassland"
@@ -182,11 +188,11 @@
     , 10, 0.5, "Grasses", "ground", "Very open grassland"
     , 5, 0.5, "Grasses", "ground", "Very very open grassland"
 
-    , 100, 0.5, "Sedges", "ground", "Closed grassland"
-    , 70, 0.5, "Sedges", "ground", "Grassland"
-    , 30, 0.5, "Sedges", "ground", "Open grassland"
-    , 10, 0.5, "Sedges", "ground", "Very open grassland"
-    , 5, 0.5, "Sedges", "ground", "Very very open grassland"
+    , 100, 0.5, "Sedges", "ground", "Closed sedgeland"
+    , 70, 0.5, "Sedges", "ground", "Sedgeland"
+    , 30, 0.5, "Sedges", "ground", "Open sedgeland"
+    , 10, 0.5, "Sedges", "ground", "Very open sedgeland"
+    , 5, 0.5, "Sedges", "ground", "Very very open sedgeland"
 
     , 100, 0.5, "Forbs", "ground", "Closed grassland"
     , 70, 0.5, "Forbs", "ground", "Grassland"
