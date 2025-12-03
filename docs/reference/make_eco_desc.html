@@ -63,7 +63,6 @@ indicator taxa; and other taxa present at a 'high' proportion of sites.</p>
 <span>  ht_col <span class="op">=</span> <span class="st">"ht"</span>,</span>
 <span>  <span class="va">lustr</span>,</span>
 <span>  str_col <span class="op">=</span> <span class="st">"lifeform"</span>,</span>
-<span>  keep_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"landcover"</span>, <span class="st">"veg"</span><span class="op">)</span>,</span>
 <span>  indigenous_df <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  indicator_p_val <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  indicator_max_n <span class="op">=</span> <span class="fl">3</span>,</span>
@@ -124,12 +123,6 @@ abundance is helpful here.</p></dd>
 <dt id="arg-str-col">str_col<a class="anchor" aria-label="anchor" href="#arg-str-col"></a></dt>
 <dd><p>Character name of column in <code>bio_df</code> and <code>lustr</code>containing
 lifeform (or structural) information.</p></dd>
-
-
-<dt id="arg-keep-cols">keep_cols<a class="anchor" aria-label="anchor" href="#arg-keep-cols"></a></dt>
-<dd><p>Character. Name of any columns in <code>bio_df</code> that
-should be passed through to the output. These should not lead to any further
-combinations (rows) than <code>clust_col</code> alone does.</p></dd>
 
 
 <dt id="arg-indigenous-df">indigenous_df<a class="anchor" aria-label="anchor" href="#arg-indigenous-df"></a></dt>

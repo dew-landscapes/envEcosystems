@@ -15,7 +15,6 @@ make_eco_desc(
   ht_col = "ht",
   lustr,
   str_col = "lifeform",
-  keep_cols = c("landcover", "veg"),
   indigenous_df = NULL,
   indicator_p_val = 0.05,
   indicator_max_n = 3,
@@ -53,10 +52,6 @@ abundance is helpful here.}
 
 \item{str_col}{Character name of column in \code{bio_df} and \code{lustr}containing
 lifeform (or structural) information.}
-
-\item{keep_cols}{Character. Name of any columns in \code{bio_df} that
-should be passed through to the output. These should not lead to any further
-combinations (rows) than \code{clust_col} alone does.}
 
 \item{indigenous_df}{dataframe containing indigenous status for each unique
 \code{taxa_col} in \code{bio_df}}
