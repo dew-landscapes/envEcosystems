@@ -26,7 +26,7 @@
 #' @param context Character. Name(s) of column(s) in `bio_df` that define bins.
 #' @param clust_col Character. Name of column in `bio_df` containing cluster
 #' membership.
-#' @param taxa_col Character. Name of column in `bio_df` and/or `taxonomy`
+#' @param taxa_col Character. Name of column in `bio_df` and/or `indigenous_df`
 #' containing the taxa names.
 #' @param cov_col Character. Name of column in `bio_df` with numeric
 #' abundance data (usually 'cover' for plants).
@@ -173,7 +173,7 @@ make_eco_desc <- function(bio_df
                      )
 
   eco_imp <- eco_imp_prep |>
-    dplyr::left_join(taxonomy$ind |>
+    dplyr::left_join(indigenous_df |>
                        dplyr::distinct()
                      ) |>
     dplyr::mutate(imp_taxa = dplyr::if_else(ind == "N"
@@ -218,7 +218,7 @@ make_eco_desc <- function(bio_df
 
   eco_ind <- eco_ind_prep |>
     dplyr::arrange(!!rlang::ensym(clust_col)) %>%
-    dplyr::left_join(dplyr::distinct(taxonomy$ind)) %>%
+    dplyr::left_join(dplyr::distinct(indigenous_df)) %>%
     dplyr::mutate(use_taxa = dplyr::if_else(ind == "N"
                                             , paste0("&ast;_", taxa, "_")
                                             , paste0("_", taxa, "_")
@@ -235,7 +235,7 @@ make_eco_desc <- function(bio_df
 
   # Common  -----
   eco_common <- bio_df |>
-    dplyr::left_join(dplyr::distinct(taxonomy$ind)) |>
+    dplyr::left_join(dplyr::distinct(indigenous_df)) |>
     dplyr::count(!!rlang::ensym(clust_col), taxa, ind, name = "taxa_sites") |>
     dplyr::left_join(clust_col_sites) |>
     dplyr::mutate(prop = taxa_sites / !!rlang::ensym(sites_col)) |>
