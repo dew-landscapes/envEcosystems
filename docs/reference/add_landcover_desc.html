@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
-  <a href="https://github.com/Acanthiza/envEcosystems/" class="external-link">
+  <a href="https://github.com/dew-landscapes/envEcosystems/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
 
   </a>
@@ -41,7 +41,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Add 'extra' ecosystem descriptions</h1>
-    <small class="dont-index">Source: <a href="https://github.com/Acanthiza/envEcosystems/blob/HEAD/R/add_landcover_desc.R" class="external-link"><code>R/add_landcover_desc.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/dew-landscapes/envEcosystems/blob/HEAD/R/add_landcover_desc.R" class="external-link"><code>R/add_landcover_desc.R</code></a></small>
     <div class="hidden name"><code>add_landcover_desc.Rd</code></div>
     </div>
 
@@ -55,9 +55,9 @@
 <span>  <span class="va">add_eco</span>,</span>
 <span>  clust_col <span class="op">=</span> <span class="st">"cluster"</span>,</span>
 <span>  add_clust_col <span class="op">=</span> <span class="st">"cluster"</span>,</span>
+<span>  clust_keep_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"landcover"</span>, <span class="st">"veg"</span><span class="op">)</span>,</span>
 <span>  add_name <span class="op">=</span> <span class="st">"Landcover"</span>,</span>
-<span>  colour_map <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  add_colour_col <span class="op">=</span> <span class="st">"lc_col"</span></span>
+<span>  colour_map <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -83,6 +83,12 @@
 <code>add_eco</code>.</p></dd>
 
 
+<dt id="arg-clust-keep-cols">clust_keep_cols<a class="anchor" aria-label="anchor" href="#arg-clust-keep-cols"></a></dt>
+<dd><p>Character. Name of any columns in <code>add_eco</code> that
+should be passed through to the output. These should not lead to any further
+combinations (rows) than <code>clust_col</code> alone does.</p></dd>
+
+
 <dt id="arg-add-name">add_name<a class="anchor" aria-label="anchor" href="#arg-add-name"></a></dt>
 <dd><p>Character name of any prefix to use in descriptions for extra
 ecosystems. e.g. "Landcover" to make, say, "cropping" into "Landcover:
@@ -90,13 +96,8 @@ cropping".</p></dd>
 
 
 <dt id="arg-colour-map">colour_map<a class="anchor" aria-label="anchor" href="#arg-colour-map"></a></dt>
-<dd><p>Dataframe mapping <code>add_clust_col</code> to colour values to use
-in mapping.</p></dd>
-
-
-<dt id="arg-add-colour-col">add_colour_col<a class="anchor" aria-label="anchor" href="#arg-add-colour-col"></a></dt>
-<dd><p>Character name of column in <code>colour_map</code> that has the
-colour values.</p></dd>
+<dd><p>Dataframe mapping any column in <code>add_eco</code> to colour values
+(in a column called <code>colour</code>).</p></dd>
 
 </dl></div>
     <div id="value">
@@ -117,7 +118,7 @@ each row of <code>add_eco</code></p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>

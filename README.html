@@ -625,15 +625,15 @@ Braun-Blanquet cover codes to various numeric cover values.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  lucover</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 7 × 12</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt;   cover_code cover_description                     cover_desc cover_seq cover_1 cover_2 cover_3 cover_4    pa cover_mid cover_max cover_min</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;      &lt;chr&gt;                                 &lt;chr&gt;          &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 1 N          not many, 1-10 individuals            1-10 indi…        13       1    0.02    0.01    0.01     1     0.01       0.01      0   </span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; 2 T          sparsely or very sparsely present - … sparsely …        11       2    0.01    0.5     0.1      1     0.015      0.02      0.01</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 3 1          plentiful but of small cover (less t… &lt;5%                9       3    0.03    1       1        1     0.025      0.05      0.02</span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; 4 2          any number of individuals covering 5… 5-25%              7       4    0.05    2       2        1     0.15       0.25      0.05</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 5 3          any no. of individuals covering 25-5… 25-50%             5       5    0.25    3       3        1     0.375      0.5       0.25</span></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; 6 4          any no. of individuals covering 50-7… 50-75%             3       6    0.5     4       4        1     0.625      0.75      0.5 </span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; 7 5          covering more than 75% of the area    &gt;75%               1       7    0.75    5       5        1     0.875      1         0.75</span></span></code></pre></div>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt;   cover_code cover_description                                                   cover_desc      cover_seq cover_1 cover_2 cover_3 cover_4    pa cover_mid cover_max cover_min</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;      &lt;chr&gt;                                                               &lt;chr&gt;               &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 1 N          not many, 1-10 individuals                                          1-10 individua…        13       1    0.02    0.01    0.01     1     0.01       0.01     0.005</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; 2 T          sparsely or very sparsely present - cover very small (less than 5%) sparsely prese…        11       2    0.01    0.5     0.1      1     0.015      0.02     0.01 </span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 3 1          plentiful but of small cover (less than 5%)                         &lt;5%                     9       3    0.03    1       1        1     0.025      0.05     0.02 </span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; 4 2          any number of individuals covering 5-25% of the area                5-25%                   7       4    0.05    2       2        1     0.15       0.25     0.05 </span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 5 3          any no. of individuals covering 25-50% of the area                  25-50%                  5       5    0.25    3       3        1     0.375      0.5      0.25 </span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; 6 4          any no. of individuals covering 50-75% of the area                  50-75%                  3       6    0.5     4       4        1     0.625      0.75     0.5  </span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; 7 5          covering more than 75% of the area                                  &gt;75%                    1       7    0.75    5       5        1     0.875      1        0.75</span></span></code></pre></div>
 <h2 id="what-else-is-in-envecosystems">What else is in
 <code>envEcosystems</code></h2>
 <p>The following functions and data sets are provided in
@@ -641,95 +641,100 @@ Braun-Blanquet cover codes to various numeric cover values.</p>
 for more examples.</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th align="left">object</th>
 <th align="left">class</th>
 <th align="left">description</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td align="left">[add_landcover_desc()]</td>
 <td align="left">function</td>
 <td align="left">Add ‘extra’ ecosystem descriptions</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">[cut_cov]</td>
 <td align="left">tbl_df, tbl and data.frame</td>
 <td align="left">Cover class threshold values</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">[cut_ht]</td>
 <td align="left">tbl_df, tbl and data.frame</td>
 <td align="left">Height class threshold values</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">[lucover]</td>
 <td align="left">tbl_df, tbl and data.frame</td>
 <td align="left">Lookup for cover codes</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">[lulandcover]</td>
 <td align="left">tbl_df, tbl and data.frame</td>
 <td align="left">Lookup for landcover classes and their associated
 colours</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">[lulifeform]</td>
 <td align="left">tbl_df, tbl and data.frame</td>
 <td align="left">Lookup for lifeform codes</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">[lulifespan]</td>
 <td align="left">tbl_df, tbl and data.frame</td>
 <td align="left">Lookup for lifespan classes</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">[make_eco_desc()]</td>
 <td align="left">function</td>
-<td align="left">Make a description for an ecosystem</td>
+<td align="left">Make a (biotic) description for an ecosystem</td>
 </tr>
-<tr class="odd">
+<tr>
+<td align="left">[make_eco_desc_old()]</td>
+<td align="left">function</td>
+<td align="left">Make a (biotic) description for an ecosystem</td>
+</tr>
+<tr>
 <td align="left">[make_eco_env()]</td>
 <td align="left">function</td>
 <td align="left">Make a dataframe summarising environmental variables
 per cluster.</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">[make_eco_str_per()]</td>
 <td align="left">function</td>
 <td align="left">Create a dataframe of taxa percent cover for each
 cluster</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">[make_eco_taxa_per()]</td>
 <td align="left">function</td>
 <td align="left">Create a dataframe of taxa percent cover for each
 cluster</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">[sa_sf]</td>
 <td align="left">tbl_df, tbl and data.frame</td>
 <td align="left">Lookup for broad structural formations</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">[sa_vsf]</td>
 <td align="left">tbl_df, tbl and data.frame</td>
 <td align="left">Lookup for South Australian vegetation structural
 formations</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">[set_eco_col()]</td>
 <td align="left">function</td>
 <td align="left">Set colours for individual ecosystems, using gradations
 within ecotype</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">[taxa_samphire]</td>
 <td align="left">character</td>
 <td align="left">Vector of samphire taxa</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">[taxa_wetland]</td>
 <td align="left">character</td>
 <td align="left">Vector of wetland taxa</td>

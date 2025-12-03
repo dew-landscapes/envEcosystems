@@ -8,18 +8,14 @@ Authors@R:
            email = "nigel.willoughby@sa.gov.au")
 Description: Create ecosystem: descriptions; taxa lists; indicator taxa;
     environmental correlates; and colours (for use in mapping and figures).
-    Descriptions are along the lines of 'Low open shrubland: always _Samolus
-    repens_, _Salicornia quinqueflora_ and frequent _Frankenia pauciflora_; with
-    emergent occasional _Austrostipa stipoides_, _Chenopodium candolleanum_,
-    _Enchylaena tomentosa_'.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 RdMacros: Rdpack
-URL: https://github.com/Acanthiza/envEcosystems
-BugReports: https://github.com/Acanthiza/envEcosystems/issues
+URL: https://github.com/dew-landscapes/envEcosystems
+BugReports: https://github.com/dew-landscapes/envEcosystems/issues
 Depends: 
     R (>= 2.10)
 Imports: 
@@ -27,13 +23,13 @@ Imports:
     dplyr,
     tibble,
     tidyr,
-    Rdpack,
     magrittr,
     purrr,
     viridis,
-    colourvalues,
-    forcats
+    forcats,
+    Rdpack,
+    rlang,
+    tidyselect
 Remotes:
     github::gastonstat/colortools,
-    github::acanthiza/envFunc,
-    github::acanthiza/envRaster
+    github::dew-landscapes/envFunc

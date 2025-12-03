@@ -3,6 +3,7 @@
 export("%>%")
 export(add_landcover_desc)
 export(make_eco_desc)
+export(make_eco_desc_old)
 export(make_eco_env)
 export(make_eco_str_per)
 export(make_eco_taxa_per)
