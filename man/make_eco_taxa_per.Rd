@@ -2,37 +2,48 @@
 % Please edit documentation in R/make_eco_taxa_per.R
 \name{make_eco_taxa_per}
 \alias{make_eco_taxa_per}
-\title{Create a dataframe of taxa percent cover for each cluster}
+\title{Create a dataframe of taxa information for each cluster}
 \usage{
 make_eco_taxa_per(
-  clust_df,
-  clust_col = "cluster",
-  bio_df,
+  bio_clust_df,
   context,
+  clust_col = "cluster",
   taxa_col = "taxa",
-  cov_col = "cover",
-  lustr = NULL
+  cov_col = "cover_adj",
+  ht_col = "use_height",
+  str_col = "lifeform",
+  lustr = envEcosystems::lulifeform
 )
 }
 \arguments{
-\item{clust_df}{Dataframe with column indicating cluster membership.}
+\item{bio_clust_df}{Long format dataframe with: \code{context}(s) defining bins;
+cluster membership in \code{clust_col}; and taxa information (\code{taxa_col},
+\code{cov_col}, \code{ht_col}, \code{str_col}).}
 
-\item{clust_col}{Name of column in clustdf with cluster membership.}
+\item{context}{Character. Name of column(s) in \code{bio_clust_df}
+defining the context.}
 
-\item{bio_df}{Dataframe with taxa records. Linked to clust_df by context.}
+\item{clust_col}{Character. Name of column in \code{bio_clust_df} containing cluster
+membership.}
 
-\item{context}{Name of columns defining the context.}
+\item{taxa_col}{Character. Name of column in \code{bio_clust_df} containing taxa
+names.}
 
-\item{taxa_col}{Name of column with taxa.}
+\item{cov_col}{Character. Name of column in \code{bio_clust_df} containing
+(numeric, 0 to 1) cover values.}
 
-\item{cov_col}{Name of column with (numeric) cover values.}
+\item{ht_col}{Character. Name of column in \code{bio_clust_df} containing height
+information.}
+
+\item{str_col}{Character. Name of column in \code{bio_clust_df} and \code{lustr}
+containing lifeform information.}
 
 \item{lustr}{Dataframe of structural information. Needs columns 'str' and
-'storey': structure and storey, respectively.}
+'storey': structure and storey, respectively plus \code{str_col}}
 }
 \value{
-Dataframe with columns clustcol, taxacol, str, storey,
+Tibble with one row per unique value in \code{clust_col}
 }
 \description{
-Optionally including structural information associated with each taxa.
+Create a dataframe of taxa information for each cluster
 }

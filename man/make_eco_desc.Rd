@@ -35,7 +35,7 @@ data in long format.}
 \item{clust_col}{Character. Name of column in \code{bio_df} containing cluster
 membership.}
 
-\item{taxa_col}{Character. Name of column in \code{bio_df} and/or \code{taxonomy}
+\item{taxa_col}{Character. Name of column in \code{bio_df} and/or \code{indigenous_df}
 containing the taxa names.}
 
 \item{cov_col}{Character. Name of column in \code{bio_df} with numeric

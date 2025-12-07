@@ -2,34 +2,44 @@
 % Please edit documentation in R/make_eco_str_per.R
 \name{make_eco_str_per}
 \alias{make_eco_str_per}
-\title{Create a dataframe of taxa percent cover for each cluster}
+\title{Create a dataframe of structural information for each cluster}
 \usage{
 make_eco_str_per(
-  clust_df,
-  clust_col = "cluster",
-  bio_df,
+  bio_clust_df,
   context,
-  cov_col = "cover",
-  lustr
+  clust_col = "cluster",
+  cov_col = "cover_adj",
+  ht_col = "use_height",
+  str_col = "lifeform",
+  lustr = envEcosystems::lulifeform
 )
 }
 \arguments{
-\item{clust_df}{Dataframe with column indicating cluster membership.}
+\item{bio_clust_df}{Long format dataframe with: \code{context}(s) defining bins;
+cluster membership in \code{clust_col}; and taxa information (\code{cov_col}, \code{ht_col},
+\code{str_col}).}
 
-\item{clust_col}{Name of column in clustdf with cluster membership.}
+\item{context}{Character. Name of column(s) in \code{bio_clust_df} defining the
+context.}
 
-\item{bio_df}{Dataframe with taxa records. Linked to clust_df by context.}
+\item{clust_col}{Character. Name of column in \code{bio_clust_df} containing
+cluster membership.}
 
-\item{context}{Name of columns defining the context.}
+\item{cov_col}{Character. Name of column in \code{bio_clust_df} containing
+(numeric, 0 to 1) cover values.}
 
-\item{cov_col}{Name of column in taxa_df with numeric cover values.}
+\item{ht_col}{Character. Name of column in \code{bio_clust_df} containing height
+information.}
 
-\item{lustr}{Dataframe of structural information. Needs columns 'lifeform',
-'str' and 'storey': structure and storey, respectively. See lulifeform.}
+\item{str_col}{Character. Name of column in \code{bio_clust_df} and \code{lustr}
+containing lifeform information.}
+
+\item{lustr}{Dataframe of structural information. Needs column 'str'
+(structure) plus \code{str_col}}
 }
 \value{
-Dataframe with structural information per cluster
+Tibble with one row per unique value in \code{clust_col}
 }
 \description{
-Optionally including structural information associated with each taxa.
+Create a dataframe of structural information for each cluster
 }
