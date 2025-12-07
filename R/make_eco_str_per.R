@@ -1,56 +1,69 @@
-#
-#' Create a dataframe of taxa percent cover for each cluster
+
+#' Create a dataframe of structural information for each cluster
 #'
-#' Optionally including structural information associated with each taxa.
+#' @param bio_clust_df Long format dataframe with: `context`(s) defining bins;
+#' cluster membership in `clust_col`; and taxa information (`cov_col`, `ht_col`,
+#' `str_col`).
+#' @param context Character. Name of column(s) in `bio_clust_df` defining the
+#' context.
+#' @param clust_col Character. Name of column in `bio_clust_df` containing
+#' cluster membership.
+#' @param cov_col Character. Name of column in `bio_clust_df` containing
+#' (numeric, 0 to 1) cover values.
+#' @param ht_col Character. Name of column in `bio_clust_df` containing height
+#' information.
+#' @param str_col Character. Name of column in `bio_clust_df` and `lustr`
+#' containing lifeform information.
+#' @param lustr Dataframe of structural information. Needs column 'str'
+#' (structure) plus `str_col`
 #'
-#' @param clust_df Dataframe with column indicating cluster membership.
-#' @param clust_col Name of column in clustdf with cluster membership.
-#' @param bio_df Dataframe with taxa records. Linked to clust_df by context.
-#' @param context Name of columns defining the context.
-#' @param cov_col Name of column in taxa_df with numeric cover values.
-#' @param lustr Dataframe of structural information. Needs columns 'lifeform',
-#' 'str' and 'storey': structure and storey, respectively. See lulifeform.
-#'
-#' @return Dataframe with structural information per cluster
+#' @return Tibble with one row per unique value in `clust_col`
 #' @export
 
 # Generate the structural percent cover for each cluster
-make_eco_str_per <- function(clust_df
-                        , clust_col = "cluster"
-                        , bio_df
-                        , context
-                        , cov_col = "cover"
-                        , lustr
-                        ) {
+make_eco_str_per <- function(bio_clust_df
+                             , context
+                             , clust_col = "cluster"
+                             , cov_col = "cover_adj"
+                             , ht_col = "use_height"
+                             , str_col = "lifeform"
+                             , lustr = envEcosystems::lulifeform
+                             ) {
 
-  clust_df %>%
-    dplyr::select(any_of(context),!!ensym(clust_col)) %>%
-    dplyr::add_count(cluster, name = "cluster_sites") %>%
-    dplyr::inner_join(bio_df %>%
-                        dplyr::filter(!is.na(lifeform))
-                      ) %>%
-    # cover per lifeform*site (otherwise presences is per taxa, not per str)
-    dplyr::group_by(!!ensym(clust_col),across(any_of(context)),lifeform,cluster_sites) %>%
-    dplyr::summarise(cov = sum(!!ensym(cov_col))) %>%
-    dplyr::ungroup() %>%
-    dplyr::left_join(lustr) %>%
-    dplyr::group_by(!!ensym(clust_col),lifeform,ht,str,storey,cluster_sites) %>%
-    # cover per lifeform * ecosystem
-    dplyr::summarise(presences = n()
-                     , str = names(which.max(table(str)))
-                     , storey = names(which.max(table(storey)))
-                     , sum_cover = sum(cov)
-                     , ht = mean(ht)
-                     ) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(per_pres = 100*presences/cluster_sites
-                  , per_cov = 100*sum_cover/cluster_sites
-                  , per_cov_pres = 100*sum_cover/presences
+  sites_col <- paste0(clust_col, "_sites")
+
+  # sites col --------
+  clust_col_sites <- bio_clust_df |>
+    dplyr::count(dplyr::across(tidyselect::any_of(c(clust_col, context)))) |>
+    dplyr::count(dplyr::across(tidyselect::any_of(clust_col))
+                 , name = sites_col
+                 )
+
+  bio_clust_df |>
+    tibble::as_tibble() |>
+    dplyr::left_join(clust_col_sites) |>
+    dplyr::left_join(lustr) |>
+    dplyr::select(tidyselect::all_of(c(context, clust_col, sites_col, cov_col, ht_col, str_col)), str) |>
+    dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col, sites_col))), str) |>
+    dplyr::summarise(taxa = dplyr::n()
+                     , !!rlang::ensym(cov_col) := sum(!!rlang::ensym(cov_col))
+                     , !!rlang::ensym(ht_col) := sum(!!rlang::ensym(ht_col))
+                     , lifeform = envFunc::get_mode(!!rlang::ensym(str_col))
+                     ) |>
+    dplyr::ungroup() |>
+    dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, sites_col))), str) |>
+    dplyr::summarise(presences = dplyr::n()
+                     , sr = mean(taxa)
+                     , sum_cover = sum(!!rlang::ensym(cov_col))
+                     , ht = mean(!!rlang::ensym(ht_col))
+                     , lifeform = envFunc::get_mode(!!rlang::ensym(str_col))
+                     ) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(per_pres = 100 * presences / cluster_sites
+                  , per_cov = 100 * sum_cover / cluster_sites
+                  , per_cov_pres = 100 * sum_cover / presences
                   , str = factor(str, levels = levels(lustr$str))
-                  , storey = factor(storey, levels = levels(lustr$storey), ordered = TRUE)
-                  ) %>%
-    dplyr::select(-sum_cover) %>%
-    dplyr::arrange(!!ensym(clust_col),desc(ht)) %>%
-    dplyr::mutate(storey = factor(storey,levels = levels(lustr$storey), ordered = TRUE))
+                  ) |>
+    dplyr::select(-sum_cover)
 
 }
