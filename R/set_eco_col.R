@@ -21,7 +21,7 @@ set_eco_col <- function(colour, x, y) {
 
   }
 
-  colour <- ensym(colour)
+  colour <- !!rlang::ensym(colour)
 
   # x, as in this is x of y
   # y, how many in this colour group?
@@ -30,19 +30,19 @@ set_eco_col <- function(colour, x, y) {
   # https://gist.github.com/mbannert/e9fcfa86de3b06068c83
   col2hex <- function(col, alpha) {
 
-    rgb(t(col2rgb(col)), alpha=alpha, maxColorValue=255)
+    rgb(t(col2rgb(col)), alpha = alpha, maxColorValue = 255)
 
   }
 
   if(y > 1) {
 
     pal <- colortools::sequential(color = colour
-                                  , percentage = 100*(1/((1+ 1/3)*y))
+                                  , percentage = 100 * (1 / ((1 + 1 / 3) * y))
                                   , alpha = 1
                                   , plot = FALSE
                                   )
 
-    tail(pal,y)[x]
+    tail(pal, y)[x]
 
   } else {
 
