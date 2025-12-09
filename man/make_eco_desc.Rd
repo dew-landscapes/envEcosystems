@@ -5,100 +5,76 @@
 \title{Make a (biotic) description for an ecosystem}
 \usage{
 make_eco_desc(
-  bio_df,
+  bio_clust_df,
   ind_val_df = NULL,
   context,
   clust_col = "cluster",
   taxa_col = "taxa",
   cov_col = "cover_adj",
-  ind_abu_col = "use_cover",
   ht_col = "ht",
   lustr,
   str_col = "lifeform",
   indigenous_df = NULL,
   indicator_p_val = 0.05,
   indicator_max_n = 3,
-  imp_taxa_quantile_thresh = 0.9,
-  imp_taxa_prop_thresh = 0.5,
   common_taxa_prop_thresh = 0.8,
   colour_map = NULL
 )
 }
 \arguments{
-\item{bio_df}{Dataframe containing all \code{context}, all the \verb{_col}s and taxa
+\item{bio_clust_df}{Dataframe containing all \code{context}, all the \verb{_col}s and taxa
 data in long format.}
 
 \item{ind_val_df}{Result from \code{envCluster::make_ind_val_df()}.}
 
-\item{context}{Character. Name(s) of column(s) in \code{bio_df} that define bins.}
+\item{context}{Character. Name(s) of column(s) in \code{bio_clust_df} that define bins.}
 
-\item{clust_col}{Character. Name of column in \code{bio_df} containing cluster
+\item{clust_col}{Character. Name of column in \code{bio_clust_df} containing cluster
 membership.}
 
-\item{taxa_col}{Character. Name of column in \code{bio_df} and/or \code{indigenous_df}
+\item{taxa_col}{Character. Name of column in \code{bio_clust_df} and/or \code{indigenous_df}
 containing the taxa names.}
 
-\item{cov_col}{Character. Name of column in \code{bio_df} with numeric
+\item{cov_col}{Character. Name of column in \code{bio_clust_df} with numeric
 abundance data (usually 'cover' for plants).}
 
-\item{ind_abu_col}{Character. Name of column in \code{bio_df} with numeric
-abundance data for use in indicator analysis (\code{labdsv::indval()}).
-This can be the same as \code{cov_col} but at times a different measure of
-abundance is helpful here.}
-
-\item{ht_col}{Character. Name of column in \code{bio_df} with numeric height data.}
+\item{ht_col}{Character. Name of column in \code{bio_clust_df} with numeric height data.}
 
 \item{lustr}{Dataframe containing lifeform (structural) information.}
 
-\item{str_col}{Character name of column in \code{bio_df} and \code{lustr}containing
+\item{str_col}{Character name of column in \code{bio_clust_df} and \code{lustr}containing
 lifeform (or structural) information.}
 
 \item{indigenous_df}{dataframe containing indigenous status for each unique
-\code{taxa_col} in \code{bio_df}}
+\code{taxa_col} in \code{bio_clust_df}}
 
 \item{indicator_p_val}{Numeric 0 to 1. The p-value to use to accept a taxa as an
 indicator for an ecosystem.}
 
 \item{indicator_max_n}{Maximum number of taxa to list as indicators.}
 
-\item{imp_taxa_quantile_thresh}{Numeric. Quantile theshold of median cover
-across all sites in a cluster for choosing \code{important} taxa. Combined with
-\code{imp_taxa_quantile_thresh}. If no taxa meet this threshold the taxa with the
-maximum of median cover across all sites is kept.}
-
-\item{imp_taxa_prop_thresh}{Numeric. Proportion theshold of median cover
-across all sites in a cluster for choosing \code{important} taxa. Combined with
-\code{imp_taxa_prop_thresh}. If no taxa meet this threshold the taxa with the
-maximum of median cover across all sites is kept.}
-
 \item{common_taxa_prop_thresh}{Numeric. Threshold (proportion) for taxa to include in
 description. Taxa that occur in more than \code{common_taxa_prop_thresh} proportion of
-sites in the cluster will be included in the description.}
+bins in the cluster will be included in the description.}
 
 \item{colour_map}{Dataframe mapping any column in result to colour values
 (in a column called \code{colour}).}
 }
 \value{
 Tibble of ecosystems descriptions per unique value of \code{clust_col} in
-\code{bio_df}
+\code{bio_clust_df}
 }
 \description{
-The description includes: 'important' taxa and their structural form(s);
-indicator taxa; and other taxa present at a 'high' proportion of sites.
+The description includes: indicator taxa; other taxa present at a 'high'
+proportion of bins; and structural layers.
 }
 \details{
-'Important' taxa are determined by thresholding:
-\itemize{
-\item quantile median cover value for each taxa; and
-\item absolute median cover value for each taxa
-}
-
 Indicator taxa requires a result from \code{envCluster::make_ind_val_df()} (a
 wrapper around \code{labdsv::inval()}). Choosing indicators uses  \code{indicator_p_val} and
 \code{indicator_max_n}.
 
 Common taxa are determined as any taxa occurring at more than
-\code{common_taxa_prop_thresh} sites within a cluster.
+\code{common_taxa_prop_thresh} bins within a cluster.
 
-Important taxa and indicator taxa are prevented from also being common taxa.
+Indicator taxa are prevented from also being common taxa.
 }

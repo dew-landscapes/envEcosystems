@@ -211,7 +211,7 @@
     , 30, 0.5, "Mistletoe", "mistletoe", "Open mistletoe"
     , 10, 0.5, "Mistletoe", "mistletoe", "Very open mistletoe"
     , 5, 0.5, "Mistletoe", "mistletoe", "Very very open mistletoe"
-    ) %>%
+    ) |>
     dplyr::mutate(cov_thresh = dplyr::if_else(cov_thresh == 100, 200, cov_thresh)
                   , cov_class = cut(cov_thresh
                                     , breaks = c(unique(cov_thresh), 0)
@@ -220,30 +220,33 @@
                                   , breaks = c(unique(ht_thresh),0)
                                   )
                   , sa_sf = gsub(".*\\s", "", tolower(sa_vsf))
-                  ) %>%
+                  ) |>
     dplyr::select(str, cov_class, ht_class, sa_vsf, sa_sf)
 
   sa_sf <-tibble::tribble(
     ~sf, ~colour, ~order
     , "forest", "forestgreen", 5
     , "grassland", "yellow", 1
+    , "sedgeland", "yellow", 1.5
     , "mallee", "orange3", 3
     , "shrubland", "darkorchid4", 2
     , "woodland", "darkolivegreen3", 4
     , "wetland", "mediumseagreen", 7
     , "samphire", "black", 8
     , "fernland", "darkgreen", 6
-    , "matplants", "firebrick3", 2
-    ) %>%
-    dplyr::mutate(sf = forcats::fct_reorder(sf,order))
+    , "matplants", "yellow", 0.5
+    ) |>
+    dplyr::mutate(sf = forcats::fct_reorder(sf,order)) |>
+    dplyr::arrange(sf)
 
   taxa_samphire <- c("Salicornia"
-                 , "Tecticornia"
-                 )
+                     , "Tecticornia"
+                     )
 
   taxa_wetland <- c("Phragmites"
                   , "Typha"
                   , "Juncus"
+                  , "Schoenoplectus"
                   , "Eragrostis australasica" # Specht Veg of SA
                   , "Cressa australis" # Specht Veg of SA
                   , "Eragrostis dielsii" # Specht Veg of SA

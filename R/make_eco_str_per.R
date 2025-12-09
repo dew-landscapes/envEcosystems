@@ -46,8 +46,8 @@ make_eco_str_per <- function(bio_clust_df
     dplyr::select(tidyselect::all_of(c(context, clust_col, sites_col, cov_col, ht_col, str_col)), str) |>
     dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col, sites_col))), str) |>
     dplyr::summarise(taxa = dplyr::n()
-                     , !!rlang::ensym(cov_col) := sum(!!rlang::ensym(cov_col))
-                     , !!rlang::ensym(ht_col) := sum(!!rlang::ensym(ht_col))
+                     , !!rlang::ensym(cov_col) := sum(!!rlang::ensym(cov_col), na.rm = TRUE)
+                     , !!rlang::ensym(ht_col) := mean(!!rlang::ensym(ht_col), na.rm = TRUE)
                      , lifeform = envFunc::get_mode(!!rlang::ensym(str_col))
                      ) |>
     dplyr::ungroup() |>
