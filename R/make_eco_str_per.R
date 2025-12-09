@@ -30,28 +30,28 @@ make_eco_str_per <- function(bio_clust_df
                              , lustr = envEcosystems::lulifeform
                              ) {
 
-  sites_col <- paste0(clust_col, "_sites")
+  bins_col <- paste0(clust_col, "_bins")
 
-  # sites col --------
-  clust_col_sites <- bio_clust_df |>
+  # bin col --------
+  clust_col_bins <- bio_clust_df |>
     dplyr::count(dplyr::across(tidyselect::any_of(c(clust_col, context)))) |>
     dplyr::count(dplyr::across(tidyselect::any_of(clust_col))
-                 , name = sites_col
+                 , name = bins_col
                  )
 
   bio_clust_df |>
     tibble::as_tibble() |>
-    dplyr::left_join(clust_col_sites) |>
+    dplyr::left_join(clust_col_bins) |>
     dplyr::left_join(lustr) |>
-    dplyr::select(tidyselect::all_of(c(context, clust_col, sites_col, cov_col, ht_col, str_col)), str) |>
-    dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col, sites_col))), str) |>
+    dplyr::select(tidyselect::all_of(c(context, clust_col, bins_col, cov_col, ht_col, str_col)), str) |>
+    dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col, bins_col))), str) |>
     dplyr::summarise(taxa = dplyr::n()
                      , !!rlang::ensym(cov_col) := sum(!!rlang::ensym(cov_col), na.rm = TRUE)
                      , !!rlang::ensym(ht_col) := mean(!!rlang::ensym(ht_col), na.rm = TRUE)
                      , lifeform = envFunc::get_mode(!!rlang::ensym(str_col))
                      ) |>
     dplyr::ungroup() |>
-    dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, sites_col))), str) |>
+    dplyr::group_by(dplyr::across(tidyselect::all_of(c(clust_col, bins_col))), str) |>
     dplyr::summarise(presences = dplyr::n()
                      , sr = mean(taxa)
                      , sum_cover = sum(!!rlang::ensym(cov_col))
@@ -59,8 +59,8 @@ make_eco_str_per <- function(bio_clust_df
                      , lifeform = envFunc::get_mode(!!rlang::ensym(str_col))
                      ) |>
     dplyr::ungroup() |>
-    dplyr::mutate(per_pres = 100 * presences / cluster_sites
-                  , per_cov = 100 * sum_cover / cluster_sites
+    dplyr::mutate(per_pres = 100 * presences / cluster_bins
+                  , per_cov = 100 * sum_cover / cluster_bins
                   , per_cov_pres = 100 * sum_cover / presences
                   , str = factor(str, levels = levels(lustr$str))
                   ) |>

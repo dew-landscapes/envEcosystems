@@ -33,41 +33,41 @@ make_eco_taxa_per <- function(bio_clust_df
                               , lustr = envEcosystems::lulifeform
                               ) {
 
-  sites_col <- paste0(clust_col, "_sites")
+  bins_col <- paste0(clust_col, "_bins")
 
   # sites col --------
   clust_col_sites <- bio_clust_df |>
     dplyr::count(dplyr::across(tidyselect::any_of(c(clust_col, context)))) |>
     dplyr::count(dplyr::across(tidyselect::any_of(clust_col))
-                 , name = sites_col
+                 , name = bins_col
                  )
 
   bio_clust_df |>
     tibble::as_tibble() |>
     dplyr::left_join(lustr) |>
     dplyr::left_join(clust_col_sites) |>
-    dplyr::distinct(dplyr::across(tidyselect::all_of(c(context, clust_col, sites_col, taxa_col, cov_col, ht_col, str_col)))
+    dplyr::distinct(dplyr::across(tidyselect::all_of(c(context, clust_col, bins_col, taxa_col, cov_col, ht_col, str_col)))
                     , storey
                     , str
                     ) |>
     dplyr::group_by(!!rlang::ensym(clust_col)
                     , !!rlang::ensym(taxa_col)
-                    , !!rlang::ensym(sites_col)
-                    ) %>%
+                    , !!rlang::ensym(bins_col)
+                    ) |>
     dplyr::summarise(presences = dplyr::n()
                      , lifeform = envFunc::get_mode(lifeform)
                      , str = envFunc::get_mode(str)
                      , storey = envFunc::get_mode(storey)
                      , sum_cover = sum(!!rlang::ensym(cov_col))
                      , ht = mean(!!rlang::ensym(ht_col))
-                     ) %>%
-    dplyr::ungroup() %>%
+                     ) |>
+    dplyr::ungroup() |>
     dplyr::mutate(per_pres = 100 * presences / cluster_sites
                   , per_cov = 100 * sum_cover / cluster_sites
                   , per_cov_pres = 100 * sum_cover / presences
                   , str = factor(str, levels = levels(lustr$str))
                   , storey = factor(storey, levels = levels(lustr$storey), ordered = TRUE)
-                  ) %>%
+                  ) |>
     dplyr::select(-sum_cover)
 
 }
