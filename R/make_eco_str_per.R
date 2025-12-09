@@ -59,8 +59,8 @@ make_eco_str_per <- function(bio_clust_df
                      , lifeform = envFunc::get_mode(!!rlang::ensym(str_col))
                      ) |>
     dplyr::ungroup() |>
-    dplyr::mutate(per_pres = 100 * presences / cluster_bins
-                  , per_cov = 100 * sum_cover / cluster_bins
+    dplyr::mutate(per_pres = 100 * presences / !!rlang::ensym(bins_col)
+                  , per_cov = 100 * sum_cover / !!rlang::ensym(bins_col)
                   , per_cov_pres = 100 * sum_cover / presences
                   , str = factor(str, levels = levels(lustr$str))
                   ) |>

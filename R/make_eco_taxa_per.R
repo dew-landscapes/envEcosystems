@@ -62,8 +62,8 @@ make_eco_taxa_per <- function(bio_clust_df
                      , ht = mean(!!rlang::ensym(ht_col))
                      ) |>
     dplyr::ungroup() |>
-    dplyr::mutate(per_pres = 100 * presences / cluster_sites
-                  , per_cov = 100 * sum_cover / cluster_sites
+    dplyr::mutate(per_pres = 100 * presences / !!rlang::ensym(bins_col)
+                  , per_cov = 100 * sum_cover / !!rlang::ensym(bins_col)
                   , per_cov_pres = 100 * sum_cover / presences
                   , str = factor(str, levels = levels(lustr$str))
                   , storey = factor(storey, levels = levels(lustr$storey), ordered = TRUE)
