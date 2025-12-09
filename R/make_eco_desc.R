@@ -239,7 +239,17 @@ make_eco_desc <- function(bio_clust_df
     dplyr::group_by(!!rlang::ensym(clust_col)) |>
     dplyr::summarise(sf_text = envFunc::first_up(envFunc::vec_to_sentence(sf_text, end = "and/or"))
                      , sf = sf[ht == max(ht)]
+                     , ht = ht[ht == max(ht)]
+                     , per_cov = per_cov[ht == max(ht)]
                      ) |>
+    dplyr::ungroup()
+
+  # cover --------
+  eco_cov <- bio_clust_df |>
+    dplyr::group_by(dplyr::across(tidyselect::any_of(c(clust_col, context)))) |>
+    dplyr::summarise(cov = sum(!!rlang::ensym(cov_col), na.rm = TRUE)) |>
+    dplyr::group_by(!!rlang::ensym(clust_col)) |>
+    dplyr::summarise(tot_cov = median(cov, na.rm = TRUE)) |>
     dplyr::ungroup()
 
   # Cluster colour --------
@@ -273,6 +283,7 @@ make_eco_desc <- function(bio_clust_df
     dplyr::left_join(eco_common) |>
     dplyr::left_join(eco_ind) |>
     dplyr::left_join(eco_str) |>
+    dplyr::left_join(eco_cov) |>
     dplyr::mutate(desc_md = paste0(envFunc::first_up(as.character(!!rlang::ensym(clust_col)))
                                    , dplyr::if_else(is.na(imp_taxa)
                                                     , ""
