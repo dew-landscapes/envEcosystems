@@ -2,19 +2,24 @@
 #' Make a (biotic) description for an ecosystem
 #'
 #' @description
-#' The description includes: indicator taxa; other taxa present at a 'high'
-#' proportion of bins; and structural layers.
+#' The description includes: 'obvious' taxa; indicator taxa; taxa present
+#' at a 'high' proportion of bins; and structural layers.
 #'
 #' @details
 #'
+#' Obvious taxa have large values for `per_pres` by `per_cov_pres` by `ht`.
+#'
 #' Indicator taxa requires a result from `envCluster::make_ind_val_df()` (a
-#' wrapper around `labdsv::inval()`). Choosing indicators uses  `indicator_p_val` and
-#' `indicator_max_n`.
+#' wrapper around `labdsv::inval()`). Choosing indicators uses
+#' `indicator_p_val` and `indicator_max_n`.
 #'
 #' Common taxa are determined as any taxa occurring at more than
 #' `common_taxa_prop_thresh` bins within a cluster.
 #'
-#' Indicator taxa are prevented from also being common taxa.
+#' Obvious and indicator taxa are prevented from also being common taxa.
+#'
+#' The structural layer chosen to represent structure for the cluster has the
+#' highest value of `per_pres` by `per_cov_pres` by `ht`.
 #'
 #' @param bio_clust_df Dataframe containing all `context`, all the `_col`s and taxa
 #' data in long format.
@@ -38,10 +43,6 @@
 #' @param common_taxa_prop_thresh Numeric. Threshold (proportion) for taxa to include in
 #' description. Taxa that occur in more than `common_taxa_prop_thresh` proportion of
 #' bins in the cluster will be included in the description.
-#' @param common_str_prop_thresh Numeric. Threshold (proportion) for structural
-#' layer to include in description. The highest layer that occurs in more than
-#' `common_str_prop_thresh` proportion of bins in the cluster will be included
-#' in the description.
 #' @param colour_map Dataframe mapping any column in result to colour values
 #' (in a column called `colour`).
 #'
@@ -63,7 +64,6 @@ make_eco_desc <- function(bio_clust_df
                           , indicator_p_val = 0.05
                           , indicator_max_n = 3
                           , common_taxa_prop_thresh = 0.8
-                          , common_str_prop_thresh = 0.8
                           , colour_map = NULL
                           ) {
 
@@ -190,14 +190,14 @@ make_eco_desc <- function(bio_clust_df
   # Structure ----------
   ## eco str per --------
 
-  eco_str_per <- make_eco_str_per(bio_clust_df = bio_clust_df
-                                  , context = context
-                                  , clust_col = clust_col
-                                  , cov_col = cov_col
-                                  , ht_col = ht_col
-                                  , str_col = str_col
-                                  , lustr = lustr
-                                  ) |>
+  eco_str_per <- envEcosystems::make_eco_str_per(bio_clust_df = bio_clust_df
+                                                 , context = context
+                                                 , clust_col = clust_col
+                                                 , cov_col = cov_col
+                                                 , ht_col = ht_col
+                                                 , str_col = str_col
+                                                 , lustr = lustr
+                                                 ) |>
     dplyr::mutate(cov_class = cut(per_cov_pres
                                   , breaks = c(cut_cov$cov_thresh)
                                   )
