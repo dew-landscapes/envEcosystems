@@ -209,7 +209,7 @@ make_eco_desc <- function(bio_clust_df
     dplyr::select(tidyselect::all_of(c(context, clust_col, bins_col, cov_col, ht_col, str_col))) |>
     dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col, bins_col, str_col)))) |>
     dplyr::summarise(cov = mean(cover_adj, na.rm = TRUE)
-                     , ht = mean(ht, na.rm = TRUE)
+                     , ht = mean(!!rlang::ensym(ht_col), na.rm = TRUE)
                      ) |>
     dplyr::left_join(lustr) |>
     dplyr::ungroup() |>
@@ -253,7 +253,7 @@ make_eco_desc <- function(bio_clust_df
     dplyr::select(tidyselect::all_of(c(context, clust_col, bins_col, cov_col, ht_col, str_col))) |>
     dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col, bins_col, str_col)))) |>
     dplyr::summarise(cov = mean(cover_adj, na.rm = TRUE)
-                     , ht = mean(ht, na.rm = TRUE)
+                     , ht = mean(!!rlang::ensym(ht_col), na.rm = TRUE)
                      ) |>
     dplyr::left_join(lustr) |>
     dplyr::ungroup() |>
