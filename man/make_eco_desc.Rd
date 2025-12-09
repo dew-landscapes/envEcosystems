@@ -15,6 +15,7 @@ make_eco_desc(
   lustr,
   str_col = "lifeform",
   indigenous_df = NULL,
+  obvious_max_n = 3,
   indicator_p_val = 0.05,
   indicator_max_n = 3,
   common_taxa_prop_thresh = 0.8,
