@@ -18,7 +18,6 @@ make_eco_desc(
   indicator_p_val = 0.05,
   indicator_max_n = 3,
   common_taxa_prop_thresh = 0.8,
-  common_str_prop_thresh = 0.8,
   colour_map = NULL
 )
 }
@@ -58,11 +57,6 @@ indicator for an ecosystem.}
 description. Taxa that occur in more than \code{common_taxa_prop_thresh} proportion of
 bins in the cluster will be included in the description.}
 
-\item{common_str_prop_thresh}{Numeric. Threshold (proportion) for structural
-layer to include in description. The highest layer that occurs in more than
-\code{common_str_prop_thresh} proportion of bins in the cluster will be included
-in the description.}
-
 \item{colour_map}{Dataframe mapping any column in result to colour values
 (in a column called \code{colour}).}
 }
@@ -71,16 +65,21 @@ Tibble of ecosystems descriptions per unique value of \code{clust_col} in
 \code{bio_clust_df}
 }
 \description{
-The description includes: indicator taxa; other taxa present at a 'high'
-proportion of bins; and structural layers.
+The description includes: 'obvious' taxa; indicator taxa; taxa present
+at a 'high' proportion of bins; and structural layers.
 }
 \details{
+Obvious taxa have large values for \code{per_pres} by \code{per_cov_pres} by \code{ht}.
+
 Indicator taxa requires a result from \code{envCluster::make_ind_val_df()} (a
-wrapper around \code{labdsv::inval()}). Choosing indicators uses  \code{indicator_p_val} and
-\code{indicator_max_n}.
+wrapper around \code{labdsv::inval()}). Choosing indicators uses
+\code{indicator_p_val} and \code{indicator_max_n}.
 
 Common taxa are determined as any taxa occurring at more than
 \code{common_taxa_prop_thresh} bins within a cluster.
 
-Indicator taxa are prevented from also being common taxa.
+Obvious and indicator taxa are prevented from also being common taxa.
+
+The structural layer chosen to represent structure for the cluster has the
+highest value of \code{per_pres} by \code{per_cov_pres} by \code{ht}.
 }
