@@ -62,6 +62,12 @@
     , 10, 2, "Trees", "over", "Very low open woodland"
     , 5, 2, "Trees", "over", "Very low very open woodland"
 
+    , 100, 30, "Mallees", "over", "Very tall closed mallee"
+    , 70, 30, "Mallees", "over", "Very tall mallee"
+    , 30, 30, "Mallees", "over", "Very tall open mallee"
+    , 10, 30, "Mallees", "over", "Very tall very open mallee"
+    , 5, 30, "Mallees", "over", "Very tall very very open mallee"
+
     , 100, 10, "Mallees", "over", "Tall closed mallee"
     , 70, 10, "Mallees", "over", "Tall mallee"
     , 30, 10, "Mallees", "over", "Tall open mallee"
@@ -91,6 +97,18 @@
     , 30, 1, "Mallees", "over", "Open low mallee"
     , 10, 1, "Mallees", "over", "Very open low mallee"
     , 5, 1, "Mallees", "over", "Very very open low mallee"
+
+    , 100, 30, "Shrubs", "over", "Very very tall closed shrubland"
+    , 70, 30, "Shrubs", "over", "Very very tall shrubland"
+    , 30, 30, "Shrubs", "over", "Very very tall open shrubland"
+    , 10, 30, "Shrubs", "over", "Very very tall very open shrubland"
+    , 5, 30, "Shrubs", "over", "Very very tall very very open shrubland"
+
+    , 100, 10, "Shrubs", "over", "Very tall closed shrubland"
+    , 70, 10, "Shrubs", "over", "Very tall shrubland"
+    , 30, 10, "Shrubs", "over", "Very tall open shrubland"
+    , 10, 10, "Shrubs", "over", "Very tall very open shrubland"
+    , 5, 10, "Shrubs", "over", "Very tall very very open shrubland"
 
     , 100, 5, "Shrubs", "over", "Tall closed shrubland"
     , 70, 5, "Shrubs", "over", "Tall shrubland"
@@ -133,6 +151,12 @@
     , 30, 1, "Hummock grasses", "hummock", "Tall open hummock grassland"
     , 10, 1, "Hummock grasses", "hummock", "Tall very open hummock grassland"
     , 5, 1, "Hummock grasses", "hummock", "Tall very very open hummock grassland"
+
+    , 100, 1, "Sedges", "mid", "Tall closed sedgeland"
+    , 70, 1, "Sedges", "mid", "Tall sedgeland"
+    , 30, 1, "Sedges", "mid", "Tall open sedgeland"
+    , 10, 1, "Sedges", "mid", "Tall very open sedgeland"
+    , 5, 1, "Sedges", "mid", "Tall very very open sedgeland"
 
     , 100, 1, "Sedges", "mid", "Tall closed sedgeland"
     , 70, 1, "Sedges", "mid", "Tall sedgeland"

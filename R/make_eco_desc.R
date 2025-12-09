@@ -38,7 +38,10 @@
 #' @param common_taxa_prop_thresh Numeric. Threshold (proportion) for taxa to include in
 #' description. Taxa that occur in more than `common_taxa_prop_thresh` proportion of
 #' bins in the cluster will be included in the description.
-
+#' @param common_str_prop_thresh Numeric. Threshold (proportion) for structural
+#' layer to include in description. The highest layer that occurs in more than
+#' `common_str_prop_thresh` proportion of bins in the cluster will be included
+#' in the description.
 #' @param colour_map Dataframe mapping any column in result to colour values
 #' (in a column called `colour`).
 #'
@@ -60,8 +63,14 @@ make_eco_desc <- function(bio_clust_df
                           , indicator_p_val = 0.05
                           , indicator_max_n = 3
                           , common_taxa_prop_thresh = 0.8
+                          , common_str_prop_thresh = 0.8
                           , colour_map = NULL
                           ) {
+
+  sa_vsf <- envEcosystems::sa_vsf
+  sa_sf <- envEcosystems::sa_sf
+  cut_cov <- envEcosystems::cut_cov
+  cut_ht <- envEcosystems::cut_ht
 
   bins_col <- paste0(clust_col, "_bins")
 
@@ -80,6 +89,31 @@ make_eco_desc <- function(bio_clust_df
     dplyr::left_join(indigenous_df |>
                        dplyr::distinct()
                      )
+
+  ## important --------
+  eco_imp_prep <- eco_taxa_per |>
+    dplyr::mutate(ht_scale = scales::rescale(ht)
+                  , val = (per_pres / 100) * (per_cov / 100) * ht_scale
+                  ) |>
+    dplyr::filter(val > quantile(val, probs = 0.975, na.rm = TRUE))
+
+  eco_imp <- eco_imp_prep |>
+    dplyr::mutate(use_taxa = dplyr::if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))
+                  , use_taxa = paste0(use_taxa, " ", tolower(str)
+                                      , " ("
+                                      , round(per_pres, 0)
+                                      , "% bins; "
+                                      , signif(per_cov_pres, 1)
+                                      , "% cover)"
+                                      )
+                  ) |>
+    dplyr::group_by(!!rlang::ensym(clust_col)) |>
+    dplyr::arrange(str) |>
+    dplyr::summarise(text = envFunc::vec_to_sentence(use_taxa, end = "and/or")) |>
+    dplyr::ungroup() |>
+    dplyr::group_by(!!rlang::ensym(clust_col)) |>
+    dplyr::summarise(imp_taxa = envFunc::vec_to_sentence(text, end = "and/or")) |>
+    dplyr::ungroup()
 
   ## indicator -----
   eco_ind_prep <- ind_val_df |>
@@ -127,7 +161,11 @@ make_eco_desc <- function(bio_clust_df
 
   ## common  -----
   eco_common <- eco_taxa_per |>
-    # prevent indicators turning up again in common taxa
+    # prevent important taxa turning up again in common taxa
+    dplyr::anti_join(eco_imp_prep |>
+                       dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))))
+                     ) |>
+    # prevent indicator taxa turning up again in common taxa
     dplyr::anti_join(eco_ind_prep |>
                        dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))))
                      ) |>
@@ -149,14 +187,6 @@ make_eco_desc <- function(bio_clust_df
     dplyr::summarise(common_taxa = envFunc::vec_to_sentence(text, end = "and/or")) |>
     dplyr::ungroup()
 
-  # Cluster colour --------
-  if(isTRUE(is.null(colour_map))) {
-
-    colour_map <- tibble::tibble(!!rlang::ensym(clust_col) := unique(bio_clust_df[clust_col][[1]])) %>%
-      dplyr::mutate(colour = viridis::viridis(n = nrow(.)))
-
-  }
-
   # Structure ----------
   ## eco str per --------
 
@@ -169,18 +199,17 @@ make_eco_desc <- function(bio_clust_df
                                   , lustr = lustr
                                   ) |>
     dplyr::mutate(cov_class = cut(per_cov_pres
-                                  , breaks = c(envEcosystems::cut_cov$cov_thresh)
+                                  , breaks = c(cut_cov$cov_thresh)
                                   )
                   , ht_class = cut(ht
-                                   , breaks = c(envEcosystems::cut_ht$ht_thresh)
+                                   , breaks = c(cut_ht$ht_thresh)
                                    )
                   ) |>
-    dplyr::left_join(envEcosystems::sa_vsf |>
-                       dplyr::mutate(sf = sa_sf
-                                     , sf = factor(sf, levels = levels(envEcosystems::sa_sf$sf))
-                                     )
+    dplyr::left_join(sa_vsf |>
+                       dplyr::rename(sf = sa_sf) |>
+                       dplyr::mutate(sf = factor(sf, levels = levels(sa_sf$sf)))
                      ) |>
-    dplyr::filter(!is.na(sf))
+    dplyr::filter(!is.na(str))
 
   ## eco str prep --------
 
@@ -191,9 +220,11 @@ make_eco_desc <- function(bio_clust_df
                      , per_cov = weighted.mean(per_cov, presences, na.rm = TRUE)
                      , per_cov_pres = weighted.mean(per_cov_pres, presences, na.rm = TRUE)
                      ) |>
+    dplyr::mutate(ht_scale = scales::rescale(ht)
+                  , val = ht_scale * (per_pres / 100) * (per_cov / 100)
+                  ) |>
     dplyr::group_by(!!rlang::ensym(clust_col)) |>
-    dplyr::filter(per_pres > imp_taxa_prop_thresh * 100 | per_pres == max(per_pres, na.rm = TRUE)) |>
-    dplyr::filter(ht == max(ht)) |>
+    dplyr::filter(val == max(val, na.rm = TRUE)) |>
     dplyr::ungroup()
 
   ## eco str --------
@@ -210,6 +241,14 @@ make_eco_desc <- function(bio_clust_df
                      , sf = sf[ht == max(ht)]
                      ) |>
     dplyr::ungroup()
+
+  # Cluster colour --------
+  if(isTRUE(is.null(colour_map))) {
+
+    colour_map <- tibble::tibble(!!rlang::ensym(clust_col) := unique(bio_clust_df[clust_col][[1]])) %>%
+      dplyr::mutate(colour = viridis::viridis(n = nrow(.)))
+
+  }
 
   # Final description ---------
 
@@ -230,10 +269,17 @@ make_eco_desc <- function(bio_clust_df
 
   desc_res <- eco_taxa_per |>
     dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, bins_col)))) |>
+    dplyr::left_join(eco_imp) |>
     dplyr::left_join(eco_common) |>
     dplyr::left_join(eco_ind) |>
     dplyr::left_join(eco_str) |>
     dplyr::mutate(desc_md = paste0(envFunc::first_up(as.character(!!rlang::ensym(clust_col)))
+                                   , dplyr::if_else(is.na(imp_taxa)
+                                                    , ""
+                                                    , paste0(". "
+                                                             , imp_taxa
+                                                             )
+                                                    )
                                    , dplyr::if_else(is.na(range_ind_md)
                                                     , ""
                                                     , paste0(". Indicated by "

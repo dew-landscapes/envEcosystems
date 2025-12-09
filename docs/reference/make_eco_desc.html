@@ -66,6 +66,7 @@ proportion of bins; and structural layers.</p>
 <span>  indicator_p_val <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  indicator_max_n <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  common_taxa_prop_thresh <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  common_str_prop_thresh <span class="op">=</span> <span class="fl">0.8</span>,</span>
 <span>  colour_map <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -133,6 +134,13 @@ indicator for an ecosystem.</p></dd>
 <dd><p>Numeric. Threshold (proportion) for taxa to include in
 description. Taxa that occur in more than <code>common_taxa_prop_thresh</code> proportion of
 bins in the cluster will be included in the description.</p></dd>
+
+
+<dt id="arg-common-str-prop-thresh">common_str_prop_thresh<a class="anchor" aria-label="anchor" href="#arg-common-str-prop-thresh"></a></dt>
+<dd><p>Numeric. Threshold (proportion) for structural
+layer to include in description. The highest layer that occurs in more than
+<code>common_str_prop_thresh</code> proportion of bins in the cluster will be included
+in the description.</p></dd>
 
 
 <dt id="arg-colour-map">colour_map<a class="anchor" aria-label="anchor" href="#arg-colour-map"></a></dt>

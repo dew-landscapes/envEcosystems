@@ -18,6 +18,7 @@ make_eco_desc(
   indicator_p_val = 0.05,
   indicator_max_n = 3,
   common_taxa_prop_thresh = 0.8,
+  common_str_prop_thresh = 0.8,
   colour_map = NULL
 )
 }
@@ -56,6 +57,11 @@ indicator for an ecosystem.}
 \item{common_taxa_prop_thresh}{Numeric. Threshold (proportion) for taxa to include in
 description. Taxa that occur in more than \code{common_taxa_prop_thresh} proportion of
 bins in the cluster will be included in the description.}
+
+\item{common_str_prop_thresh}{Numeric. Threshold (proportion) for structural
+layer to include in description. The highest layer that occurs in more than
+\code{common_str_prop_thresh} proportion of bins in the cluster will be included
+in the description.}
 
 \item{colour_map}{Dataframe mapping any column in result to colour values
 (in a column called \code{colour}).}
