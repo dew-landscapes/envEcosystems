@@ -26,6 +26,8 @@ make_eco_env <- function(clust_df
                          , env_cols
                          ) {
 
+  options(scipen = 9999)
+
   if(!is.data.frame(imp_df)) imp_df <- as_tibble(imp_df
                                                  , rownames = env_col
                                                  )

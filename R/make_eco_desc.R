@@ -68,6 +68,8 @@ make_eco_desc <- function(bio_clust_df
                           , colour_map = NULL
                           ) {
 
+  options(scipen = 9999)
+
   sa_vsf <- envEcosystems::sa_vsf
   sa_sf <- envEcosystems::sa_sf
   cut_cov <- envEcosystems::cut_cov

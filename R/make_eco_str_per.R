@@ -30,6 +30,8 @@ make_eco_str_per <- function(bio_clust_df
                              , lustr = envEcosystems::lulifeform
                              ) {
 
+  options(scipen = 9999)
+
   bins_col <- paste0(clust_col, "_bins")
 
   # bin col --------
