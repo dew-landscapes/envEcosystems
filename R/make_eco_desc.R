@@ -241,7 +241,7 @@ make_eco_desc <- function(bio_clust_df
     dplyr::filter(prop_pres > 0.3 | prop_pres == max(prop_pres)) |>
     dplyr::mutate(sa_sf_text = paste0(sa_sf, " (", signif(100 * prop_pres, 1), "% bins)")) |>
     dplyr::summarise(sf_text = envFunc::vec_to_sentence(sa_sf_text, end = "or")
-                     , sf = sa_sf[n == max(n)]
+                     , sf = sample(sa_sf[n == max(n)], 1)
                      ) |>
     dplyr::ungroup()
 
