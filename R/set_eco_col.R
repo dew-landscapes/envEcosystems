@@ -34,14 +34,6 @@ set_eco_col <- function(colour, x, y) {
 
   }
 
-<<<<<<< HEAD
-  adj <- (y - x + 1) / y
-  adj <- scales::rescale(adj, to = c(0.3, 1), from = c(0, 1))
-
-  col2hex(rlang::ensym(colour)
-          , alpha = 255 * adj
-          )
-=======
   if(y > 1) {
 
     pal <- colortools::sequential(color = colour
@@ -58,5 +50,4 @@ set_eco_col <- function(colour, x, y) {
 
   }
 
->>>>>>> 33c92fd (revert set_eco_col manually (and fix git pain))
 }
