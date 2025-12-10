@@ -267,6 +267,7 @@ make_eco_desc <- function(bio_clust_df
     dplyr::left_join(sa_vsf |>
                        dplyr::distinct()
                      ) |>
+    dplyr::filter(!is.na(sa_vsf)) |>
     dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col)))) |>
     dplyr::mutate(val = cov * ht) |>
     dplyr::filter(val == max(val, na.rm = TRUE)) |>
