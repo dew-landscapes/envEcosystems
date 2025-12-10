@@ -32,21 +32,10 @@ set_eco_col <- function(colour, x, y) {
 
   }
 
-  if(y > 1) {
+  adj <- (y - x + 1) / y
+  adj <- scales::rescale(adj, to = c(0.3, 1), from = c(0, 1))
 
-    pal <- colortools::sequential(color = rlang::ensym(colour)
-                                  , percentage = 100 * (1 / ((1 + 1 / 3) * y))
-                                  , alpha = 1
-                                  , plot = FALSE
-                                  )
-
-    pal[x]
-
-  } else {
-
-    col2hex(rlang::ensym(colour))
-
-  }
-
-
+  col2hex(rlang::ensym(colour)
+          , alpha = 255 * adj
+          )
 }

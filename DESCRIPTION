@@ -31,5 +31,4 @@ Imports:
     rlang,
     tidyselect
 Remotes:
-    github::gastonstat/colortools,
     github::dew-landscapes/envFunc
