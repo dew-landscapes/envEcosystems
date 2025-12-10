@@ -114,7 +114,7 @@ make_eco_desc <- function(bio_clust_df
                   , use_taxa = paste0(use_taxa, " ", tolower(str)
                                       , " ("
                                       , round(per_pres, 0)
-                                      , "% bins; "
+                                      , "% bins;\u00A0"
                                       , signif(per_cov_pres, 1)
                                       , "% cover)"
                                       )
@@ -156,7 +156,7 @@ make_eco_desc <- function(bio_clust_df
                   , use_taxa = paste0(use_taxa, " ", tolower(str)
                                       , " ("
                                       , round(frq * 100, 0)
-                                      , "% bins; "
+                                      , "% bins;\u00A0"
                                       , signif(per_cov_pres, 1)
                                       , "% cover; p = "
                                       , signif(p_val, 1)
@@ -188,7 +188,7 @@ make_eco_desc <- function(bio_clust_df
                   , use_taxa = paste0(use_taxa, " ", tolower(str)
                                        , " ("
                                        , round(per_pres, 0)
-                                       , "% bins; "
+                                       , "% bins;\u00A0"
                                       , signif(per_cov_pres, 1)
                                       , "% cover)"
                                       )
