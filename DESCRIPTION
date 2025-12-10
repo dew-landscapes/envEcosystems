@@ -29,6 +29,7 @@ Imports:
     forcats,
     Rdpack,
     rlang,
+    scales,
     tidyselect
 Remotes:
     github::dew-landscapes/envFunc
