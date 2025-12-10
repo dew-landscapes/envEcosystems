@@ -29,7 +29,7 @@ Imports:
     forcats,
     Rdpack,
     rlang,
-    scales,
     tidyselect
 Remotes:
+    github::gastonstat/colortools,
     github::dew-landscapes/envFunc
