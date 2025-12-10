@@ -35,7 +35,7 @@ add_landcover_desc <- function(eco_desc
 
   eco_add <- add_eco |>
     dplyr::count(dplyr::across(tidyselect::any_of(c(clust_col, clust_keep_cols)))
-                 , name = paste0(clust_col, "_sites")
+                 , name = paste0(clust_col, "_bins")
                  ) |>
     dplyr::mutate(desc = paste0(add_name,": ", gsub("_"," ",!!rlang::ensym(add_clust_col))))
 
