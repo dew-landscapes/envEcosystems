@@ -19,7 +19,8 @@ make_eco_desc(
   indicator_p_val = 0.05,
   indicator_max_n = 3,
   common_taxa_prop_thresh = 0.8,
-  colour_map = NULL
+  colour_map = NULL,
+  add_structure = TRUE
 )
 }
 \arguments{
