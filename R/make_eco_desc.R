@@ -66,6 +66,7 @@ make_eco_desc <- function(bio_clust_df
                           , indicator_max_n = 3
                           , common_taxa_prop_thresh = 0.8
                           , colour_map = NULL
+                          , add_structure = TRUE
                           ) {
 
   options(scipen = 9999)
@@ -111,7 +112,8 @@ make_eco_desc <- function(bio_clust_df
 
   eco_obv <- eco_obv_prep |>
     dplyr::mutate(use_taxa = dplyr::if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))
-                  , use_taxa = paste0(use_taxa, " ", tolower(str)
+                  , use_taxa = dplyr::if_else(is.na(str), use_taxa, paste0(use_taxa, " ", tolower(str)))
+                  , use_taxa = paste0(use_taxa, " "
                                       , " ("
                                       , round(per_pres, 0)
                                       , "% bins;\u00A0"
@@ -153,7 +155,8 @@ make_eco_desc <- function(bio_clust_df
                                             , paste0("&ast;_", taxa, "_")
                                             , paste0("_", taxa, "_")
                                             )
-                  , use_taxa = paste0(use_taxa, " ", tolower(str)
+                  , use_taxa = dplyr::if_else(is.na(str), use_taxa, paste0(use_taxa, " ", tolower(str)))
+                  , use_taxa = paste0(use_taxa
                                       , " ("
                                       , round(frq * 100, 0)
                                       , "% bins;\u00A0"
@@ -185,7 +188,8 @@ make_eco_desc <- function(bio_clust_df
                      ) |>
     dplyr::filter(per_pres > common_taxa_prop_thresh * 100) |>
     dplyr::mutate(use_taxa = dplyr::if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))
-                  , use_taxa = paste0(use_taxa, " ", tolower(str)
+                  , use_taxa = dplyr::if_else(is.na(str), use_taxa, paste0(use_taxa, " ", tolower(str)))
+                  , use_taxa = paste0(use_taxa
                                        , " ("
                                        , round(per_pres, 0)
                                        , "% bins;\u00A0"
@@ -204,85 +208,89 @@ make_eco_desc <- function(bio_clust_df
   # Structure ----------
   ## sf --------
 
-  eco_sf <- bio_clust_df |>
-    tibble::as_tibble() |>
-    dplyr::left_join(clust_col_bins) |>
-    dplyr::left_join(lustr) |>
-    dplyr::select(tidyselect::all_of(c(context, clust_col, bins_col, cov_col, ht_col, str_col))) |>
-    dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col, bins_col, str_col)))) |>
-    dplyr::summarise(cov = mean(cover_adj, na.rm = TRUE)
-                     , ht = mean(!!rlang::ensym(ht_col), na.rm = TRUE)
-                     ) |>
-    dplyr::left_join(lustr) |>
-    dplyr::ungroup() |>
-    dplyr::mutate(cov_class = cut(cov
-                                  , breaks = c(cut_cov$cov_thresh)
-                                  )
-                  , ht_class = cut(ht
-                                   , breaks = c(cut_ht$ht_thresh)
-                                   )
-                  ) |>
-    dplyr::left_join(sa_vsf |>
-                       dplyr::distinct()
-                     ) |>
-    dplyr::filter(!is.na(sa_sf)) |>
-    dplyr::group_by(sa_sf, dplyr::across(tidyselect::all_of(c(context, clust_col, bins_col)))) |>
-    dplyr::summarise(cov = sum(cov, na.rm = TRUE)
-                     , ht = mean(ht, na.rm = TRUE)
-                     ) |>
-    dplyr::ungroup() |>
-    dplyr::mutate(val = cov * ht) |>
-    dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col, bins_col)))) |>
-    dplyr::filter(val == max(val, na.rm = TRUE)) |>
-    dplyr::ungroup() |>
-    dplyr::count(!!rlang::ensym(clust_col), !!rlang::ensym(bins_col), sa_sf) |>
-    dplyr::mutate(prop_pres = n / !!rlang::ensym(bins_col)) |>
-    dplyr::group_by(!!rlang::ensym(clust_col)) |>
-    dplyr::filter(prop_pres > 0.3 | prop_pres == max(prop_pres)) |>
-    dplyr::mutate(sa_sf_text = paste0(sa_sf, " (", signif(100 * prop_pres, 1), "% bins)")) |>
-    dplyr::summarise(sf_text = envFunc::vec_to_sentence(sa_sf_text, end = "or")
-                     , sf = sample(sa_sf[n == max(n)], 1)
-                     ) |>
-    dplyr::ungroup()
+  if(add_structure) {
+
+    eco_sf <- bio_clust_df |>
+      tibble::as_tibble() |>
+      dplyr::left_join(clust_col_bins) |>
+      dplyr::left_join(lustr) |>
+      dplyr::select(tidyselect::all_of(c(context, clust_col, bins_col, cov_col, ht_col, str_col))) |>
+      dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col, bins_col, str_col)))) |>
+      dplyr::summarise(cov = mean(cover_adj, na.rm = TRUE)
+                       , ht = mean(!!rlang::ensym(ht_col), na.rm = TRUE)
+                       ) |>
+      dplyr::left_join(lustr) |>
+      dplyr::ungroup() |>
+      dplyr::mutate(cov_class = cut(cov
+                                    , breaks = c(cut_cov$cov_thresh)
+                                    )
+                    , ht_class = cut(ht
+                                     , breaks = c(cut_ht$ht_thresh)
+                                     )
+                    ) |>
+      dplyr::left_join(sa_vsf |>
+                         dplyr::distinct()
+                       ) |>
+      dplyr::filter(!is.na(sa_sf)) |>
+      dplyr::group_by(sa_sf, dplyr::across(tidyselect::all_of(c(context, clust_col, bins_col)))) |>
+      dplyr::summarise(cov = sum(cov, na.rm = TRUE)
+                       , ht = mean(ht, na.rm = TRUE)
+                       ) |>
+      dplyr::ungroup() |>
+      dplyr::mutate(val = cov * ht) |>
+      dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col, bins_col)))) |>
+      dplyr::filter(val == max(val, na.rm = TRUE)) |>
+      dplyr::ungroup() |>
+      dplyr::count(!!rlang::ensym(clust_col), !!rlang::ensym(bins_col), sa_sf) |>
+      dplyr::mutate(prop_pres = n / !!rlang::ensym(bins_col)) |>
+      dplyr::group_by(!!rlang::ensym(clust_col)) |>
+      dplyr::filter(prop_pres > 0.3 | prop_pres == max(prop_pres)) |>
+      dplyr::mutate(sa_sf_text = paste0(sa_sf, " (", signif(100 * prop_pres, 1), "% bins)")) |>
+      dplyr::summarise(sf_text = envFunc::vec_to_sentence(sa_sf_text, end = "or")
+                       , sf = sample(sa_sf[n == max(n)], 1)
+                       ) |>
+      dplyr::ungroup()
 
 
-  ## sa vsf ----------
+    ## sa vsf ----------
 
-  eco_savsf <- bio_clust_df |>
-    tibble::as_tibble() |>
-    dplyr::left_join(clust_col_bins) |>
-    dplyr::left_join(lustr) |>
-    dplyr::select(tidyselect::all_of(c(context, clust_col, bins_col, cov_col, ht_col, str_col))) |>
-    dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col, bins_col, str_col)))) |>
-    dplyr::summarise(cov = mean(cover_adj, na.rm = TRUE)
-                     , ht = mean(!!rlang::ensym(ht_col), na.rm = TRUE)
-                     ) |>
-    dplyr::left_join(lustr) |>
-    dplyr::ungroup() |>
-    dplyr::mutate(cov_class = cut(cov
-                                  , breaks = c(cut_cov$cov_thresh)
-                                  )
-                  , ht_class = cut(ht
-                                   , breaks = c(cut_ht$ht_thresh)
-                                   )
-                  ) |>
-    dplyr::left_join(sa_vsf |>
-                       dplyr::distinct()
-                     ) |>
-    dplyr::filter(!is.na(sa_vsf)) |>
-    dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col)))) |>
-    dplyr::mutate(val = cov * ht) |>
-    dplyr::filter(val == max(val, na.rm = TRUE)) |>
-    dplyr::ungroup() |>
-    dplyr::count(!!rlang::ensym(clust_col), !!rlang::ensym(bins_col), sa_vsf) |>
-    dplyr::mutate(prop_pres = n / !!rlang::ensym(bins_col)) |>
-    dplyr::group_by(!!rlang::ensym(clust_col)) |>
-    dplyr::filter(prop_pres > 0.2 | prop_pres == max(prop_pres)) |>
-    dplyr::mutate(sa_vsf_text = paste0(sa_vsf, " (", signif(100 * prop_pres, 1), "% bins)")) |>
-    dplyr::summarise(sa_vsf_text = envFunc::vec_to_sentence(sa_vsf_text, end = "or")
-                     , sa_vsf = sample(sa_vsf[n == max(n)], 1)
-                     ) |>
-    dplyr::ungroup()
+    eco_savsf <- bio_clust_df |>
+      tibble::as_tibble() |>
+      dplyr::left_join(clust_col_bins) |>
+      dplyr::left_join(lustr) |>
+      dplyr::select(tidyselect::all_of(c(context, clust_col, bins_col, cov_col, ht_col, str_col))) |>
+      dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col, bins_col, str_col)))) |>
+      dplyr::summarise(cov = mean(cover_adj, na.rm = TRUE)
+                       , ht = mean(!!rlang::ensym(ht_col), na.rm = TRUE)
+                       ) |>
+      dplyr::left_join(lustr) |>
+      dplyr::ungroup() |>
+      dplyr::mutate(cov_class = cut(cov
+                                    , breaks = c(cut_cov$cov_thresh)
+                                    )
+                    , ht_class = cut(ht
+                                     , breaks = c(cut_ht$ht_thresh)
+                                     )
+                    ) |>
+      dplyr::left_join(sa_vsf |>
+                         dplyr::distinct()
+                       ) |>
+      dplyr::filter(!is.na(sa_vsf)) |>
+      dplyr::group_by(dplyr::across(tidyselect::all_of(c(context, clust_col)))) |>
+      dplyr::mutate(val = cov * ht) |>
+      dplyr::filter(val == max(val, na.rm = TRUE)) |>
+      dplyr::ungroup() |>
+      dplyr::count(!!rlang::ensym(clust_col), !!rlang::ensym(bins_col), sa_vsf) |>
+      dplyr::mutate(prop_pres = n / !!rlang::ensym(bins_col)) |>
+      dplyr::group_by(!!rlang::ensym(clust_col)) |>
+      dplyr::filter(prop_pres > 0.2 | prop_pres == max(prop_pres)) |>
+      dplyr::mutate(sa_vsf_text = paste0(sa_vsf, " (", signif(100 * prop_pres, 1), "% bins)")) |>
+      dplyr::summarise(sa_vsf_text = envFunc::vec_to_sentence(sa_vsf_text, end = "or")
+                       , sa_vsf = sample(sa_vsf[n == max(n)], 1)
+                       ) |>
+      dplyr::ungroup()
+
+  }
 
   # cover --------
   eco_cov <- bio_clust_df |>
@@ -329,9 +337,17 @@ make_eco_desc <- function(bio_clust_df
     dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, bins_col)))) |>
     dplyr::left_join(eco_obv) |>
     dplyr::left_join(eco_common) |>
-    dplyr::left_join(eco_ind) |>
-    dplyr::left_join(eco_sf) |>
-    dplyr::left_join(eco_savsf) |>
+    dplyr::left_join(eco_ind)
+
+  if(add_structure) {
+
+    desc_res <- desc_res |>
+      dplyr::left_join(eco_sf) |>
+      dplyr::left_join(eco_savsf)
+
+    }
+
+  desc_res <- desc_res |>
     dplyr::left_join(eco_cov) |>
     dplyr::left_join(eco_ht) |>
     dplyr::mutate(desc_md = paste0(envFunc::first_up(as.character(!!rlang::ensym(clust_col)))
@@ -355,21 +371,31 @@ make_eco_desc <- function(bio_clust_df
                                                     )
                                    )
                   , desc_md = gsub("NA|\\s\\.\\s", "", desc_md)
-                  , desc_md = replace_text_after_first(desc_md, " cover")
-                  , desc_md = replace_text_after_first(desc_md, " bins")
-                  , desc_md = replace_text_after_first(desc_md, " p =")
-                  , desc_md = paste0(desc_md
+                  )
+
+  if(add_structure) {
+
+    desc_res <- desc_res |>
+      dplyr::mutate(desc_md = paste0(desc_md
                                      , ". "
                                      , envFunc::first_up(sf_text)
                                      , ": "
                                      , sa_vsf_text
                                      )
-                  , desc_md = stringr::str_squish(desc_md)
+                    ) |>
+      dplyr::left_join(colour_map)
+
+  }
+
+  desc_res <- desc_res |>
+    dplyr::mutate(desc_md = stringr::str_squish(desc_md)
                   , desc_html = gsub("&ast;", "*", desc_md)
                   , desc = gsub("_", "", desc_html)
+                  , desc_md = replace_text_after_first(desc_md, " cover")
+                  , desc_md = replace_text_after_first(desc_md, " bins")
+                  , desc_md = replace_text_after_first(desc_md, " p =")
                   ) |>
-    dplyr::mutate(!!rlang::ensym(id_col) := gsub("\\s|[[:punct:]]","",!!rlang::ensym(clust_col))) |>
-    dplyr::left_join(colour_map)
+    dplyr::mutate(!!rlang::ensym(id_col) := gsub("\\s|[[:punct:]]","",!!rlang::ensym(clust_col)))
 
   return(desc_res)
 
