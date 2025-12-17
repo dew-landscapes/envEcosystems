@@ -46,6 +46,7 @@ make_eco_taxa_per <- function(bio_clust_df
 
   bio_clust_df |>
     tibble::as_tibble() |>
+    dplyr::filter(!!rlang::ensym(cov_col) != 0) |>
     dplyr::left_join(lustr) |>
     dplyr::left_join(clust_col_sites) |>
     dplyr::distinct(dplyr::across(tidyselect::all_of(c(context, clust_col, bins_col, taxa_col, cov_col, ht_col, str_col)))

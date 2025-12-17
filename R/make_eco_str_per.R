@@ -41,8 +41,10 @@ make_eco_str_per <- function(bio_clust_df
                  , name = bins_col
                  )
 
+
   bio_clust_df |>
     tibble::as_tibble() |>
+    dplyr::filter(!!rlang::ensym(cov_col) != 0) |>
     dplyr::left_join(clust_col_bins) |>
     dplyr::left_join(lustr) |>
     dplyr::select(tidyselect::all_of(c(context, clust_col, bins_col, cov_col, ht_col, str_col)), str) |>

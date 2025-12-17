@@ -76,6 +76,10 @@ make_eco_desc <- function(bio_clust_df
   cut_cov <- envEcosystems::cut_cov
   cut_ht <- envEcosystems::cut_ht
 
+  # filter zero cover ---------
+  bio_clust_df <- bio_clust_df |>
+    dplyr::filter(!!rlang::ensym(cov_col) != 0)
+
   # bin col --------
   bins_col <- paste0(clust_col, "_bins")
 
