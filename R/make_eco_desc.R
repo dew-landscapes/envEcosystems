@@ -391,9 +391,15 @@ make_eco_desc <- function(bio_clust_df
     dplyr::mutate(desc_md = stringr::str_squish(desc_md)
                   , desc_html = gsub("&ast;", "*", desc_md)
                   , desc = gsub("_", "", desc_html)
-                  , desc_md = replace_text_after_first(desc_md, " cover")
-                  , desc_md = replace_text_after_first(desc_md, " bins")
-                  , desc_md = replace_text_after_first(desc_md, " p =")
+                  , dplyr::across(dplyr::where(is.character)
+                                  , \(x) replace_text_after_first(x, " cover")
+                                  )
+                  , dplyr::across(dplyr::where(is.character)
+                                  , \(x) replace_text_after_first(x, " bins")
+                                  )
+                  , dplyr::across(dplyr::where(is.character)
+                                  , \(x) replace_text_after_first(x, " p =")
+                                  )
                   ) |>
     dplyr::mutate(!!rlang::ensym(id_col) := gsub("\\s|[[:punct:]]","",!!rlang::ensym(clust_col)))
 
