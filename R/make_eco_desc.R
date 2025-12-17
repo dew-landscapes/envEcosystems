@@ -76,10 +76,6 @@ make_eco_desc <- function(bio_clust_df
   cut_cov <- envEcosystems::cut_cov
   cut_ht <- envEcosystems::cut_ht
 
-  # filter zero cover ---------
-  bio_clust_df <- bio_clust_df |>
-    dplyr::filter(!!rlang::ensym(cov_col) != 0)
-
   # bin col --------
   bins_col <- paste0(clust_col, "_bins")
 
@@ -103,7 +99,9 @@ make_eco_desc <- function(bio_clust_df
                                                    ) |>
     dplyr::left_join(indigenous_df |>
                        dplyr::distinct()
-                     )
+                     ) |>
+    dplyr::filter(per_cov > 0)  # this line feels like a hack. Not sure why it is still needed.
+                                # make_eco_taxa_per already has dplyr::filter(!!rlang::ensym(cov_col) != 0)
 
   ## obvious --------
   eco_obv_prep <- eco_taxa_per |>
