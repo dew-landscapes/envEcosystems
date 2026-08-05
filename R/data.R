@@ -148,3 +148,13 @@
 #' @format A character vector of wetland taxa
 #'   ...
 "taxa_wetland"
+
+
+#' Lookup for Global Ecosystem Typology level 3 ecological functional types
+#'
+#' Based on the file: `r basename(fs::dir_ls("data-raw", regexp = "GET"))`
+#' downloaded from `https://osf.io/5ay6q/files/osfstorage`.
+#'
+#'
+#' @format A tibble
+"luget"
