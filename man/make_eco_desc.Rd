@@ -18,6 +18,7 @@ make_eco_desc(
   obvious_max_n = 3,
   indicator_p_val = 0.05,
   indicator_max_n = 3,
+  ind_taxa_prop_thresh = 0.3,
   common_taxa_prop_thresh = 0.8,
   colour_map = NULL,
   add_structure = TRUE
@@ -61,6 +62,10 @@ bins in the cluster will be included in the description.}
 
 \item{colour_map}{Dataframe mapping any column in result to colour values
 (in a column called \code{colour}).}
+
+\item{ind_frq_prop_thresh}{Numeric. Threshold (proportion) of bins at which
+a taxa must occur to be considered an indicator (irrespective of
+\code{indicator_p_val})}
 }
 \value{
 Tibble of ecosystems descriptions per unique value of \code{clust_col} in

@@ -66,6 +66,7 @@ at a 'high' proportion of bins; and structural layers.</p>
 <span>  obvious_max_n <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  indicator_p_val <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  indicator_max_n <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  ind_taxa_prop_thresh <span class="op">=</span> <span class="fl">0.3</span>,</span>
 <span>  common_taxa_prop_thresh <span class="op">=</span> <span class="fl">0.8</span>,</span>
 <span>  colour_map <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  add_structure <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -140,6 +141,12 @@ bins in the cluster will be included in the description.</p></dd>
 <dt id="arg-colour-map">colour_map<a class="anchor" aria-label="anchor" href="#arg-colour-map"></a></dt>
 <dd><p>Dataframe mapping any column in result to colour values
 (in a column called <code>colour</code>).</p></dd>
+
+
+<dt id="arg-ind-frq-prop-thresh">ind_frq_prop_thresh<a class="anchor" aria-label="anchor" href="#arg-ind-frq-prop-thresh"></a></dt>
+<dd><p>Numeric. Threshold (proportion) of bins at which
+a taxa must occur to be considered an indicator (irrespective of
+<code>indicator_p_val</code>)</p></dd>
 
 </dl></div>
     <div id="value">
