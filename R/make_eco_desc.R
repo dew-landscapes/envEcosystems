@@ -40,6 +40,9 @@
 #' @param indicator_p_val Numeric 0 to 1. The p-value to use to accept a taxa as an
 #' indicator for an ecosystem.
 #' @param indicator_max_n Maximum number of taxa to list as indicators.
+#' @param ind_frq_prop_thresh Numeric. Threshold (proportion) of bins at which
+#' a taxa must occur to be considered an indicator (irrespective of
+#' `indicator_p_val`)
 #' @param common_taxa_prop_thresh Numeric. Threshold (proportion) for taxa to include in
 #' description. Taxa that occur in more than `common_taxa_prop_thresh` proportion of
 #' bins in the cluster will be included in the description.
@@ -64,6 +67,7 @@ make_eco_desc <- function(bio_clust_df
                           , obvious_max_n = 3
                           , indicator_p_val = 0.05
                           , indicator_max_n = 3
+                          , ind_taxa_prop_thresh = 0.3
                           , common_taxa_prop_thresh = 0.8
                           , colour_map = NULL
                           , add_structure = TRUE
@@ -138,7 +142,9 @@ make_eco_desc <- function(bio_clust_df
     dplyr::slice_max(frq
                      , n = indicator_max_n
                      ) |>
-    dplyr::filter(p_val <= indicator_p_val) |>
+    dplyr::filter(p_val <= indicator_p_val
+                  , frq >= ind_taxa_frq_thresh
+                  ) |>
     dplyr::arrange(!!rlang::ensym(clust_col)
                    , p_val
                    , desc(ind_val)
