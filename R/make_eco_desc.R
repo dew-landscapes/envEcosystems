@@ -14,7 +14,7 @@
 #' `indicator_p_val` and `indicator_max_n`.
 #'
 #' Common taxa are determined as any taxa occurring at more than
-#' `common_taxa_prop_thresh` bins within a cluster.
+#' `common_prop_thresh` bins within a cluster.
 #'
 #' Obvious and indicator taxa are prevented from also being common taxa.
 #'
@@ -40,11 +40,12 @@
 #' @param indicator_p_val Numeric 0 to 1. The p-value to use to accept a taxa as an
 #' indicator for an ecosystem.
 #' @param indicator_max_n Maximum number of taxa to list as indicators.
-#' @param ind_frq_prop_thresh Numeric. Threshold (proportion) of bins at which
+#' @param ind_frq_thresh Numeric. Threshold (proportion) of bins at which
 #' a taxa must occur to be considered an indicator (irrespective of
-#' `indicator_p_val`)
-#' @param common_taxa_prop_thresh Numeric. Threshold (proportion) for taxa to include in
-#' description. Taxa that occur in more than `common_taxa_prop_thresh` proportion of
+#' `indicator_p_val`). Default `0` will include any taxa with indicator p value
+#' less than or equal to `indicator_p_val`
+#' @param common_prop_thresh Numeric. Threshold (proportion) for taxa to include in
+#' description. Taxa that occur in more than `common_prop_thresh` proportion of
 #' bins in the cluster will be included in the description.
 #' @param colour_map Dataframe mapping any column in result to colour values
 #' (in a column called `colour`).
@@ -67,8 +68,8 @@ make_eco_desc <- function(bio_clust_df
                           , obvious_max_n = 3
                           , indicator_p_val = 0.05
                           , indicator_max_n = 3
-                          , ind_taxa_prop_thresh = 0.3
-                          , common_taxa_prop_thresh = 0.8
+                          , ind_frq_thresh = 0
+                          , common_prop_thresh = 0.8
                           , colour_map = NULL
                           , add_structure = TRUE
                           ) {
@@ -143,7 +144,7 @@ make_eco_desc <- function(bio_clust_df
                      , n = indicator_max_n
                      ) |>
     dplyr::filter(p_val <= indicator_p_val
-                  , frq >= ind_taxa_frq_thresh
+                  , frq >= ind_frq_thresh
                   ) |>
     dplyr::arrange(!!rlang::ensym(clust_col)
                    , p_val
@@ -192,7 +193,7 @@ make_eco_desc <- function(bio_clust_df
     dplyr::anti_join(eco_ind_prep |>
                        dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))))
                      ) |>
-    dplyr::filter(per_pres > common_taxa_prop_thresh * 100) |>
+    dplyr::filter(per_pres > common_prop_thresh * 100) |>
     dplyr::mutate(use_taxa = dplyr::if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))
                   , use_taxa = dplyr::if_else(is.na(str), use_taxa, paste0(use_taxa, " ", tolower(str)))
                   , use_taxa = paste0(use_taxa
