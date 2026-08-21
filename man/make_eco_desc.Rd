@@ -18,8 +18,8 @@ make_eco_desc(
   obvious_max_n = 3,
   indicator_p_val = 0.05,
   indicator_max_n = 3,
-  ind_taxa_prop_thresh = 0.3,
-  common_taxa_prop_thresh = 0.8,
+  ind_frq_thresh = 0,
+  common_prop_thresh = 0.8,
   colour_map = NULL,
   add_structure = TRUE
 )
@@ -56,16 +56,17 @@ indicator for an ecosystem.}
 
 \item{indicator_max_n}{Maximum number of taxa to list as indicators.}
 
-\item{common_taxa_prop_thresh}{Numeric. Threshold (proportion) for taxa to include in
-description. Taxa that occur in more than \code{common_taxa_prop_thresh} proportion of
+\item{ind_frq_thresh}{Numeric. Threshold (proportion) of bins at which
+a taxa must occur to be considered an indicator (irrespective of
+\code{indicator_p_val}). Default \code{0} will include any taxa with indicator p value
+less than or equal to \code{indicator_p_val}}
+
+\item{common_prop_thresh}{Numeric. Threshold (proportion) for taxa to include in
+description. Taxa that occur in more than \code{common_prop_thresh} proportion of
 bins in the cluster will be included in the description.}
 
 \item{colour_map}{Dataframe mapping any column in result to colour values
 (in a column called \code{colour}).}
-
-\item{ind_frq_prop_thresh}{Numeric. Threshold (proportion) of bins at which
-a taxa must occur to be considered an indicator (irrespective of
-\code{indicator_p_val})}
 }
 \value{
 Tibble of ecosystems descriptions per unique value of \code{clust_col} in
@@ -83,7 +84,7 @@ wrapper around \code{labdsv::inval()}). Choosing indicators uses
 \code{indicator_p_val} and \code{indicator_max_n}.
 
 Common taxa are determined as any taxa occurring at more than
-\code{common_taxa_prop_thresh} bins within a cluster.
+\code{common_prop_thresh} bins within a cluster.
 
 Obvious and indicator taxa are prevented from also being common taxa.
 

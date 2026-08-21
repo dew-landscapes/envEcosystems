@@ -66,8 +66,8 @@ at a 'high' proportion of bins; and structural layers.</p>
 <span>  obvious_max_n <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  indicator_p_val <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  indicator_max_n <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>  ind_taxa_prop_thresh <span class="op">=</span> <span class="fl">0.3</span>,</span>
-<span>  common_taxa_prop_thresh <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  ind_frq_thresh <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  common_prop_thresh <span class="op">=</span> <span class="fl">0.8</span>,</span>
 <span>  colour_map <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  add_structure <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -132,21 +132,22 @@ indicator for an ecosystem.</p></dd>
 <dd><p>Maximum number of taxa to list as indicators.</p></dd>
 
 
-<dt id="arg-common-taxa-prop-thresh">common_taxa_prop_thresh<a class="anchor" aria-label="anchor" href="#arg-common-taxa-prop-thresh"></a></dt>
+<dt id="arg-ind-frq-thresh">ind_frq_thresh<a class="anchor" aria-label="anchor" href="#arg-ind-frq-thresh"></a></dt>
+<dd><p>Numeric. Threshold (proportion) of bins at which
+a taxa must occur to be considered an indicator (irrespective of
+<code>indicator_p_val</code>). Default <code>0</code> will include any taxa with indicator p value
+less than or equal to <code>indicator_p_val</code></p></dd>
+
+
+<dt id="arg-common-prop-thresh">common_prop_thresh<a class="anchor" aria-label="anchor" href="#arg-common-prop-thresh"></a></dt>
 <dd><p>Numeric. Threshold (proportion) for taxa to include in
-description. Taxa that occur in more than <code>common_taxa_prop_thresh</code> proportion of
+description. Taxa that occur in more than <code>common_prop_thresh</code> proportion of
 bins in the cluster will be included in the description.</p></dd>
 
 
 <dt id="arg-colour-map">colour_map<a class="anchor" aria-label="anchor" href="#arg-colour-map"></a></dt>
 <dd><p>Dataframe mapping any column in result to colour values
 (in a column called <code>colour</code>).</p></dd>
-
-
-<dt id="arg-ind-frq-prop-thresh">ind_frq_prop_thresh<a class="anchor" aria-label="anchor" href="#arg-ind-frq-prop-thresh"></a></dt>
-<dd><p>Numeric. Threshold (proportion) of bins at which
-a taxa must occur to be considered an indicator (irrespective of
-<code>indicator_p_val</code>)</p></dd>
 
 </dl></div>
     <div id="value">
@@ -161,7 +162,7 @@ a taxa must occur to be considered an indicator (irrespective of
 wrapper around <code>labdsv::inval()</code>). Choosing indicators uses
 <code>indicator_p_val</code> and <code>indicator_max_n</code>.</p>
 <p>Common taxa are determined as any taxa occurring at more than
-<code>common_taxa_prop_thresh</code> bins within a cluster.</p>
+<code>common_prop_thresh</code> bins within a cluster.</p>
 <p>Obvious and indicator taxa are prevented from also being common taxa.</p>
 <p>The structural layer chosen to represent structure for the cluster has the
 highest value of <code>per_pres</code> by <code>per_cov_pres</code> by <code>ht</code>.</p>
