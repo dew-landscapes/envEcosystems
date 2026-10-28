@@ -3,17 +3,21 @@
   library(tibble)
 
 
-  artificialSurface <- rgb(218,92,105,maxColorValue = 255)
-  cultTerrVegWoodyOpen <- rgb(205,181,75,maxColorValue = 255)
-  cultTerrVegWoodyClosed <- rgb(197,168,51,maxColorValue = 255)
-  water <- rgb(77,159,220,maxColorValue = 255)
-  cultTerrVegHerbOpen <- rgb(242,240,127,maxColorValue = 255)
-  cultTerrVegHerbClosed <- rgb(228,224,52,maxColorValue = 255)
+  artificialSurface <- rgb(218, 92, 105, maxColorValue = 255)
+  cultTerrVegWoodyOpen <- rgb(205, 181, 75, maxColorValue = 255)
+  cultTerrVegWoodyClosed <- rgb(197, 168, 51, maxColorValue = 255)
+  water <- rgb(77, 159, 220, maxColorValue = 255)
+  cultTerrVegHerbOpen <- rgb(242, 240, 27 ,maxColorValue = 255)
+  cultTerrVegHerbClosed <- rgb(228, 224, 52, maxColorValue = 255)
+  naturalBareGround <- rgb(230, 230, 230, maxColorValue = 255)
+  benthicVegSeagrass <- rgb(56, 174, 99, maxColorValue = 255)
+  benthicReefRocky <- rgb(139, 90, 43, maxColorValue = 255)
 
 # Landcover colours
   lulandcover <- tribble(
     ~ecotype, ~use_class, ~definition, ~veg, ~lc_col, ~colour
     , "built", "built", "to add", FALSE, artificialSurface, artificialSurface
+    , "bare", "bare", "to add", TRUE, naturalBareGround, naturalBareGround
     , "dryland_ag", "cropping_cereals", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
     , "dryland_ag", "cropping_oilseeds", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
     , "dryland_ag", "cropping_pulses", "to add", FALSE, cultTerrVegHerbClosed, cultTerrVegHerbClosed
@@ -29,8 +33,10 @@
     , "dryland_ag", "pasture_grass", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
     , "dryland_ag", "pasture_legumes", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
     , "dryland_ag", "pasture_mixed", "to add", FALSE, cultTerrVegHerbOpen, cultTerrVegHerbOpen
+    , "reef", "reef", "to add", TRUE, benthicReefRocky, benthicReefRocky
     , "saltlake", "saltlake", "to add", TRUE, "thistle1", "thistle1"
     , "sand", "sand", "to add", TRUE, "beige", "beige"
+    , "seagrass", "seagrass", "to add", TRUE, benthicVegSeagrass, benthicVegSeagrass
     , "willow", "willow", "to add", FALSE, "gray80", "gray80"
     , "water", "water", "to add", TRUE, water, water
     , "water", "water_coastal", "to add", TRUE, water, water
