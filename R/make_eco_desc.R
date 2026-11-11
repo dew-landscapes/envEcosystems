@@ -9,9 +9,6 @@
 #'
 #' Obvious taxa have large values for `per_pres` by `per_cov_pres` by `ht`.
 #'
-#' Indicator taxa requires a result from `envCluster::make_assoc_df()` (a
-#' wrapper around `indicspecies::strassoc()`).
-#'
 #' Common taxa are determined as any taxa occurring at more than
 #' `common_prop_thresh` bins within a cluster.
 #'
@@ -22,32 +19,34 @@
 #'
 #' @param bio_clust_df Dataframe containing all `context`, all the `_col`s and taxa
 #' data in long format.
-#' @param assoc_df Result from `envCluster::make_assoc_df()`.
-#' @param context Character. Name(s) of column(s) in `bio_clust_df` that define bins.
-#' @param clust_col Character. Name of column in `bio_clust_df` containing cluster
-#' membership.
-#' @param taxa_col Character. Name of column in `bio_clust_df` and/or `indigenous_df`
-#' containing the taxa names.
+#' @param assoc_df Dataframe. Usually a result from
+#' `envCluster::make_assoc_df()` (a wrapper around `indicspecies::strassoc()`).
+#' @param context Character. Name(s) of column(s) in `bio_clust_df` that define
+#' bins.
+#' @param clust_col Character. Name of column in `bio_clust_df` containing
+#' cluster membership.
+#' @param taxa_col Character. Name of column in `bio_clust_df` and/or
+#' `indigenous_df` containing the taxa names.
 #' @param cov_col Character. Name of column in `bio_clust_df` with numeric
 #' abundance data (usually 'cover' for plants).
-#' @param ht_col Character. Name of column in `bio_clust_df` with numeric height data.
-#' @param str_col Character name of column in `bio_clust_df` and `lustr`containing
-#' lifeform (or structural) information.
-#' @param lustr Dataframe containing lifeform (structural) information.
+#' @param ht_col Character. Name of column in `bio_clust_df` with numeric height
+#' data.
+#' @param str_col Character name of column in `bio_clust_df` containing lifeform
+#' (or structural) information.
 #' @param indigenous_df dataframe containing indigenous status for each unique
 #' `taxa_col` in `bio_clust_df`
-#' @param indicator_p_val Numeric 0 to 1. The p-value to use to accept a taxa as an
-#' indicator for an ecosystem.
-#' @param indicator_max_n Maximum number of taxa to list as indicators.
-#' @param ind_frq_thresh Numeric. Threshold (proportion) of bins at which
-#' a taxa must occur to be considered an indicator (irrespective of
-#' `indicator_p_val`). Default `0` will include any taxa with indicator p value
-#' less than or equal to `indicator_p_val`
+#' @param obvious_max_n,rg_max_n,common_max_n How many taxa to include in
+#' descriptions for obvious, rg and common taxa.
+#' @param rg_thresh Numeric 0 to 1. The value to use to accept a taxa as
+#' associated with an ecosystem (from `func = "r.g"` in
+#' `indicspecies::strassoc()`)
 #' @param common_prop_thresh Numeric. Threshold (proportion) for taxa to include in
 #' description. Taxa that occur in more than `common_prop_thresh` proportion of
 #' bins in the cluster will be included in the description.
 #' @param colour_map Dataframe mapping any column in result to colour values
 #' (in a column called `colour`).
+#' @param add_structure Logical. Add structural information (such as 'woodland'
+#' or 'shrubland' etc)
 #'
 #' @return Tibble of ecosystems descriptions per unique value of `clust_col` in
 #' `bio_clust_df`
@@ -61,20 +60,20 @@ make_eco_desc <- function(bio_clust_df
                           , taxa_col = "taxa"
                           , cov_col = "cover_adj"
                           , ht_col = "use_height"
-                          , lustr
                           , str_col = "lifeform"
                           , indigenous_df = NULL
                           , obvious_max_n = 3
-                          , rg_val = 0.5
+                          , rg_thresh = 0.5
                           , rg_max_n = 5
-                          , ind_frq_thresh = 0
                           , common_prop_thresh = 0.8
+                          , common_max_n
                           , colour_map = NULL
                           , add_structure = TRUE
                           ) {
 
   options(scipen = 999)
 
+  lustr = envEcosystems::lulifeform
   sa_vsf <- envEcosystems::sa_vsf
   sa_sf <- envEcosystems::sa_sf
   cut_cov <- envEcosystems::cut_cov
