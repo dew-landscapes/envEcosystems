@@ -12,14 +12,13 @@ make_eco_desc(
   taxa_col = "taxa",
   cov_col = "cover_adj",
   ht_col = "use_height",
-  lustr,
   str_col = "lifeform",
   indigenous_df = NULL,
   obvious_max_n = 3,
-  rg_val = 0.5,
+  rg_thresh = 0.5,
   rg_max_n = 5,
-  ind_frq_thresh = 0,
   common_prop_thresh = 0.8,
+  common_max_n,
   colour_map = NULL,
   add_structure = TRUE
 )
@@ -28,33 +27,36 @@ make_eco_desc(
 \item{bio_clust_df}{Dataframe containing all \code{context}, all the \verb{_col}s and taxa
 data in long format.}
 
-\item{assoc_df}{Result from \code{envCluster::make_assoc_df()}.}
+\item{assoc_df}{Dataframe. Usually a result from
+\code{envCluster::make_assoc_df()} (a wrapper around \code{indicspecies::strassoc()}).}
 
-\item{context}{Character. Name(s) of column(s) in \code{bio_clust_df} that define bins.}
+\item{context}{Character. Name(s) of column(s) in \code{bio_clust_df} that define
+bins.}
 
-\item{clust_col}{Character. Name of column in \code{bio_clust_df} containing cluster
-membership.}
+\item{clust_col}{Character. Name of column in \code{bio_clust_df} containing
+cluster membership.}
 
-\item{taxa_col}{Character. Name of column in \code{bio_clust_df} and/or \code{indigenous_df}
-containing the taxa names.}
+\item{taxa_col}{Character. Name of column in \code{bio_clust_df} and/or
+\code{indigenous_df} containing the taxa names.}
 
 \item{cov_col}{Character. Name of column in \code{bio_clust_df} with numeric
 abundance data (usually 'cover' for plants).}
 
-\item{ht_col}{Character. Name of column in \code{bio_clust_df} with numeric height data.}
+\item{ht_col}{Character. Name of column in \code{bio_clust_df} with numeric height
+data.}
 
-\item{lustr}{Dataframe containing lifeform (structural) information.}
-
-\item{str_col}{Character name of column in \code{bio_clust_df} and \code{lustr}containing
-lifeform (or structural) information.}
+\item{str_col}{Character name of column in \code{bio_clust_df} containing lifeform
+(or structural) information.}
 
 \item{indigenous_df}{dataframe containing indigenous status for each unique
 \code{taxa_col} in \code{bio_clust_df}}
 
-\item{ind_frq_thresh}{Numeric. Threshold (proportion) of bins at which
-a taxa must occur to be considered an indicator (irrespective of
-\code{indicator_p_val}). Default \code{0} will include any taxa with indicator p value
-less than or equal to \code{indicator_p_val}}
+\item{obvious_max_n, rg_max_n, common_max_n}{How many taxa to include in
+descriptions for obvious, rg and common taxa.}
+
+\item{rg_thresh}{Numeric 0 to 1. The value to use to accept a taxa as
+associated with an ecosystem (from \code{func = "r.g"} in
+\code{indicspecies::strassoc()})}
 
 \item{common_prop_thresh}{Numeric. Threshold (proportion) for taxa to include in
 description. Taxa that occur in more than \code{common_prop_thresh} proportion of
@@ -63,10 +65,8 @@ bins in the cluster will be included in the description.}
 \item{colour_map}{Dataframe mapping any column in result to colour values
 (in a column called \code{colour}).}
 
-\item{indicator_p_val}{Numeric 0 to 1. The p-value to use to accept a taxa as an
-indicator for an ecosystem.}
-
-\item{indicator_max_n}{Maximum number of taxa to list as indicators.}
+\item{add_structure}{Logical. Add structural information (such as 'woodland'
+or 'shrubland' etc)}
 }
 \value{
 Tibble of ecosystems descriptions per unique value of \code{clust_col} in
@@ -78,9 +78,6 @@ at a 'high' proportion of bins; and structural layers.
 }
 \details{
 Obvious taxa have large values for \code{per_pres} by \code{per_cov_pres} by \code{ht}.
-
-Indicator taxa requires a result from \code{envCluster::make_assoc_df()} (a
-wrapper around \code{indicspecies::strassoc()}).
 
 Common taxa are determined as any taxa occurring at more than
 \code{common_prop_thresh} bins within a cluster.

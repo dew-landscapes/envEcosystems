@@ -60,14 +60,13 @@ at a 'high' proportion of bins; and structural layers.</p>
 <span>  taxa_col <span class="op">=</span> <span class="st">"taxa"</span>,</span>
 <span>  cov_col <span class="op">=</span> <span class="st">"cover_adj"</span>,</span>
 <span>  ht_col <span class="op">=</span> <span class="st">"use_height"</span>,</span>
-<span>  <span class="va">lustr</span>,</span>
 <span>  str_col <span class="op">=</span> <span class="st">"lifeform"</span>,</span>
 <span>  indigenous_df <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  obvious_max_n <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>  rg_val <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  rg_thresh <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  rg_max_n <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  ind_frq_thresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  common_prop_thresh <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  <span class="va">common_max_n</span>,</span>
 <span>  colour_map <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  add_structure <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -83,21 +82,23 @@ data in long format.</p></dd>
 
 
 <dt id="arg-assoc-df">assoc_df<a class="anchor" aria-label="anchor" href="#arg-assoc-df"></a></dt>
-<dd><p>Result from <code><a href="https://rdrr.io/pkg/envCluster/man/make_assoc_df.html" class="external-link">envCluster::make_assoc_df()</a></code>.</p></dd>
+<dd><p>Dataframe. Usually a result from
+<code><a href="https://rdrr.io/pkg/envCluster/man/make_assoc_df.html" class="external-link">envCluster::make_assoc_df()</a></code> (a wrapper around <code><a href="https://emf-creaf.github.io/indicspecies/reference/strassoc.html" class="external-link">indicspecies::strassoc()</a></code>).</p></dd>
 
 
 <dt id="arg-context">context<a class="anchor" aria-label="anchor" href="#arg-context"></a></dt>
-<dd><p>Character. Name(s) of column(s) in <code>bio_clust_df</code> that define bins.</p></dd>
+<dd><p>Character. Name(s) of column(s) in <code>bio_clust_df</code> that define
+bins.</p></dd>
 
 
 <dt id="arg-clust-col">clust_col<a class="anchor" aria-label="anchor" href="#arg-clust-col"></a></dt>
-<dd><p>Character. Name of column in <code>bio_clust_df</code> containing cluster
-membership.</p></dd>
+<dd><p>Character. Name of column in <code>bio_clust_df</code> containing
+cluster membership.</p></dd>
 
 
 <dt id="arg-taxa-col">taxa_col<a class="anchor" aria-label="anchor" href="#arg-taxa-col"></a></dt>
-<dd><p>Character. Name of column in <code>bio_clust_df</code> and/or <code>indigenous_df</code>
-containing the taxa names.</p></dd>
+<dd><p>Character. Name of column in <code>bio_clust_df</code> and/or
+<code>indigenous_df</code> containing the taxa names.</p></dd>
 
 
 <dt id="arg-cov-col">cov_col<a class="anchor" aria-label="anchor" href="#arg-cov-col"></a></dt>
@@ -106,16 +107,13 @@ abundance data (usually 'cover' for plants).</p></dd>
 
 
 <dt id="arg-ht-col">ht_col<a class="anchor" aria-label="anchor" href="#arg-ht-col"></a></dt>
-<dd><p>Character. Name of column in <code>bio_clust_df</code> with numeric height data.</p></dd>
-
-
-<dt id="arg-lustr">lustr<a class="anchor" aria-label="anchor" href="#arg-lustr"></a></dt>
-<dd><p>Dataframe containing lifeform (structural) information.</p></dd>
+<dd><p>Character. Name of column in <code>bio_clust_df</code> with numeric height
+data.</p></dd>
 
 
 <dt id="arg-str-col">str_col<a class="anchor" aria-label="anchor" href="#arg-str-col"></a></dt>
-<dd><p>Character name of column in <code>bio_clust_df</code> and <code>lustr</code>containing
-lifeform (or structural) information.</p></dd>
+<dd><p>Character name of column in <code>bio_clust_df</code> containing lifeform
+(or structural) information.</p></dd>
 
 
 <dt id="arg-indigenous-df">indigenous_df<a class="anchor" aria-label="anchor" href="#arg-indigenous-df"></a></dt>
@@ -123,11 +121,15 @@ lifeform (or structural) information.</p></dd>
 <code>taxa_col</code> in <code>bio_clust_df</code></p></dd>
 
 
-<dt id="arg-ind-frq-thresh">ind_frq_thresh<a class="anchor" aria-label="anchor" href="#arg-ind-frq-thresh"></a></dt>
-<dd><p>Numeric. Threshold (proportion) of bins at which
-a taxa must occur to be considered an indicator (irrespective of
-<code>indicator_p_val</code>). Default <code>0</code> will include any taxa with indicator p value
-less than or equal to <code>indicator_p_val</code></p></dd>
+<dt id="arg-obvious-max-n-rg-max-n-common-max-n">obvious_max_n, rg_max_n, common_max_n<a class="anchor" aria-label="anchor" href="#arg-obvious-max-n-rg-max-n-common-max-n"></a></dt>
+<dd><p>How many taxa to include in
+descriptions for obvious, rg and common taxa.</p></dd>
+
+
+<dt id="arg-rg-thresh">rg_thresh<a class="anchor" aria-label="anchor" href="#arg-rg-thresh"></a></dt>
+<dd><p>Numeric 0 to 1. The value to use to accept a taxa as
+associated with an ecosystem (from <code>func = "r.g"</code> in
+<code><a href="https://emf-creaf.github.io/indicspecies/reference/strassoc.html" class="external-link">indicspecies::strassoc()</a></code>)</p></dd>
 
 
 <dt id="arg-common-prop-thresh">common_prop_thresh<a class="anchor" aria-label="anchor" href="#arg-common-prop-thresh"></a></dt>
@@ -141,13 +143,9 @@ bins in the cluster will be included in the description.</p></dd>
 (in a column called <code>colour</code>).</p></dd>
 
 
-<dt id="arg-indicator-p-val">indicator_p_val<a class="anchor" aria-label="anchor" href="#arg-indicator-p-val"></a></dt>
-<dd><p>Numeric 0 to 1. The p-value to use to accept a taxa as an
-indicator for an ecosystem.</p></dd>
-
-
-<dt id="arg-indicator-max-n">indicator_max_n<a class="anchor" aria-label="anchor" href="#arg-indicator-max-n"></a></dt>
-<dd><p>Maximum number of taxa to list as indicators.</p></dd>
+<dt id="arg-add-structure">add_structure<a class="anchor" aria-label="anchor" href="#arg-add-structure"></a></dt>
+<dd><p>Logical. Add structural information (such as 'woodland'
+or 'shrubland' etc)</p></dd>
 
 </dl></div>
     <div id="value">
@@ -158,8 +156,6 @@ indicator for an ecosystem.</p></dd>
     <div id="details">
     <h2>Details</h2>
     <p>Obvious taxa have large values for <code>per_pres</code> by <code>per_cov_pres</code> by <code>ht</code>.</p>
-<p>Indicator taxa requires a result from <code><a href="https://rdrr.io/pkg/envCluster/man/make_assoc_df.html" class="external-link">envCluster::make_assoc_df()</a></code> (a
-wrapper around <code><a href="https://emf-creaf.github.io/indicspecies/reference/strassoc.html" class="external-link">indicspecies::strassoc()</a></code>).</p>
 <p>Common taxa are determined as any taxa occurring at more than
 <code>common_prop_thresh</code> bins within a cluster.</p>
 <p>Obvious and indicator taxa are prevented from also being common taxa.</p>
