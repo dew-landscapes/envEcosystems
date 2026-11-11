@@ -9,9 +9,8 @@
 #'
 #' Obvious taxa have large values for `per_pres` by `per_cov_pres` by `ht`.
 #'
-#' Indicator taxa requires a result from `envCluster::make_ind_val_df()` (a
-#' wrapper around `labdsv::inval()`). Choosing indicators uses
-#' `indicator_p_val` and `indicator_max_n`.
+#' Indicator taxa requires a result from `envCluster::make_assoc_df()` (a
+#' wrapper around `indicspecies::strassoc()`).
 #'
 #' Common taxa are determined as any taxa occurring at more than
 #' `common_prop_thresh` bins within a cluster.
@@ -23,7 +22,7 @@
 #'
 #' @param bio_clust_df Dataframe containing all `context`, all the `_col`s and taxa
 #' data in long format.
-#' @param ind_val_df Result from `envCluster::make_ind_val_df()`.
+#' @param assoc_df Result from `envCluster::make_assoc_df()`.
 #' @param context Character. Name(s) of column(s) in `bio_clust_df` that define bins.
 #' @param clust_col Character. Name of column in `bio_clust_df` containing cluster
 #' membership.
@@ -56,25 +55,25 @@
 #'
 #' @examples
 make_eco_desc <- function(bio_clust_df
-                          , ind_val_df = NULL
+                          , assoc_df = NULL
                           , context
                           , clust_col = "cluster"
                           , taxa_col = "taxa"
                           , cov_col = "cover_adj"
-                          , ht_col = "ht"
+                          , ht_col = "use_height"
                           , lustr
                           , str_col = "lifeform"
                           , indigenous_df = NULL
                           , obvious_max_n = 3
-                          , indicator_p_val = 0.05
-                          , indicator_max_n = 3
+                          , rg_val = 0.5
+                          , rg_max_n = 5
                           , ind_frq_thresh = 0
                           , common_prop_thresh = 0.8
                           , colour_map = NULL
                           , add_structure = TRUE
                           ) {
 
-  options(scipen = 9999)
+  options(scipen = 999)
 
   sa_vsf <- envEcosystems::sa_vsf
   sa_sf <- envEcosystems::sa_sf
@@ -134,28 +133,23 @@ make_eco_desc <- function(bio_clust_df
     dplyr::summarise(obv_taxa = envFunc::vec_to_sentence(text, end = "and/or")) |>
     dplyr::ungroup()
 
-  ## indicator -----
-  eco_ind_prep <- ind_val_df |>
-    dplyr::group_by(!!rlang::ensym(clust_col)) |>
-    dplyr::slice_min(p_val
-                     , n = indicator_max_n
+  ## assoc -----
+  eco_assoc_prep <- assoc_df |>
+    dplyr::filter(rg > rg_thresh) |>
+    dplyr::slice_max(rg
+                     , n = rg_max_n
+                     , by = tidyselect::any_of(clust_col)
                      ) |>
-    dplyr::slice_max(frq
-                     , n = indicator_max_n
-                     ) |>
-    dplyr::filter(p_val <= indicator_p_val
-                  , frq >= ind_frq_thresh
-                  ) |>
     dplyr::arrange(!!rlang::ensym(clust_col)
-                   , p_val
-                   , desc(ind_val)
+                   , rg
+                   , desc(b)
                    ) |>
     dplyr::mutate(ind_num = dplyr::row_number()
                   , best = ind_num == min(ind_num)
-                  ) |>
-    dplyr::ungroup()
+                  , .by = tidyselect::any_of(clust_col)
+                  )
 
-  eco_ind <- eco_ind_prep |>
+  eco_assoc <- eco_assoc_prep |>
     dplyr::arrange(!!rlang::ensym(clust_col)) |>
     dplyr::left_join(eco_taxa_per) |>
     dplyr::mutate(use_taxa = dplyr::if_else(ind == "N"
@@ -165,22 +159,21 @@ make_eco_desc <- function(bio_clust_df
                   , use_taxa = dplyr::if_else(is.na(str), use_taxa, paste0(use_taxa, " ", tolower(str)))
                   , use_taxa = paste0(use_taxa
                                       , " ("
-                                      , round(frq * 100, 0)
+                                      , round(b * 100, 0)
                                       , "% bins;\u00A0"
                                       , signif(per_cov_pres, 1)
-                                      , "% cover; p = "
-                                      , signif(p_val, 1)
+                                      , "% cover; rg = "
+                                      , signif(rg, 1)
                                       , ")"
                                       )
                   ) |>
-    dplyr::group_by(!!rlang::ensym(clust_col)) |>
     dplyr::arrange(str) |>
-    dplyr::summarise(range_ind = stringr::str_flatten_comma(taxa)
-                     , best_ind = ifelse(best, taxa, NA) |> na.omit(object = _)
-                     , range_ind_md = envFunc::vec_to_sentence(use_taxa, end = "and/or")
-                     , best_ind_md = ifelse(best, use_taxa, NA) |> na.omit(object = _)
-                     ) |>
-    dplyr::ungroup()
+    dplyr::summarise(range_assoc = stringr::str_flatten_comma(taxa)
+                     , best_assoc = taxa[best]
+                     , range_assoc_md = envFunc::vec_to_sentence(use_taxa, end = "and/or")
+                     , best_assoc_md = use_taxa[best]
+                     , .by = tidyselect::any_of(clust_col)
+                     )
 
 
   ## common  -----
@@ -190,7 +183,7 @@ make_eco_desc <- function(bio_clust_df
                        dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))))
                      ) |>
     # prevent indicator taxa turning up again in common taxa
-    dplyr::anti_join(eco_ind_prep |>
+    dplyr::anti_join(eco_assoc_prep |>
                        dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))))
                      ) |>
     dplyr::filter(per_pres > common_prop_thresh * 100) |>
@@ -344,7 +337,7 @@ make_eco_desc <- function(bio_clust_df
     dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, bins_col)))) |>
     dplyr::left_join(eco_obv) |>
     dplyr::left_join(eco_common) |>
-    dplyr::left_join(eco_ind)
+    dplyr::left_join(eco_assoc)
 
   if(add_structure) {
 
@@ -364,10 +357,10 @@ make_eco_desc <- function(bio_clust_df
                                                              , obv_taxa
                                                              )
                                                     )
-                                   , dplyr::if_else(is.na(range_ind_md)
+                                   , dplyr::if_else(is.na(range_assoc_md)
                                                     , ""
                                                     , paste0(". Indicated by "
-                                                             , range_ind_md
+                                                             , range_assoc_md
                                                              )
                                                     )
                                    , dplyr::if_else(is.na(common_taxa)
