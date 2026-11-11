@@ -6,18 +6,18 @@
 \usage{
 make_eco_desc(
   bio_clust_df,
-  ind_val_df = NULL,
+  assoc_df = NULL,
   context,
   clust_col = "cluster",
   taxa_col = "taxa",
   cov_col = "cover_adj",
-  ht_col = "ht",
+  ht_col = "use_height",
   lustr,
   str_col = "lifeform",
   indigenous_df = NULL,
   obvious_max_n = 3,
-  indicator_p_val = 0.05,
-  indicator_max_n = 3,
+  rg_val = 0.5,
+  rg_max_n = 5,
   ind_frq_thresh = 0,
   common_prop_thresh = 0.8,
   colour_map = NULL,
@@ -28,7 +28,7 @@ make_eco_desc(
 \item{bio_clust_df}{Dataframe containing all \code{context}, all the \verb{_col}s and taxa
 data in long format.}
 
-\item{ind_val_df}{Result from \code{envCluster::make_ind_val_df()}.}
+\item{assoc_df}{Result from \code{envCluster::make_assoc_df()}.}
 
 \item{context}{Character. Name(s) of column(s) in \code{bio_clust_df} that define bins.}
 
@@ -51,11 +51,6 @@ lifeform (or structural) information.}
 \item{indigenous_df}{dataframe containing indigenous status for each unique
 \code{taxa_col} in \code{bio_clust_df}}
 
-\item{indicator_p_val}{Numeric 0 to 1. The p-value to use to accept a taxa as an
-indicator for an ecosystem.}
-
-\item{indicator_max_n}{Maximum number of taxa to list as indicators.}
-
 \item{ind_frq_thresh}{Numeric. Threshold (proportion) of bins at which
 a taxa must occur to be considered an indicator (irrespective of
 \code{indicator_p_val}). Default \code{0} will include any taxa with indicator p value
@@ -67,6 +62,11 @@ bins in the cluster will be included in the description.}
 
 \item{colour_map}{Dataframe mapping any column in result to colour values
 (in a column called \code{colour}).}
+
+\item{indicator_p_val}{Numeric 0 to 1. The p-value to use to accept a taxa as an
+indicator for an ecosystem.}
+
+\item{indicator_max_n}{Maximum number of taxa to list as indicators.}
 }
 \value{
 Tibble of ecosystems descriptions per unique value of \code{clust_col} in
@@ -79,9 +79,8 @@ at a 'high' proportion of bins; and structural layers.
 \details{
 Obvious taxa have large values for \code{per_pres} by \code{per_cov_pres} by \code{ht}.
 
-Indicator taxa requires a result from \code{envCluster::make_ind_val_df()} (a
-wrapper around \code{labdsv::inval()}). Choosing indicators uses
-\code{indicator_p_val} and \code{indicator_max_n}.
+Indicator taxa requires a result from \code{envCluster::make_assoc_df()} (a
+wrapper around \code{indicspecies::strassoc()}).
 
 Common taxa are determined as any taxa occurring at more than
 \code{common_prop_thresh} bins within a cluster.

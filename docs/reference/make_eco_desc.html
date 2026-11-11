@@ -54,18 +54,18 @@ at a 'high' proportion of bins; and structural layers.</p>
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_eco_desc</span><span class="op">(</span></span>
 <span>  <span class="va">bio_clust_df</span>,</span>
-<span>  ind_val_df <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  assoc_df <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">context</span>,</span>
 <span>  clust_col <span class="op">=</span> <span class="st">"cluster"</span>,</span>
 <span>  taxa_col <span class="op">=</span> <span class="st">"taxa"</span>,</span>
 <span>  cov_col <span class="op">=</span> <span class="st">"cover_adj"</span>,</span>
-<span>  ht_col <span class="op">=</span> <span class="st">"ht"</span>,</span>
+<span>  ht_col <span class="op">=</span> <span class="st">"use_height"</span>,</span>
 <span>  <span class="va">lustr</span>,</span>
 <span>  str_col <span class="op">=</span> <span class="st">"lifeform"</span>,</span>
 <span>  indigenous_df <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  obvious_max_n <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>  indicator_p_val <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>  indicator_max_n <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  rg_val <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  rg_max_n <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  ind_frq_thresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  common_prop_thresh <span class="op">=</span> <span class="fl">0.8</span>,</span>
 <span>  colour_map <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -82,8 +82,8 @@ at a 'high' proportion of bins; and structural layers.</p>
 data in long format.</p></dd>
 
 
-<dt id="arg-ind-val-df">ind_val_df<a class="anchor" aria-label="anchor" href="#arg-ind-val-df"></a></dt>
-<dd><p>Result from <code><a href="https://rdrr.io/pkg/envCluster/man/make_ind_val_df.html" class="external-link">envCluster::make_ind_val_df()</a></code>.</p></dd>
+<dt id="arg-assoc-df">assoc_df<a class="anchor" aria-label="anchor" href="#arg-assoc-df"></a></dt>
+<dd><p>Result from <code><a href="https://rdrr.io/pkg/envCluster/man/make_assoc_df.html" class="external-link">envCluster::make_assoc_df()</a></code>.</p></dd>
 
 
 <dt id="arg-context">context<a class="anchor" aria-label="anchor" href="#arg-context"></a></dt>
@@ -123,15 +123,6 @@ lifeform (or structural) information.</p></dd>
 <code>taxa_col</code> in <code>bio_clust_df</code></p></dd>
 
 
-<dt id="arg-indicator-p-val">indicator_p_val<a class="anchor" aria-label="anchor" href="#arg-indicator-p-val"></a></dt>
-<dd><p>Numeric 0 to 1. The p-value to use to accept a taxa as an
-indicator for an ecosystem.</p></dd>
-
-
-<dt id="arg-indicator-max-n">indicator_max_n<a class="anchor" aria-label="anchor" href="#arg-indicator-max-n"></a></dt>
-<dd><p>Maximum number of taxa to list as indicators.</p></dd>
-
-
 <dt id="arg-ind-frq-thresh">ind_frq_thresh<a class="anchor" aria-label="anchor" href="#arg-ind-frq-thresh"></a></dt>
 <dd><p>Numeric. Threshold (proportion) of bins at which
 a taxa must occur to be considered an indicator (irrespective of
@@ -149,6 +140,15 @@ bins in the cluster will be included in the description.</p></dd>
 <dd><p>Dataframe mapping any column in result to colour values
 (in a column called <code>colour</code>).</p></dd>
 
+
+<dt id="arg-indicator-p-val">indicator_p_val<a class="anchor" aria-label="anchor" href="#arg-indicator-p-val"></a></dt>
+<dd><p>Numeric 0 to 1. The p-value to use to accept a taxa as an
+indicator for an ecosystem.</p></dd>
+
+
+<dt id="arg-indicator-max-n">indicator_max_n<a class="anchor" aria-label="anchor" href="#arg-indicator-max-n"></a></dt>
+<dd><p>Maximum number of taxa to list as indicators.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -158,9 +158,8 @@ bins in the cluster will be included in the description.</p></dd>
     <div id="details">
     <h2>Details</h2>
     <p>Obvious taxa have large values for <code>per_pres</code> by <code>per_cov_pres</code> by <code>ht</code>.</p>
-<p>Indicator taxa requires a result from <code><a href="https://rdrr.io/pkg/envCluster/man/make_ind_val_df.html" class="external-link">envCluster::make_ind_val_df()</a></code> (a
-wrapper around <code>labdsv::inval()</code>). Choosing indicators uses
-<code>indicator_p_val</code> and <code>indicator_max_n</code>.</p>
+<p>Indicator taxa requires a result from <code><a href="https://rdrr.io/pkg/envCluster/man/make_assoc_df.html" class="external-link">envCluster::make_assoc_df()</a></code> (a
+wrapper around <code><a href="https://emf-creaf.github.io/indicspecies/reference/strassoc.html" class="external-link">indicspecies::strassoc()</a></code>).</p>
 <p>Common taxa are determined as any taxa occurring at more than
 <code>common_prop_thresh</code> bins within a cluster.</p>
 <p>Obvious and indicator taxa are prevented from also being common taxa.</p>
