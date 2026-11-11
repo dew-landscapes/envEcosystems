@@ -108,7 +108,12 @@ make_eco_desc <- function(bio_clust_df
 
   ## obvious --------
   eco_obv_prep <- eco_taxa_per |>
-    dplyr::mutate(val = (per_pres / 100) * (per_cov / 100)) |>
+    dplyr::mutate(ht_rescale = scales::rescale(ht, to = c(0, 1))
+                  , per_pres_rescale = scales::rescale(per_pres, to = c(0, 1))
+                  , per_cov_rescale = scales::rescale(per_cov, to = c(0, 1))
+                  , .by = tidyselect::any_of(clust_col)
+                  ) |>
+    dplyr::mutate(val = ht_rescale * per_pres_rescale * per_cov_rescale) |>
     dplyr::group_by(!!rlang::ensym(clust_col)) |>
     dplyr::slice_max(order_by = val, n = obvious_max_n) |>
     dplyr::ungroup()
