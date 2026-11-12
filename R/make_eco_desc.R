@@ -62,11 +62,16 @@ make_eco_desc <- function(bio_clust_df
                           , ht_col = "use_height"
                           , str_col = "lifeform"
                           , indigenous_df = NULL
+                          # obvious taxa
+                          , obvious_min_prop
                           , obvious_max_n = 3
+                          # indicator taxa indicspecies::strassoc(func = "r.g")
+                          , rg_min_prop
                           , rg_thresh = 0.5
                           , rg_max_n = 5
-                          , common_prop_thresh = 0.8
-                          , common_max_n
+                          # common taxa
+                          , common_min_prop = 0.8
+                          , common_max_n = 3
                           , colour_map = NULL
                           , add_structure = TRUE
                           ) {
@@ -114,6 +119,7 @@ make_eco_desc <- function(bio_clust_df
                   , .by = tidyselect::any_of(clust_col)
                   ) |>
     dplyr::mutate(val = ht_rescale * per_pres_rescale * per_cov_rescale) |>
+    dplyr::filter(per_pres >= obvious_min_prop * 100) |>
     dplyr::group_by(!!rlang::ensym(clust_col)) |>
     dplyr::slice_max(order_by = val, n = obvious_max_n) |>
     dplyr::ungroup()
@@ -139,7 +145,9 @@ make_eco_desc <- function(bio_clust_df
 
   ## assoc -----
   eco_assoc_prep <- assoc_df |>
-    dplyr::filter(rg > rg_thresh) |>
+    dplyr::filter(rg > rg_thresh
+                  , b >= rg_min_prop
+                  ) |>
     dplyr::slice_max(rg
                      , n = rg_max_n
                      , by = tidyselect::any_of(clust_col)
@@ -190,7 +198,11 @@ make_eco_desc <- function(bio_clust_df
     dplyr::anti_join(eco_assoc_prep |>
                        dplyr::distinct(dplyr::across(tidyselect::any_of(c(clust_col, taxa_col))))
                      ) |>
-    dplyr::filter(per_pres > common_prop_thresh * 100) |>
+    dplyr::filter(per_pres >= common_min_prop * 100) |>
+    dplyr::slice_max(per_pres
+                     , n = common_max_n
+                     , by = tidyselect::any_of(clust_col)
+                     ) |>
     dplyr::mutate(use_taxa = dplyr::if_else(ind == "N",paste0("&ast;_",taxa,"_"),paste0("_",taxa,"_"))
                   , use_taxa = dplyr::if_else(is.na(str), use_taxa, paste0(use_taxa, " ", tolower(str)))
                   , use_taxa = paste0(use_taxa
