@@ -62,11 +62,13 @@ at a 'high' proportion of bins; and structural layers.</p>
 <span>  ht_col <span class="op">=</span> <span class="st">"use_height"</span>,</span>
 <span>  str_col <span class="op">=</span> <span class="st">"lifeform"</span>,</span>
 <span>  indigenous_df <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">obvious_min_prop</span>,</span>
 <span>  obvious_max_n <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  <span class="va">rg_min_prop</span>,</span>
 <span>  rg_thresh <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  rg_max_n <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  common_prop_thresh <span class="op">=</span> <span class="fl">0.8</span>,</span>
-<span>  <span class="va">common_max_n</span>,</span>
+<span>  common_min_prop <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  common_max_n <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  colour_map <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  add_structure <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -132,12 +134,6 @@ associated with an ecosystem (from <code>func = "r.g"</code> in
 <code><a href="https://emf-creaf.github.io/indicspecies/reference/strassoc.html" class="external-link">indicspecies::strassoc()</a></code>)</p></dd>
 
 
-<dt id="arg-common-prop-thresh">common_prop_thresh<a class="anchor" aria-label="anchor" href="#arg-common-prop-thresh"></a></dt>
-<dd><p>Numeric. Threshold (proportion) for taxa to include in
-description. Taxa that occur in more than <code>common_prop_thresh</code> proportion of
-bins in the cluster will be included in the description.</p></dd>
-
-
 <dt id="arg-colour-map">colour_map<a class="anchor" aria-label="anchor" href="#arg-colour-map"></a></dt>
 <dd><p>Dataframe mapping any column in result to colour values
 (in a column called <code>colour</code>).</p></dd>
@@ -146,6 +142,12 @@ bins in the cluster will be included in the description.</p></dd>
 <dt id="arg-add-structure">add_structure<a class="anchor" aria-label="anchor" href="#arg-add-structure"></a></dt>
 <dd><p>Logical. Add structural information (such as 'woodland'
 or 'shrubland' etc)</p></dd>
+
+
+<dt id="arg-common-prop-thresh">common_prop_thresh<a class="anchor" aria-label="anchor" href="#arg-common-prop-thresh"></a></dt>
+<dd><p>Numeric. Threshold (proportion) for taxa to include in
+description. Taxa that occur in more than <code>common_prop_thresh</code> proportion of
+bins in the cluster will be included in the description.</p></dd>
 
 </dl></div>
     <div id="value">

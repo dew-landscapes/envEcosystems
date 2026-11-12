@@ -14,11 +14,13 @@ make_eco_desc(
   ht_col = "use_height",
   str_col = "lifeform",
   indigenous_df = NULL,
+  obvious_min_prop,
   obvious_max_n = 3,
+  rg_min_prop,
   rg_thresh = 0.5,
   rg_max_n = 5,
-  common_prop_thresh = 0.8,
-  common_max_n,
+  common_min_prop = 0.8,
+  common_max_n = 3,
   colour_map = NULL,
   add_structure = TRUE
 )
@@ -58,15 +60,15 @@ descriptions for obvious, rg and common taxa.}
 associated with an ecosystem (from \code{func = "r.g"} in
 \code{indicspecies::strassoc()})}
 
-\item{common_prop_thresh}{Numeric. Threshold (proportion) for taxa to include in
-description. Taxa that occur in more than \code{common_prop_thresh} proportion of
-bins in the cluster will be included in the description.}
-
 \item{colour_map}{Dataframe mapping any column in result to colour values
 (in a column called \code{colour}).}
 
 \item{add_structure}{Logical. Add structural information (such as 'woodland'
 or 'shrubland' etc)}
+
+\item{common_prop_thresh}{Numeric. Threshold (proportion) for taxa to include in
+description. Taxa that occur in more than \code{common_prop_thresh} proportion of
+bins in the cluster will be included in the description.}
 }
 \value{
 Tibble of ecosystems descriptions per unique value of \code{clust_col} in
